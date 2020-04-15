@@ -1,0 +1,10 @@
+#ifndef PROJECT_SERVER_IGAMEENGINE_H
+#define PROJECT_SERVER_IGAMEENGINE_H
+
+
+class IGameEngine {
+
+};
+
+
+#endif //PROJECT_SERVER_IGAMEENGINE_H

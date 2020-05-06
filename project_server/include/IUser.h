@@ -1,6 +1,7 @@
 #ifndef PROJECT_SERVER_IUSER_H
 #define PROJECT_SERVER_IUSER_H
 #include <string>
+#include "Socket.h"
 
 class IUser {
 private:

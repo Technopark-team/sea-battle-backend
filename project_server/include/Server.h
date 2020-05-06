@@ -2,12 +2,16 @@
 #define PROJECT_SERVER_SERVER_H
 
 #include "IServer.h"
+#include "ServerSocket.h"
 
 class Server: public IServer{
-private:
-    int m_socket;
+protected:
+    std::shared_ptr<ServerSocket> m_socket;
 public:
-    Server(std::string host, std::string port, int sock) : IServer(std::move(host), std::move(port)), m_socket(sock) {}
+    Server(std::string host, uint32_t port) : IServer(std::move(host), port) {
+        m_socket = std::make_shared<ServerSocket>(host, port);
+    }
+
     void run() override;
 };
 

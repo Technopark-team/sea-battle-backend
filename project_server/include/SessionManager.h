@@ -2,13 +2,14 @@
 #define PROJECT_SERVER_SESSIONMANAGER_H
 
 #include <memory>
-#include <set>
+#include <map>
+
 #include "Session.h"
 
 
 using SessionPtr = std::shared_ptr<Session>;
 
-enum session_type {
+enum class type {
     Multi = true,
     Local = false
 };
@@ -16,14 +17,13 @@ enum session_type {
 class SessionManager {
 public:
     SessionManager() = default;
-    bool create_session(UserPtr user, size_t id, session_type flag = Multi);
-    int update_sessions();
-    int delete_session();
-    int update_with_user_id(size_t user_id, std::string message);
-
+    bool create_session(UserPtr user, size_t id, type flag = type::Multi);
     bool add_user_in_session(size_t session_id, UserPtr user);
+
+    int delete_session(size_t id);
+    int update_with_user_id(const std::string& message, size_t user_id);
 private:
-    std::set<SessionPtr> sessions;
+    std::map<int, SessionPtr> sessions;
 };
 
 

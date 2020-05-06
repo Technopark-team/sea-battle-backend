@@ -1,6 +1,6 @@
-#include "../include/Parser.h"
+#include "Parser.h"
 
 
-int Parser::parse_type(const std::string &request) {
-    return 0;
+typeMsg Parser::parse_type(const std::string &request) {
+    return typeMsg::CreateSession;
 }

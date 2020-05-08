@@ -6,10 +6,9 @@ namespace client {
 namespace game {
 
 GameClient::GameClient()
-    : network_client_(new network::NetworkClient()),
-      menu_controller_(new controller::MenuController()) {
-        auth_controller_ = std::unique_ptr<controller::AuthController>(new controller::AuthController(network_client_));
-
+    : menu_controller_(new controller::MenuController()) {
+    network_client_ = std::make_shared<network::TCPClient>(ioc);
+    auth_controller_ = std::unique_ptr<controller::AuthController>(new controller::AuthController(network_client_));
 }
 size_t GameClient::run() {
     config::UserCommand command;
@@ -24,6 +23,8 @@ size_t GameClient::run() {
         }
     }
     std::cout << "Ура, мы вышли" << std::endl;
+    network_client_->Close();
+
     return 0;
 }
 }  // namespace game

@@ -2,9 +2,9 @@
 #define SEA_BATTLE_BACKEND_USER_MODEL_H
 
 #include <memory>
-#include "model_inteface.h"
 #include "../sbcli/config/config.h"
-#include "../sbcli/network/network_interface.h"
+#include "model_inteface.h"
+#include "network/network.h"
 
 namespace seabattle {
 namespace client {
@@ -12,7 +12,7 @@ namespace model {
 
 class UserModel : public IModel {
  public:
-    explicit UserModel(std::shared_ptr<seabattle::client::network::INetworkClient> network_client);
+    explicit UserModel(std::shared_ptr<network::TCPClient> &network_client);
     ~UserModel() = default;
 
     size_t PostSignup() override;
@@ -27,7 +27,7 @@ class UserModel : public IModel {
 
     config::UserData user_data_;
     config::AuthData auth_data_;
-    std::shared_ptr<seabattle::client::network::INetworkClient> network_client_;
+    std::shared_ptr<network::TCPClient> network_client_;
 
 };
 

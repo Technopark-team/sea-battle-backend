@@ -4,7 +4,7 @@ namespace seabattle {
 namespace client {
 namespace model {
 
-UserModel::UserModel(std::shared_ptr<seabattle::client::network::INetworkClient> network_client)
+UserModel::UserModel(std::shared_ptr<network::TCPClient> &network_client)
     : network_client_(network_client), user_data_(), auth_data_() {}
 
 size_t UserModel::PostSignup() {
@@ -13,6 +13,7 @@ size_t UserModel::PostSignup() {
 }
 
 size_t UserModel::PostSignin() {
+    network_client_->Run();
     user_data_.user_id = 1;  // тестовая инициализация
     return 0;
 }

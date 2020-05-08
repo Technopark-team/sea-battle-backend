@@ -17,7 +17,7 @@ namespace controller {
 class AuthController : public IController {
  public:
     explicit AuthController(
-        std::shared_ptr<seabattle::client::network::INetworkClient> &network_client);
+        std::shared_ptr<network::TCPClient> &network_client);
     ~AuthController() = default;
 
     /**

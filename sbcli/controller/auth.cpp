@@ -5,7 +5,7 @@ namespace client {
 namespace controller {
 
 AuthController::AuthController(
-    std::shared_ptr<network::INetworkClient> &network_client)
+    std::shared_ptr<network::TCPClient> &network_client)
     : user_model_(new model::UserModel(network_client)),
       console_interface_(new ui::AuthConsoleInput()) {}
 
@@ -15,6 +15,7 @@ size_t AuthController::Action(config::UserCommand& user_command) {
     // TODO: проверить, что введена команда авторизации или регистрации
     config::AuthData auth_data;
     console_interface_->ReadAuthData(auth_data);
+    user_model_->PostSignin();
     // TODO: продумать view, которая рендерит успех/неудачу авторизации/регистрации
     console_interface_->ReadCommand(
         user_command);  // предложение пользователю выйти в меню или выйти из игры

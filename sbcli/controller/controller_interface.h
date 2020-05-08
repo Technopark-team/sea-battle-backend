@@ -4,7 +4,6 @@
 #include <cstddef>
 #include <string>
 #include "../sbcli/config/config.h"
-#include "../sbcli/network/network_interface.h"
 
 namespace seabattle {
 namespace client {

@@ -3,25 +3,41 @@
 
 #include "network_interface.h"
 
+#include <iostream>
+#include <string>
+
 namespace seabattle {
 namespace client {
 namespace network {
 
-class NetworkClient : public INetworkClient {
+using namespace std;
+
+using boost::asio::ip::tcp;
+
+class TCPClient : public INetworkClient {
  public:
-    explicit NetworkClient();
-    ~NetworkClient() = default;
+    TCPClient(boost::asio::io_service& IO_Service);
+    ~TCPClient() = default;
 
-    size_t Fail(std::string error) override;
-    size_t OnRead(std::string error) override;
-    size_t OnWrite(std::string error) override;
-    size_t OnConnect(std::string error) override;
-    size_t OnResolve(std::string error) override;
+    void Run() override;
+    void Close() override;
 
+ private:
+    boost::asio::io_service& io_service_;
+    tcp::socket socket_;
+
+    string send_buffer_;
+    static const size_t buf_len_ = 100;
+    char recieve_buffer_[buf_len_ * 2];
+
+    void OnConnect(const boost::system::error_code& ErrorCode) override;
+    void OnReceive(const boost::system::error_code& ErrorCode) override;
+    void OnSend(const boost::system::error_code& ErrorCode) override;
+    void DoClose() override;
 };
 
 }  // namespace network
 }  // namespace client
 }  // namespace seabattle
 
-#endif //SEA_BATTLE_BACKEND_NETWORK_H
+#endif  // SEA_BATTLE_BACKEND_NETWORK_H

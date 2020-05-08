@@ -4,6 +4,9 @@
 #include <cstddef>
 #include <string>
 
+#include <boost/asio.hpp>
+#include <boost/bind.hpp>
+
 namespace seabattle {
 namespace client {
 namespace network {
@@ -11,13 +14,15 @@ namespace network {
 class INetworkClient {
  public:
     virtual ~INetworkClient() = default;
+    virtual void Run() = 0;
+    virtual void Close() = 0;
 
-    virtual size_t Fail(std::string error) = 0;
-    virtual size_t OnRead(std::string error) = 0;
-    virtual size_t OnWrite(std::string error) = 0;
-    virtual size_t OnConnect(std::string error) = 0;
-    virtual size_t OnResolve(std::string error) = 0;
+ private:
 
+    virtual void OnConnect(const boost::system::error_code& ErrorCode) = 0;
+    virtual void OnReceive(const boost::system::error_code& ErrorCode) = 0;
+    virtual void OnSend(const boost::system::error_code& ErrorCode) = 0;
+    virtual void DoClose() = 0;
 };
 
 }  // namespace network

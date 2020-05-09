@@ -1,9 +1,10 @@
 #ifndef PROJECT_SERVER_SESSION_H
 #define PROJECT_SERVER_SESSION_H
 
-#include "User.h"
+
 #include <set>
 #include "IGameEngine.h"
+#include "User.h"
 
 class Session {
 private:

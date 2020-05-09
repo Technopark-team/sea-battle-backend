@@ -6,11 +6,13 @@
 
 class ClientSocket: public Socket {
 public:
-    explicit ClientSocket(int socket): Socket(socket) {
-        setNonBlocking(true);
+    explicit ClientSocket(int socket, bool option = true): Socket(socket) {
+        if (option) {
+            setNonBlocking(true);
+        }
     }
 
-    std::string receive(std::string& msg);
+    int receive(std::string& msg);
     int send_msg(const std::string& msg);
 };
 

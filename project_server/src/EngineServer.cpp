@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 #include "EngineServer.h"
 
 EngineServer::EngineServer(std::string host, uint32_t port):
@@ -9,13 +10,42 @@ EngineServer::EngineServer(std::string host, uint32_t port):
 }
 
 int EngineServer::switch_action(std::string message, UserPtr user) {
+    if (message.empty()) {
+        // erase disconnected client // recv returns empty msg
+
+        std::cout << "erase" << std::endl;
+        clients.erase(user->get_id());
+
+        //notifySession()
+
+        return 1;
+    }
+
+    std::string response = "true";
+
     typeMsg type = m_parser->parse_type(message);
+    if (type == typeMsg::CreateSession) {
+        int id = m_parser->parseCreateSession(message);
+        bool result = m_session_manager->create_session(user, id);
+        if (result) {
+            user->setSessionId(id);
 
-    /*if (type == typeMsg::CreateSession) {
-        m_parser->parseCreateSession(message);
+            //std::cout << user->getSessionId() << std::endl;
+        } else {
 
-        m_session_manager->create_session(user, id);
-    } else if (type == )*/
+        }
+
+        user->write(response);
+    } else if (type == typeMsg::CreateUser) {
+        user->set_name(m_parser->parseCreateUser(message));
+    } else if (type == typeMsg::JoinSession) {
+        int id = m_parser->parseJoinSession(message);
+        m_session_manager->add_user_in_session(user, id);
+
+    } else if (type == typeMsg::StartGame) {
+
+    }
+    return 0;
 }
 
 
@@ -26,60 +56,80 @@ void EngineServer::do_accept() {
 
         if (new_client && new_client->getFd() > -1) {
             std::cout << "new client's sd is " << new_client->getFd() << std::endl;
-            std::shared_ptr<Connection> connection = std::make_shared<Connection>(new_client);
-            auto f = std::bind(&EngineServer::asyncRead, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-            connection->read(f);
-        }
 
-        usleep(100);
+            auto read = std::bind(&EngineServer::asyncRead, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+            auto write = std::bind(&EngineServer::asyncWrite, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+            auto switchF = std::bind(&EngineServer::switch_action, this, std::placeholders::_1, std::placeholders::_2);
+
+            std::shared_ptr<User> user = std::make_shared<User>(new_client, read, write, switchF);
+
+            bool flag = clients.insert({user->get_id(), user}).second;
+
+            user->read();
+        }
+        sleep(1);
         //break;
     }
 }
 
-void EngineServer::asyncRead(std::shared_ptr<ClientSocket> client, std::string message, std::function<void(int)> callback) {
+void EngineServer::asyncRead(std::shared_ptr<ClientSocket> client, std::string& message, std::function<void(int)> callback) {
     Event event = Event(client, message, event::WantRead, callback);
-    work_events.push(event);
+    std::cout << " read" << std::endl;
+    wantReadEvents.push_back(event);
 }
 
-void EngineServer::asyncWrite(std::shared_ptr<ClientSocket> client, std::string message, std::function<void(int)> callback) {
+void EngineServer::asyncWrite(std::shared_ptr<ClientSocket> client, std::string& message, std::function<void(int)> callback) {
     Event event = Event(client, message, event::WantWrite, callback);
-    work_events.push(event);
+    workEvents.push(event);
 }
 
+void EngineServer::run() {
 
-void EngineServer::Connection::read(
-        const std::function<void(std::shared_ptr<ClientSocket>, std::string, std::function<void(int)>)>& async_read)  {
-    auto cb = [con = shared_from_this()](int error) {
-        con->readHandler(error);
+    auto manageFunction = [this]() {
+        m_engine->ManageClients(wantReadEvents, workEvents, mWantReadEvents, mWorkEvents);
     };
 
-    async_read(client, buffer, cb);
-}
+    auto processFunction = [this]() {
+        this->process();
+    };
 
-void EngineServer::Connection::readHandler(int error) {
-    std::string message = buffer;
-    UserPtr user = clients.find(client)->second;
-    switch_action(message, user);
+    std::thread manageThread(manageFunction);
+    std::thread processThread(processFunction);
 
+    do_accept();
 
-}
-
-void EngineServer::Connection::write(
-        const std::function<void(std::shared_ptr<ClientSocket>, std::string, std::function<void(int)>)>& async_write,
-        const std::string &message) {
-
-        buffer = message;
-        auto cb = [con = shared_from_this()](int error) {
-            con->writeHandler(error);
-        };
-        async_write(client, buffer, cb);
-}
-
-void EngineServer::Connection::writeHandler(int error) {
-
+    manageThread.join();
+    processThread.join();
 }
 
 void EngineServer::process() {
+    while (true) {
+        std::string msg;
+        std::shared_ptr<ClientSocket> cl = std::make_shared<ClientSocket>(4, false);
+        Event event (cl, msg, event::WantRead);
 
+        {
+            std::unique_lock<std::mutex> lock(mWorkEvents);
+            if (workEvents.empty()) {
+                lock.unlock();
+                usleep(10000);
+                continue;
+            }
+            event = workEvents.front();
+            workEvents.pop();
+        }
+
+        if (event._status == event::WantRead) {
+
+            int result = event.client->receive(msg);
+            event._data.get().assign(msg);
+            event.callback(errno);
+        } else {
+            event.client->send_msg(event._data.get());
+            event.callback(errno);
+        }
+
+        //break;
+    }
 }
 

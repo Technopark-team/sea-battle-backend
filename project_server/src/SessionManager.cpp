@@ -5,12 +5,15 @@ bool SessionManager::create_session(UserPtr user, size_t id, type flag) {
     return sessions.insert({id, newSession}).second;
 }
 
-bool SessionManager::add_user_in_session(size_t id, UserPtr user) {
+error SessionManager::add_user_in_session(UserPtr user, size_t id) {
     auto it = sessions.find(id);
     if (it == sessions.end()) {
-        return false;
+        return error::NotFound;
     }
-    return it->second->add_user_in_session(user);
+    if (it->second->add_user_in_session(user)) {
+        return error::Success;
+    }
+    return error::Full;
 }
 
 int SessionManager::delete_session(size_t id) {

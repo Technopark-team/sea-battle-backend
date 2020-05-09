@@ -1,20 +1,22 @@
 #ifndef PROJECT_SERVER_IUSER_H
 #define PROJECT_SERVER_IUSER_H
 #include <string>
-#include "Socket.h"
+#include "ClientSocket.h"
 
 class IUser {
 private:
     static size_t next_id;
 protected:
-    int m_socket;
+    std::shared_ptr<ClientSocket> m_socket;
     std::string name;
     size_t id;
 public:
-    IUser(std::string username, int sock);
-    virtual int send_message(std::string message) = 0;
-    virtual int recieve_message(std::string message) = 0;
+    explicit IUser(std::shared_ptr<ClientSocket> sock);
+    void set_name(const std::string& username);
+    virtual void write(const std::string& message) = 0;
+    virtual void read() = 0;
     size_t get_id();
+    std::shared_ptr<ClientSocket> get_client();
 };
 
 

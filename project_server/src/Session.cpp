@@ -1,5 +1,6 @@
 #include "Session.h"
 
+
 Session::Session(UserPtr user, size_t id): id(id){
 
 }

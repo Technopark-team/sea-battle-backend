@@ -15,7 +15,7 @@ ServerSocket::ServerSocket(const std::string& host, uint32_t port) noexcept(fals
 
     struct sockaddr_in server_addr;
     server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = inet_addr(host.c_str());
+    server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
     server_addr.sin_port = htons(port);
 
     if (bind(sock_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)

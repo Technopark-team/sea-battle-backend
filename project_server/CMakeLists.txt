@@ -4,6 +4,8 @@ project(project_server)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_FLAGS "-g -Wall -Wextra -Werror -Wpedantic -pthread")
 
+find_package(Threads)
+
 set(project_name project_server)
 set(library_name server_lib)
 
@@ -25,7 +27,7 @@ file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cpp)
 add_library(${library_name} SHARED ${sources})
 
 add_executable(project_server main.cpp)
-target_link_libraries(${project_name} ${library_name})
+target_link_libraries(${project_name} ${library_name} -lpthread)
 
 enable_testing()
 add_subdirectory(test)

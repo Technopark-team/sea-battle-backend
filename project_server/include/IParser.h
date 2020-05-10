@@ -22,7 +22,6 @@ class IParser {
 public:
     IParser():  buffer("") {}
     virtual typeMsg parse_type(const std::string& request) = 0;
-
 private:
     std::string buffer;
 };

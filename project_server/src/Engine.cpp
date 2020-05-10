@@ -7,6 +7,22 @@ int Engine::get_users_with_events(std::vector<Event> users_events, std::queue<Ev
     return 0;
 }
 
+void Engine::deleteEvents(std::vector<Event>& wantReadEvents, std::vector<size_t>& needDelete, std::mutex& mWantReadEvents) {
+    {
+        std::unique_lock<std::mutex> lock(mWantReadEvents);
+        std::cout << "before: " << wantReadEvents.size() << " need delete size " << needDelete.size() << std::endl;
+        for (auto& id: needDelete) {
+            wantReadEvents.erase(std::remove_if(wantReadEvents.begin(), wantReadEvents.end(), [&id](Event& event){return event.id == id;}), wantReadEvents.end());
+        }
+
+    }
+    {
+        std::unique_lock<std::mutex> lock(mNeedDelete);
+        needDelete.clear();
+    }
+    std::cout << "after: " << wantReadEvents.size() << " need delete size " << needDelete.size() << std::endl;
+}
+
 void Engine::ManageClients(std::vector<Event>& wantReadEvents, std::queue<Event>& workEvents, std::mutex& mWantReadEvents, std::mutex& mWorkEvents) {
 
     while(true) {
@@ -14,9 +30,8 @@ void Engine::ManageClients(std::vector<Event>& wantReadEvents, std::queue<Event>
             sleep (1);
             continue;
         }
-
         struct pollfd fds[1024];
-        std::vector<ClientSocket> disconnected;
+        std::vector<size_t> needDelete;
 
         int i = 0;
         for (auto& client: wantReadEvents) {
@@ -43,16 +58,16 @@ void Engine::ManageClients(std::vector<Event>& wantReadEvents, std::queue<Event>
 
         for (size_t k = 0; k < size; k++) {
             if (fds[k].revents == 0) {
-
                 continue;
             }
 
             if (fds[k].revents & POLLHUP) {
-                sleep(1);
+                std::unique_lock<std::mutex> lockN(mNeedDelete);
+                needDelete.push_back(wantReadEvents[k].id);
+
                 std::cout << "pollhup" << std::endl;
             } else if (fds[k].revents & POLLIN) {
                 if (wantReadEvents[k]._status == event::WantWrite) {
-                    sleep(1);
                     continue;
                 }
                 {
@@ -60,20 +75,18 @@ void Engine::ManageClients(std::vector<Event>& wantReadEvents, std::queue<Event>
                     workEvents.push(wantReadEvents[k]);
                 }
                 {
-                    std::unique_lock<std::mutex> lockE(mWantReadEvents);
-                    wantReadEvents.erase(wantReadEvents.begin() + k);
-
-                    //std::cout<< "wantReadsize = " << wantReadEvents.size() << std::endl;
+                    std::unique_lock<std::mutex> lockN(mNeedDelete);
+                    needDelete.push_back(wantReadEvents[k].id);
                 }
             } else if (fds[k].revents & POLLNVAL) {
+                std::unique_lock<std::mutex> lockN(mNeedDelete);
+                needDelete.push_back(wantReadEvents[k].id);
                 std::cout << "pollnval" << std::endl;
             }
-
         }
-
-        // delete
+        deleteEvents(wantReadEvents, needDelete, mWantReadEvents);
+        sleep(1);
     }
-
 }
 
 

@@ -10,6 +10,8 @@ EngineServer::EngineServer(std::string host, uint32_t port):
 }
 
 int EngineServer::switch_action(std::string message, UserPtr user) {
+    std::string response = "true";
+
     if (message.empty()) {
         // erase disconnected client // recv returns empty msg
 
@@ -21,30 +23,37 @@ int EngineServer::switch_action(std::string message, UserPtr user) {
         return 1;
     }
 
-    std::string response = "true";
-
     typeMsg type = m_parser->parse_type(message);
     if (type == typeMsg::CreateSession) {
         int id = m_parser->parseCreateSession(message);
         bool result = m_session_manager->create_session(user, id);
         if (result) {
             user->setSessionId(id);
-
             //std::cout << user->getSessionId() << std::endl;
         } else {
 
         }
 
-        user->write(response);
+        m_session_manager->notifySession(response, id);
     } else if (type == typeMsg::CreateUser) {
         user->set_name(m_parser->parseCreateUser(message));
+        user->write(response);
     } else if (type == typeMsg::JoinSession) {
         int id = m_parser->parseJoinSession(message);
         m_session_manager->add_user_in_session(user, id);
 
+        m_session_manager->notifySession(response, id);
     } else if (type == typeMsg::StartGame) {
+        Map userMap = m_parser->parseStartGame(message);
+        m_session_manager->startGame(user, userMap, user->getSessionId());
 
+        m_session_manager->notifySession(response, user->getSessionId());
+    } else if (type == typeMsg::UpdateGame) {
+        Point point = m_parser->parseUpdateGame(message);
+
+        m_session_manager->updateStep(user, point, user->getSessionId());
     }
+
     return 0;
 }
 
@@ -74,7 +83,6 @@ void EngineServer::do_accept() {
 
 void EngineServer::asyncRead(std::shared_ptr<ClientSocket> client, std::string& message, std::function<void(int)> callback) {
     Event event = Event(client, message, event::WantRead, callback);
-    std::cout << " read" << std::endl;
     wantReadEvents.push_back(event);
 }
 
@@ -84,15 +92,12 @@ void EngineServer::asyncWrite(std::shared_ptr<ClientSocket> client, std::string&
 }
 
 void EngineServer::run() {
-
     auto manageFunction = [this]() {
         m_engine->ManageClients(wantReadEvents, workEvents, mWantReadEvents, mWorkEvents);
     };
-
     auto processFunction = [this]() {
-        this->process();
+        process();
     };
-
     std::thread manageThread(manageFunction);
     std::thread processThread(processFunction);
 
@@ -107,7 +112,6 @@ void EngineServer::process() {
         std::string msg;
         std::shared_ptr<ClientSocket> cl = std::make_shared<ClientSocket>(4, false);
         Event event (cl, msg, event::WantRead);
-
         {
             std::unique_lock<std::mutex> lock(mWorkEvents);
             if (workEvents.empty()) {
@@ -118,9 +122,7 @@ void EngineServer::process() {
             event = workEvents.front();
             workEvents.pop();
         }
-
         if (event._status == event::WantRead) {
-
             int result = event.client->receive(msg);
             event._data.get().assign(msg);
             event.callback(errno);

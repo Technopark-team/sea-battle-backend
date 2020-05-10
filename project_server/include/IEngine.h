@@ -14,25 +14,27 @@ enum class event {
 };
 
 struct Event {
-    Event(std::shared_ptr<ClientSocket> cl, std::string& data, event status): client(std::move(cl)), _data(data), _status(status) {
-    }
+    Event(std::shared_ptr<ClientSocket> cl, std::string& data, event status);
 
-    Event(std::shared_ptr<ClientSocket> cl, std::string& data, event status, std::function<void (int)> cb):
-            client(std::move(cl)), _data(data), _status(status), callback(cb) {
-    }
+    Event(std::shared_ptr<ClientSocket> cl, std::string& data, event status, std::function<void (int)> cb);
 
     Event& operator= (const Event& rhs) {
         client = rhs.client;
         _data = std::ref(rhs._data);
-        callback = rhs.callback;
         _status = rhs._status;
+        callback = rhs.callback;
+        id = rhs.id;
         return *this;
     }
 
-    event _status;
     std::shared_ptr<ClientSocket> client;
+    event _status;
     std::reference_wrapper<std::string> _data;
     std::function<void (int)> callback;
+    size_t id;
+
+private:
+    static size_t next_id;
 };
 
 

@@ -26,8 +26,6 @@ private:
     void do_accept();
     void process();
 
-
-
 protected:
     std::unordered_map<int, UserPtr> clients;
     std::vector<Event> wantReadEvents;

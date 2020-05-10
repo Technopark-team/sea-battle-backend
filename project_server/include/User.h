@@ -13,7 +13,7 @@ using asyncFunction = std::function<void(std::shared_ptr<ClientSocket>, std::str
 class User: public IUser, public std::enable_shared_from_this<User> {
 private:
     std::string buffer;
-    int sessionId;
+    size_t sessionId;
 
     asyncFunction mAsyncRead;
     asyncFunction mAsyncWrite;
@@ -28,9 +28,14 @@ public:
     void write(const std::string& message) override;
     void read() override;
 
-    void setSessionId(int session) {
+    void setSessionId(size_t session) {
         sessionId = session;
     }
+
+    size_t getSessionId() {
+        return sessionId;
+    }
+
 };
 
 using UserPtr = std::shared_ptr<User>;

@@ -4,6 +4,7 @@
 #include <memory>
 #include "../sbcli/config/config.h"
 #include "../sbcli/model/user_model.h"
+#include "sbutils/data/data.h"
 #include "controller_interface.h"
 #include "ui/auth_console_input.h"
 

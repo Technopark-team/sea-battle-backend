@@ -17,15 +17,6 @@ struct UserData {
     UserData(int id) : user_id(id) {}
 };
 
-struct AuthData {
-    std::string login{};
-    std::string password{};
-
-    AuthData() = default;
-    AuthData(std::string log, std::string pass)
-        : login(std::move(log)), password(std::move(password)) {}
-};
-
 struct UserCommand {
     std::string command{};
 

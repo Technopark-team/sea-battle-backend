@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace sbutils {
+namespace seabattle {
 namespace utils {
 namespace data {
 

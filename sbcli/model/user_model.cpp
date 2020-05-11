@@ -28,12 +28,12 @@ size_t UserModel::SetUserId(config::UserData user_data) {
     return 0;
 }
 
-size_t UserModel::GetAuthData(config::AuthData& auth_data) {
+size_t UserModel::GetAuthData(utils::data::AuthData& auth_data) {
     auth_data = std::move(auth_data_);
     return 0;
 }
 
-size_t UserModel::SetAuthData(config::AuthData auth_data) {
+size_t UserModel::SetAuthData(utils::data::AuthData auth_data) {
     auth_data_ = std::move(auth_data);
     return 0;
 }

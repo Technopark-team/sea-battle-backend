@@ -10,7 +10,7 @@ AuthController::AuthController(std::shared_ptr<network::TCPClient>& network_clie
 
 size_t AuthController::Action(config::UserCommand& user_command) {
     config::UserCommand auth_command;
-    config::AuthData auth_data;
+    utils::data::AuthData auth_data;
 
     console_interface_->ReadCommand(auth_command);
 

@@ -5,6 +5,7 @@
 #include "../sbcli/config/config.h"
 #include "model_inteface.h"
 #include "network/network.h"
+#include "sbutils/data/data.h"
 
 namespace seabattle {
 namespace client {
@@ -21,14 +22,14 @@ class UserModel : public IModel {
     size_t PostSignin() override;
     size_t GetUserId(config::UserData &user_data);
     size_t SetUserId(config::UserData user_data);
-    size_t GetAuthData(config::AuthData &auth_data);
-    size_t SetAuthData(config::AuthData auth_data);
+    size_t GetAuthData(utils::data::AuthData &auth_data);
+    size_t SetAuthData(utils::data::AuthData auth_data);
 
  private:
     size_t GeneralCallback_(std::string response) override;
 
     config::UserData user_data_;
-    config::AuthData auth_data_;
+    utils::data::AuthData auth_data_;
     std::shared_ptr<network::TCPClient> network_client_;
 
 };

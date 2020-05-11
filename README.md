@@ -4,7 +4,17 @@ Swagger JSON API: https://app.swaggerhub.com/apis/rufa-a/APISeaBattle/1.0.0-oas3
 
 UML-диаграмма классов: 
 
-![image info](client-uml.png)
+![image info](docs/client-uml.png)
+
+Схема алгоритма логики работы клиентской части:
+
+![image info](docs/ClientAlg.png)
+
+Вместо POST, PUT, GET HTTP запросов используется TCP-сокет для передачи структуры данных, в которой роут и тип запроса указаны в дополнительной переменной (см. `struct DataRequest`/`struct DataResponse` и `enum Route`).
+
+  - Асинхронная работа с сетью
+    - библиотека boost: https://github.com/boostorg/boost
+    - TCP сокет
 
   - MVC-архитектура 
       - контроллеры: 

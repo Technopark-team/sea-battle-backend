@@ -12,10 +12,6 @@ UML-диаграмма классов:
 
 Вместо POST, PUT, GET HTTP запросов используется TCP-сокет для передачи структуры данных, в которой роут и тип запроса указаны в дополнительной переменной (см. `struct DataRequest`/`struct DataResponse` и `enum Route`).
 
-  - Асинхронная работа с сетью
-    - библиотека boost: https://github.com/boostorg/boost
-    - TCP сокет
-
   - MVC-архитектура 
       - контроллеры: 
         - MenuController
@@ -27,8 +23,8 @@ UML-диаграмма классов:
       - представление:
         - GameView
   - Асинхронная работа с сетью
-      - библиотека beast: https://github.com/boostorg/beast
-      - методы http (GET, POST, PUT)
+      - библиотека boost: https://github.com/boostorg/boost
+      - TCP сокет
       
       
   Например, регистрация пользователя:

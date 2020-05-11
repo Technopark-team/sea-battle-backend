@@ -10,6 +10,7 @@
 #include "model/user_model.h"
 #include "ui/auth_console_input.h"
 
+// TODO: добавить документацию к методам и свойствам
 
 namespace seabattle {
 namespace client {

@@ -7,6 +7,9 @@ namespace seabattle {
 namespace client {
 namespace config {
 
+// TODO: убрать перенесенные структуры
+// TODO: добавить струтуру ip/port сервера
+
 struct UserData {
     int user_id = 0;
 

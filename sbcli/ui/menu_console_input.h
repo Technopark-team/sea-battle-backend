@@ -9,6 +9,8 @@ namespace seabattle {
 namespace client {
 namespace ui {
 
+// TODO: добавить документацию к методам и свойствам
+
 class MenuConsoleInput : public IUserInput {
  public:
     explicit MenuConsoleInput();

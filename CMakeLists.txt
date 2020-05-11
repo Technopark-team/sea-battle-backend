@@ -15,6 +15,24 @@ set(SEABATTLE_CLI_LIB "${CMAKE_CURRENT_SOURCE_DIR}/sbcli")
 set(CLIENT_SRC_LIST ${CMAKE_CURRENT_SOURCE_DIR}/seabattle_cli.cpp)
 set(SERVER_SRC_LIST ${CMAKE_CURRENT_SOURCE_DIR}/tcp_server.cpp)
 
+find_package(GTest REQUIRED)
+
+set(GMock_INCLUDE_DIR "/usr/local/include")
+if (EXISTS "/usr/local/lib/libgmock.a")
+    set(GMock_LIBRARY "/usr/local/lib/libgmock.a")
+    set(GMock_LIBRARY_MAIN "/usr/local/lib/libgmock_main.a")
+    message("Gmock is a static build")
+else ()
+    set(GMock_LIBRARY "/usr/local/lib/libgmock.so")
+    set(GMock_LIBRARY "/usr/local/lib/libgmock.so")
+    message("Gmock is a dynamic build")
+endif ()
+set(GMock_BOTH_LIBRARIES ${GMock_LIBRARY} ${GMock_LIBRARY_MAIN})
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${GTEST_INCLUDE_DIRS})
+include_directories(${GMock_INCLUDE_DIR})
+
 add_subdirectory(${SEABATTLE_CLI_LIB})
 
 # compile client
@@ -25,5 +43,18 @@ target_link_libraries(seabattle-cli ${Boost_LIBRARIES})
 # compile server
 add_executable(test_tcp_server ${SERVER_SRC_LIST})
 target_link_libraries(test_tcp_server ${Boost_LIBRARIES})
+
+set(TESTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+
+######sbcli test sources########
+file(GLOB TEST_CLI_SOURCES ${TESTS_DIR}/tests_cli/run_tests.cpp)
+file(GLOB TEST_CLI_HEADERS ${TESTS_DIR}/tests_cli/*.h ${TESTS_DIR}/tests_cli/controller/*.h)
+
+add_executable(run-cli-tests ${TEST_CLI_SOURCES} ${TEST_CLI_HEADERS})
+target_link_libraries(run-cli-tests ${GTEST_BOTH_LIBRARIES})
+target_link_libraries(run-cli-tests ${GMock_BOTH_LIBRARIES})
+target_link_libraries(run-cli-tests ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(run-cli-tests ${Boost_LIBRARIES})
+target_link_libraries(run-cli-tests sbcli)
 
 message("Boost version ${Boost_VERSION} found at ${Boost_LIBRARY_DIRS}")

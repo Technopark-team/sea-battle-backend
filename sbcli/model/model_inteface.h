@@ -8,6 +8,7 @@ namespace seabattle {
 namespace client {
 namespace model {
 
+// TODO: переписать интерфейс
 class IModel {
  public:
     virtual ~IModel() = default;

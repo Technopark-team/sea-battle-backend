@@ -9,6 +9,8 @@ namespace sbutils {
 namespace utils {
 namespace data {
 
+// TODO: [ВАЖНО!] добавить документацию к методам и свойствам
+
 enum Routes {
     GET_GAME_ALL,
     GET_GAME_OPEN,

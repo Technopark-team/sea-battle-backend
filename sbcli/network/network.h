@@ -10,6 +10,8 @@ namespace seabattle {
 namespace client {
 namespace network {
 
+// TODO: добавить документацию к методам и свойствам
+
 using namespace std;
 
 using boost::asio::ip::tcp;

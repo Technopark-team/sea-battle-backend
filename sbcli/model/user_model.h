@@ -10,6 +10,8 @@ namespace seabattle {
 namespace client {
 namespace model {
 
+// TODO: добавить документацию к методам и свойствам
+
 class UserModel : public IModel {
  public:
     explicit UserModel(std::shared_ptr<network::TCPClient> &network_client);

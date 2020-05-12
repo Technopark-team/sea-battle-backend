@@ -2,10 +2,10 @@
 #define PROJECT_SERVER_IPARSER_H
 
 #include <string>
+#include <sstream>
 
 enum class typeMsg {
-    NewPlayer = 1,
-    CreateSession,
+    CreateSession = 1,
     UpdateGame,
     JoinSession,
     StartGame,
@@ -21,6 +21,7 @@ enum class errorType {
 class IParser {
 public:
     IParser():  buffer("") {}
+    virtual ~IParser() = default;
     virtual typeMsg parse_type(const std::string& request) = 0;
 private:
     std::string buffer;

@@ -12,24 +12,11 @@ enum class error {
     Full,
     UserExist,
     Started,
-    Wait
+    Wait,
+    NotValidMap
 };
 
-struct Ship {
-    size_t start;
-    size_t end;
 
-    bool horizontal;
-};
-
-struct Map {
-    std::vector<Ship> ships;
-};
-
-struct Point {
-    size_t x;
-    size_t y;
-};
 
 
 class Session {
@@ -42,6 +29,7 @@ public:
     Session(UserPtr user, size_t id);
 
     error add_user_in_session(UserPtr user);
+    bool eraseUser(UserPtr user);
 
     error startGame(UserPtr user, const Map& userMap);
     int updateGameState(UserPtr user, const Point& point);

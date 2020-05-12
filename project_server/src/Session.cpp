@@ -18,6 +18,10 @@ error Session::add_user_in_session(UserPtr user) {
 
 error Session::startGame(UserPtr user, const Map& userMap) {
 
+    if (!game_engine->insertMap(user->get_id(), userMap)) {
+        return error::NotValidMap;
+    }
+
     started++;
     if (started == 1) {
         return error::Wait;
@@ -31,7 +35,12 @@ void Session::notifyUsers(const std::string& message) {
     }
 }
 
+
 int Session::updateGameState(UserPtr user, const Point& point) {
 
     return 0;
+}
+
+bool Session::eraseUser(UserPtr user) {
+    return users.erase(user);
 }

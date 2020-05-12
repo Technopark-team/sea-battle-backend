@@ -1,6 +1,7 @@
 #ifndef PROJECT_SERVER_IUSER_H
 #define PROJECT_SERVER_IUSER_H
 #include <string>
+
 #include "ClientSocket.h"
 
 class IUser {
@@ -12,6 +13,8 @@ protected:
     size_t id;
 public:
     explicit IUser(std::shared_ptr<ClientSocket> sock);
+    virtual ~IUser() = default;
+
     void set_name(const std::string& username);
     virtual void write(const std::string& message) = 0;
     virtual void read() = 0;

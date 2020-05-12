@@ -31,8 +31,11 @@ int ClientSocket::send_msg(const std::string& msg) {
         }
         left -= sent;
     }
-
     return 0;
+}
+
+void ClientSocket::close() {
+    ::close(sock_fd);
 }
 
 

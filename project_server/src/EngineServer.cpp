@@ -1,5 +1,6 @@
 #include <iostream>
 #include <thread>
+
 #include "EngineServer.h"
 
 EngineServer::EngineServer(std::string host, uint32_t port):
@@ -13,23 +14,26 @@ int EngineServer::switch_action(std::string message, UserPtr user) {
     std::string response = "true";
 
     if (message.empty()) {
-        // erase disconnected client // recv returns empty msg
+        m_session_manager->eraseUser(user, user->getSessionId());
+        // todo: real serializer
+        response = "user_id: "+ std::to_string(user->get_id()) + " disconnected";
+        m_session_manager->notifySession(response, user->getSessionId());
 
-        std::cout << "erase" << std::endl;
+        user->get_client()->close();
         clients.erase(user->get_id());
-
-        //notifySession()
-
         return 1;
     }
 
     typeMsg type = m_parser->parse_type(message);
     if (type == typeMsg::CreateSession) {
+        // todo: real serializer and parser
+
         int id = m_parser->parseCreateSession(message);
         bool result = m_session_manager->create_session(user, id);
+
         if (result) {
             user->setSessionId(id);
-            //std::cout << user->getSessionId() << std::endl;
+            response = "session created " + std::to_string(id);
         } else {
 
         }
@@ -40,7 +44,12 @@ int EngineServer::switch_action(std::string message, UserPtr user) {
         user->write(response);
     } else if (type == typeMsg::JoinSession) {
         int id = m_parser->parseJoinSession(message);
-        m_session_manager->add_user_in_session(user, id);
+        error result = m_session_manager->add_user_in_session(user, id);
+
+        if (result == error::Success) {
+            user->setSessionId(id);
+            response = "joined to session " + std::to_string(id);
+        }
 
         m_session_manager->notifySession(response, id);
     } else if (type == typeMsg::StartGame) {
@@ -50,10 +59,10 @@ int EngineServer::switch_action(std::string message, UserPtr user) {
         m_session_manager->notifySession(response, user->getSessionId());
     } else if (type == typeMsg::UpdateGame) {
         Point point = m_parser->parseUpdateGame(message);
-
         m_session_manager->updateStep(user, point, user->getSessionId());
-    }
 
+        m_session_manager->notifySession(response, user->getSessionId());
+    }
     return 0;
 }
 
@@ -83,7 +92,13 @@ void EngineServer::do_accept() {
 
 void EngineServer::asyncRead(std::shared_ptr<ClientSocket> client, std::string& message, std::function<void(int)> callback) {
     Event event = Event(client, message, event::WantRead, callback);
-    wantReadEvents.push_back(event);
+
+    auto result = std::find_if(wantReadEvents.begin(), wantReadEvents.end(), [&event](Event& ev){
+        return event.client->getFd() == ev.client->getFd();});
+
+    if (result == wantReadEvents.end()) {
+        wantReadEvents.push_back(event);
+    }
 }
 
 void EngineServer::asyncWrite(std::shared_ptr<ClientSocket> client, std::string& message, std::function<void(int)> callback) {
@@ -130,8 +145,6 @@ void EngineServer::process() {
             event.client->send_msg(event._data.get());
             event.callback(errno);
         }
-
-        //break;
     }
 }
 

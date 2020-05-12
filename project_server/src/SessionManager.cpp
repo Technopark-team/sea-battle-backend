@@ -26,11 +26,6 @@ error SessionManager::startGame(UserPtr user, const Map& userMap, size_t id) {
     it->second->startGame(user, userMap);
 }
 
-void SessionManager::notifySession(const std::string &message, size_t id) {
-    auto iterator = sessions.find(id);
-    iterator->second->notifyUsers(message);
-}
-
 int SessionManager::updateStep(UserPtr user, const Point& point, size_t id) {
     auto iterator = sessions.find(id);
 
@@ -38,8 +33,21 @@ int SessionManager::updateStep(UserPtr user, const Point& point, size_t id) {
     return 0;
 }
 
+void SessionManager::notifySession(const std::string &message, size_t id) {
+    auto iterator = sessions.find(id);
+    if (iterator != sessions.end()) {
+        iterator->second->notifyUsers(message);
+    }
+}
 
-
+bool SessionManager::eraseUser(UserPtr user, size_t sessionId) {
+    auto iterator = sessions.find(sessionId);
+    if (iterator != sessions.end()){
+        iterator->second->eraseUser(user);
+        return true;
+    }
+    return false;
+}
 
 
 

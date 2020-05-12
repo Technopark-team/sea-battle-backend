@@ -14,6 +14,6 @@ void IUser::set_name(const std::string& username) {
 }
 
 std::shared_ptr<ClientSocket> IUser::get_client() {
-    return std::shared_ptr<ClientSocket>();
+    return m_socket;
 }
 

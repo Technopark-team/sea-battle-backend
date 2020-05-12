@@ -2,8 +2,8 @@
 
 #include "EngineServer.h"
 #include "SessionManager.h"
-#include "Parser.h"
-#include "Engine.h"
+#include "IParser.h"
+#include "IEngine.h"
 #include "IUser.h"
 
 using ::testing::InSequence;
@@ -35,34 +35,31 @@ public:
     MOCK_METHOD(bool, add_user_in_session, (size_t session_id, UserPtr user));
 };
 
-TEST(ParserTypeTest, NewPlayerTest) {
-    Parser parser;
-    EXPECT_EQ(NewPlayer, parser.parse_type("type:new_player"));
-}
+
 
 TEST(ParserTypeTest, CreateSessionTest) {
     Parser parser;
-    EXPECT_EQ(CreateSession, parser.parse_type("type:create"));
+    EXPECT_EQ(typeMsg::CreateSession, parser.parse_type("type:create"));
 }
 
 TEST(ParserTypeTest, JoinSessionTest) {
     Parser parser;
-    EXPECT_EQ(JoinSession, parser.parse_type("type:join"));
+    EXPECT_EQ(typeMsg::JoinSession, parser.parse_type("type:join"));
 }
 
 TEST(ParserTypeTest, UpdateGameTest) {
     Parser parser;
-    EXPECT_EQ(UpdateGame, parser.parse_type("type:update"));
+    EXPECT_EQ(typeMsg::UpdateGame, parser.parse_type("type:update"));
 }
 
 TEST(ParserTypeTest, InvalidTypeTest) {
     Parser parser;
-    EXPECT_EQ(InvalidType, parser.parse_type("type:destroy"));
+    EXPECT_EQ(typeMsg::InvalidType, parser.parse_type("type:destroy"));
 }
 
 TEST(ParserTypeTest, NoTypeTest) {
     Parser parser;
-    EXPECT_EQ(NoType, parser.parse_type("tye:join"));
+    EXPECT_EQ(typeMsg::NoType, parser.parse_type("tye:join"));
 }
 
 TEST(ParserArgumentsTest, GameStateArguments) {
@@ -89,9 +86,9 @@ TEST(SessionManagerTest, AddInSessionTest) {
 
     session_manager.create_session(user1, 1);
 
-    EXPECT_FALSE(session_manager.add_user_in_session(1, user1));
+    EXPECT_FALSE(session_manager.add_user_in_session(user1, 1));
     UserPtr user2 = std::make_shared<MockUser>("nick2", 2);
-    EXPECT_TRUE(session_manager.add_user_in_session(1, user2));
+    EXPECT_TRUE(session_manager.add_user_in_session(user2, 1));
 }
 
 
@@ -100,7 +97,7 @@ TEST(EngineServerTest, CreateActionTest) {
     std::shared_ptr<MockSessionManager> session_manager = std::make_shared<MockSessionManager>();
     EXPECT_CALL(*session_manager, create_session(user1, 1)).Times(1);
 
-    EngineServer server("127.0.0.1", "5555", 1, session_manager);
+    EngineServer server("127.0.0.1", 5555);
     std::string message = "type:create";
     EXPECT_EQ(CreateSession, server.switch_action(message, user1));
 }

@@ -12,8 +12,11 @@ public:
         }
     }
 
+    ~ClientSocket() = default;
     int receive(std::string& msg);
     int send_msg(const std::string& msg);
+
+    void close();
 };
 
 

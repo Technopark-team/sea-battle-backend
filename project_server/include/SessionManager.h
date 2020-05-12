@@ -16,6 +16,7 @@ public:
     bool create_session(UserPtr user, size_t id);
     error add_user_in_session(UserPtr user, size_t id);
     bool delete_session(size_t id);
+    bool eraseUser(UserPtr user, size_t sessionId);
 
     error startGame(UserPtr user, const Map& map, size_t id);
     int updateStep(UserPtr user, const Point& point, size_t id);

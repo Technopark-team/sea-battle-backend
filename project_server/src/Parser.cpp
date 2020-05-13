@@ -1,5 +1,5 @@
 #include "Parser.h"
-#include <iostream>
+
 
 typeMsg Parser::parse_type(const std::string& request) {
     std::istringstream is(request);
@@ -37,18 +37,17 @@ int Parser::parseJoinSession(const std::string& message) {
     is >> type;
     int id = 0;
     is >> id;
-    std::cout << id << std::endl;
     return id;
 }
 
-Map Parser::parseStartGame(const std::string &message) {
+Map Parser::parseStartGame(const std::string& message) {
 
 
 
     return Map();
 }
 
-Point Parser::parseUpdateGame(const std::string &message) {
+Point Parser::parseUpdateGame(const std::string& message) {
 
 
 

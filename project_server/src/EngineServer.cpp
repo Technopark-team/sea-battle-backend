@@ -94,7 +94,7 @@ void EngineServer::do_accept() {
 
             user->read();
         }
-        sleep(1);
+        usleep(1000);
     }
 }
 
@@ -140,7 +140,7 @@ void EngineServer::process() {
             std::unique_lock<std::mutex> lock(mWorkEvents);
             if (workEvents.empty()) {
                 lock.unlock();
-                usleep(10000);
+                usleep(1000);
                 continue;
             }
             event = workEvents.front();

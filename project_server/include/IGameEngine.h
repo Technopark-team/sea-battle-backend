@@ -69,16 +69,6 @@ public:
 
     bool insertShip(const Ship& ship);
     void prepareMap();
-
-    /*void print() {
-        for (auto& line: cells) {
-            for (auto& call: line) {
-                std::cout << call << " ";
-            }
-            std::cout << std::endl;
-        }
-        std::cout << "---------------" << std::endl;
-    }*/
 };
 
 class IGameEngine {

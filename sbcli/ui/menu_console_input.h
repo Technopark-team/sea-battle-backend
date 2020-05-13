@@ -2,7 +2,7 @@
 #define SEABATTLE_MENU_CONSOLE_INPUT_H
 
 #include <memory>
-#include "../sbcli/config/config.h"
+#include "sbcli/config/config.h"
 #include "ui_interface.h"
 
 namespace seabattle {

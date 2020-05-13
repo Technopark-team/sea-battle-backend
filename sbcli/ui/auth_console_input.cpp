@@ -8,7 +8,7 @@ namespace ui {
 AuthConsoleInput::AuthConsoleInput() {}
 
 size_t AuthConsoleInput::ReadCommand(config::UserCommand& user_command) {
-    user_command.command = "menu";
+    user_command.command = config::MENU_COMMAND;
     return 0;
 }
 

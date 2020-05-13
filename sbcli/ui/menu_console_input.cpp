@@ -7,7 +7,7 @@ namespace ui {
 MenuConsoleInput::MenuConsoleInput() {}
 
 size_t MenuConsoleInput::ReadCommand(config::UserCommand& user_command) {
-    user_command.command = "exit";
+    user_command.command = config::EXIT_COMMAND;
     return 0;
 }
 

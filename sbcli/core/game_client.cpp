@@ -14,10 +14,10 @@ size_t GameClient::run() {
     // TODO: возвращать значение команды без создания переменной в этой функции
     config::UserCommand command;
     // TODO: возвращать bool значение для статуса авторизированного пользователя без переменной
-    config::UserData user_data;
+    utils::data::UserData user_data;
     while (command.command.compare("exit") != 0) {  // пока не выход
-        auth_controller_->GetUserId(user_data);
-        if (user_data.user_id == 0) {
+        auth_controller_->GetUserData(user_data);
+        if (user_data.user_id == -1) {
             auth_controller_->Action(command);
         }
         if (command.command.compare("menu") == 0) {

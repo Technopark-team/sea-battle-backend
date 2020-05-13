@@ -27,7 +27,7 @@ class GameClient {
     std::unique_ptr<controller::AuthController> auth_controller_;
     std::unique_ptr<controller::MenuController> menu_controller_;
     std::shared_ptr<network::TCPClient> network_client_;
-    net::io_context ioc;
+    net::io_service ioc;
 };
 
 }  // namespace game

@@ -9,13 +9,6 @@ namespace config {
 
 // TODO: добавить струтуру ip/port сервера
 
-struct UserData {
-    int user_id = 0;
-
-    UserData() = default;
-    UserData(int id) : user_id(id) {}
-};
-
 struct UserCommand {
     std::string command{};
 

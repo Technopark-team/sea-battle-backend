@@ -24,7 +24,7 @@ class IModel {
     virtual size_t PutGameStop() { return 0; };
 
  private:
-    virtual size_t GeneralCallback_(std::string response) = 0;
+    virtual size_t GeneralCallback_(std::stringstream& response) = 0;
 };
 
 }  // namespace model

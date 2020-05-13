@@ -17,7 +17,9 @@ size_t AuthController::Action(config::UserCommand& user_command) {
     // TODO: проверить, что введена команда авторизации или регистрации
     console_interface_->ReadAuthData(auth_data);
 
-    // TODO: сохранить auth_data в модель
+    // TODO: провалидировать auth_data
+    user_model_->SetAuthData(auth_data);
+
     // TODO: вызвать PostSignin()/PostSignup() в зависимости от команды авторизации или регистрации
     // TODO: это блокирующая операция, требуется продумать корректный коллбек
     user_model_->PostSignin();
@@ -28,8 +30,8 @@ size_t AuthController::Action(config::UserCommand& user_command) {
     return 0;
 }
 
-size_t AuthController::GetUserId(config::UserData& user_data) {
-    user_model_->GetUserId(user_data);
+size_t AuthController::GetUserData(utils::data::UserData& user_data) {
+    user_model_->GetUserData(user_data);
     return 0;
 }
 

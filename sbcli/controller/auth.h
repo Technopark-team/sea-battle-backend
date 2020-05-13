@@ -34,7 +34,7 @@ class AuthController : public IController {
      * @param user_data
      * @return
      */
-    size_t GetUserId(config::UserData &user_data);
+    size_t GetUserData(utils::data::UserData &user_data);
 
  private:
     /**

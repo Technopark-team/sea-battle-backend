@@ -22,6 +22,8 @@ class IModel {
     virtual size_t PostGameStep() { return 0; };
     virtual size_t GetGameState() { return 0; };
     virtual size_t PutGameStop() { return 0; };
+    virtual size_t GetGameAll() { return 0; };
+
 
  private:
     virtual size_t GeneralCallback_(std::stringstream& response) = 0;

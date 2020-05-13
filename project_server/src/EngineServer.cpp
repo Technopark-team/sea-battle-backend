@@ -10,7 +10,7 @@ EngineServer::EngineServer(std::string host, uint32_t port):
     m_session_manager = std::make_shared<SessionManager>();
 }
 
-int EngineServer::switch_action(std::string message, UserPtr user) {
+int EngineServer::switch_action(const std::string& message, UserPtr user) {
     std::string response = "true";
 
     if (message.empty()) {
@@ -19,7 +19,7 @@ int EngineServer::switch_action(std::string message, UserPtr user) {
         response = "user_id: "+ std::to_string(user->get_id()) + " disconnected";
         m_session_manager->notifySession(response, user->getSessionId());
 
-        user->get_client()->close();
+        needClose.push_back(user->get_client()->getFd());
         clients.erase(user->get_id());
         return 1;
     }
@@ -41,6 +41,8 @@ int EngineServer::switch_action(std::string message, UserPtr user) {
         m_session_manager->notifySession(response, id);
     } else if (type == typeMsg::CreateUser) {
         user->set_name(m_parser->parseCreateUser(message));
+
+
         user->write(response);
     } else if (type == typeMsg::JoinSession) {
         int id = m_parser->parseJoinSession(message);
@@ -56,11 +58,19 @@ int EngineServer::switch_action(std::string message, UserPtr user) {
         Map userMap = m_parser->parseStartGame(message);
         m_session_manager->startGame(user, userMap, user->getSessionId());
 
+
+
         m_session_manager->notifySession(response, user->getSessionId());
     } else if (type == typeMsg::UpdateGame) {
         Point point = m_parser->parseUpdateGame(message);
-        m_session_manager->updateStep(user, point, user->getSessionId());
+        std::shared_ptr<GameState> gameState = nullptr;
+        m_session_manager->updateStep(user, point, user->getSessionId(), gameState);
 
+        if (!gameState) {
+            //error response
+        } else {
+            //todo:serialize struct
+        }
         m_session_manager->notifySession(response, user->getSessionId());
     }
     return 0;
@@ -86,7 +96,6 @@ void EngineServer::do_accept() {
             user->read();
         }
         sleep(1);
-        //break;
     }
 }
 
@@ -114,6 +123,7 @@ void EngineServer::run() {
         process();
     };
     std::thread manageThread(manageFunction);
+
     std::thread processThread(processFunction);
 
     do_accept();

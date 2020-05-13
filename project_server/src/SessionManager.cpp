@@ -23,14 +23,13 @@ error SessionManager::startGame(UserPtr user, const Map& userMap, size_t id) {
     if (it == sessions.end()) {
         return error::NotFound;
     }
-    it->second->startGame(user, userMap);
+    error result = it->second->startGame(user, userMap);
+    return result;
 }
 
-int SessionManager::updateStep(UserPtr user, const Point& point, size_t id) {
+void SessionManager::updateStep(UserPtr user, const Point& point, size_t id, std::shared_ptr<GameState>& gameState) {
     auto iterator = sessions.find(id);
-
-    iterator->second->updateGameState(user, point);
-    return 0;
+    gameState = iterator->second->updateGameState(user, point);
 }
 
 void SessionManager::notifySession(const std::string &message, size_t id) {

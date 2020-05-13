@@ -11,3 +11,8 @@ void Socket::setNonBlocking(bool option) {
 int Socket::getFd() {
     return sock_fd;
 }
+
+void Socket::close() {
+    ::close(sock_fd);
+}
+

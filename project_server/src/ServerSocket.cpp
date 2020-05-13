@@ -4,26 +4,25 @@
 
 ServerSocket::ServerSocket(const std::string& host, uint32_t port) noexcept(false) {
     sock_fd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (sock_fd <=0) {
+    if (sock_fd <= 0) {
         throw std::runtime_error("socket: " + std::string(strerror(errno)));
     }
 
     int yes = 1;
     if (setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
-        close(sock_fd);
+        close();
     }
 
     struct sockaddr_in server_addr;
     server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    server_addr.sin_addr.s_addr = inet_addr(host.c_str());
     server_addr.sin_port = htons(port);
 
     if (bind(sock_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)
     {
-        close(sock_fd);
+        close();
         throw std::runtime_error("bind: " + std::string(strerror(errno)));
     }
-
     listen(getFd(), 1000);
 }
 

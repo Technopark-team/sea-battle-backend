@@ -7,7 +7,9 @@ bool IGameEngine::validateMap(const Map& map, GameMap& gameMap) {
             return false;
         }
     }
-    // todo: check count of ships and refuse 2 from map after validation
+
+    // todo: check count of ships
+    gameMap.prepareMap();
     return true;
 }
 
@@ -20,6 +22,41 @@ bool IGameEngine::insertMap(int userId, const Map &map) {
     return false;
 }
 
+void IGameEngine::setStep(int userId) {
+    stepId = userId;
+}
+
+std::shared_ptr<GameState> IGameEngine::UpdateGame(int userId, const Point &point) {
+    if (userId != stepId) {
+        return nullptr;
+    }
+    auto it = userMaps.begin();
+
+    if (userMaps.begin()->first == userId) {
+        it = userMaps.end();
+    }
+
+    Result result = it->second.insertPoint(point);
+
+    if (result == Result::BadPoint) {
+        return nullptr;
+    } else if (result == Result::Miss) {
+        stepId = it->first;
+        return std::make_shared<GameState>(stepId, Result::Miss);
+    } else if (result == Result::Hit) {
+        return std::make_shared<GameState>(stepId, Result::Hit);
+    } else {
+        //todo:check count of alive ships and set EndGame
+
+        return std::make_shared<GameState>(stepId, Result::Kill);
+    }
+}
+
+bool IGameEngine::eraseId(int userId) {
+    return userMaps.erase(userId);
+}
+
+
 GameMap::GameMap() {
     cells.resize(10);
     for (auto& line: cells) {
@@ -27,15 +64,21 @@ GameMap::GameMap() {
     }
 }
 
-bool GameMap::insertPoint(const Point& point) {
-    if (!point.isValid() && cells[point.y][point.x] != 0) {
-        return false;
+Result GameMap::insertPoint(const Point& point) {
+    if (!point.isValid()) {
+        return Result::BadPoint;
     }
-    cells[point.y][point.x] = 1;
-    return true;
+    if (cells[point.y][point.x] == 1) {
+        //todo: check kill or hit and return
+        cells[point.y][point.x] = 2;
+        return Result::Hit;
+    }
+
+    return Result::Miss;
 }
 
-bool GameMap::flushResults(size_t start, size_t end, bool x, size_t constant) {
+
+void GameMap::flushResults(size_t start, size_t end, bool x, size_t constant) {
     if (x) {
         int i = end;
         while (i >= start) {
@@ -214,5 +257,11 @@ bool GameMap::insertShip(const Ship& ship) {
         }
     }
     return true;
+}
+
+void GameMap::prepareMap() {
+    for (auto& line: cells) {
+        std::replace(line.begin(),line.end(), 2, 0);
+    }
 }
 

@@ -19,7 +19,7 @@ public:
     bool eraseUser(UserPtr user, size_t sessionId);
 
     error startGame(UserPtr user, const Map& map, size_t id);
-    int updateStep(UserPtr user, const Point& point, size_t id);
+    void updateStep(UserPtr user, const Point& point, size_t id, std::shared_ptr<GameState>& gameState);
 
     void notifySession(const std::string& message, size_t id);
 private:

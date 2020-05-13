@@ -23,6 +23,7 @@ public:
 
     void setNonBlocking(bool option);
     int getFd();
+    void close();
 };
 
 #endif //PROJECT_SERVER_SOCKET_H

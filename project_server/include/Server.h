@@ -8,7 +8,7 @@ class Server: public IServer{
 protected:
     std::shared_ptr<ServerSocket> m_socket;
 public:
-    Server(std::string host, uint32_t port) : IServer(std::move(host), port) {
+    Server(const std::string& host, uint32_t port) : IServer(host, port) {
         m_socket = std::make_shared<ServerSocket>(host, port);
     }
 

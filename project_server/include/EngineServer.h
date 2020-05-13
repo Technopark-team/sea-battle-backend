@@ -26,14 +26,20 @@ private:
     void do_accept();
     void process();
 
+    std::vector<int> needClose;
 protected:
     std::unordered_map<int, UserPtr> clients;
     std::vector<Event> wantReadEvents;
     std::queue<Event> workEvents;
 public:
     EngineServer(std::string host, uint32_t port);
+    ~EngineServer() {
+        for (auto& sock: needClose) {
+            close(sock);
+        }
+    }
     void run() override;
-    int switch_action(std::string message, UserPtr user);
+    int switch_action(const std::string& message, UserPtr user);
 };
 
 

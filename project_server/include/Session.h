@@ -17,8 +17,6 @@ enum class error {
 };
 
 
-
-
 class Session {
 private:
     size_t id;
@@ -32,7 +30,7 @@ public:
     bool eraseUser(UserPtr user);
 
     error startGame(UserPtr user, const Map& userMap);
-    int updateGameState(UserPtr user, const Point& point);
+    std::shared_ptr<GameState> updateGameState(UserPtr user, const Point& point);
 
     void notifyUsers(const std::string& message);
 

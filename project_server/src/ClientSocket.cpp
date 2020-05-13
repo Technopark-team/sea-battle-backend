@@ -16,7 +16,6 @@ int ClientSocket::receive(std::string& msg) {
     if (msg.empty()) {
         return 0;
     }
-
     return 1;
 }
 
@@ -34,8 +33,6 @@ int ClientSocket::send_msg(const std::string& msg) {
     return 0;
 }
 
-void ClientSocket::close() {
-    ::close(sock_fd);
-}
+
 
 

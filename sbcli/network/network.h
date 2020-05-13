@@ -21,7 +21,8 @@ class TCPClient : public INetworkClient {
     TCPClient(boost::asio::io_service& IO_Service);
     ~TCPClient() = default;
 
-    void Run() override;
+    void Run(std::shared_ptr<std::stringstream> data,
+             std::shared_ptr<std::function<size_t(std::stringstream&)>> callback) override;
     void Close() override;
 
  private:
@@ -29,12 +30,15 @@ class TCPClient : public INetworkClient {
     tcp::socket socket_;
 
     string send_buffer_;
-    static const size_t buf_len_ = 100;
+    static const size_t buf_len_ = 5000;
     char recieve_buffer_[buf_len_ * 2];
 
-    void OnConnect(const boost::system::error_code& ErrorCode) override;
-    void OnReceive(const boost::system::error_code& ErrorCode) override;
-    void OnSend(const boost::system::error_code& ErrorCode) override;
+    void OnConnect(const boost::system::error_code& ErrorCode,
+                   std::shared_ptr<std::function<size_t(std::stringstream&)>> callback) override;
+    void OnReceive(const boost::system::error_code& ErrorCode,
+                   std::shared_ptr<std::function<size_t(std::stringstream&)>> callback) override;
+    void OnSend(const boost::system::error_code& ErrorCode,
+                std::shared_ptr<std::function<size_t(std::stringstream&)>> callback) override;
     void DoClose() override;
 };
 

@@ -14,14 +14,17 @@ namespace network {
 class INetworkClient {
  public:
     virtual ~INetworkClient() = default;
-    virtual void Run() = 0;
+    virtual void Run(std::shared_ptr<std::stringstream> data,
+                     std::shared_ptr<std::function<size_t(std::stringstream&)>> callback) = 0;
     virtual void Close() = 0;
 
  private:
-
-    virtual void OnConnect(const boost::system::error_code& ErrorCode) = 0;
-    virtual void OnReceive(const boost::system::error_code& ErrorCode) = 0;
-    virtual void OnSend(const boost::system::error_code& ErrorCode) = 0;
+    virtual void OnConnect(const boost::system::error_code& ErrorCode,
+                           std::shared_ptr<std::function<size_t(std::stringstream&)>> callback) = 0;
+    virtual void OnReceive(const boost::system::error_code& ErrorCode,
+                           std::shared_ptr<std::function<size_t(std::stringstream&)>> callback) = 0;
+    virtual void OnSend(const boost::system::error_code& ErrorCode,
+                        std::shared_ptr<std::function<size_t(std::stringstream&)>> callback) = 0;
     virtual void DoClose() = 0;
 };
 

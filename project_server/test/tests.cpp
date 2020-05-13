@@ -8,11 +8,12 @@
 
 using ::testing::InSequence;
 
+
 class MockUser: public User {
 public:
-    MockUser(std::string nick, int sock): User(std::move(nick), sock){}
-    MOCK_METHOD(int, send_message, (std::string message), (override));
-    MOCK_METHOD(int, recieve_message, (std::string message), (override));
+    MockUser(int sock): User(std::move(nick), sock){}
+    MOCK_METHOD(void, write, (const std::string& message), (override));
+    MOCK_METHOD(void, recieve_message, (std::string message), (override));
 };
 
 class MockSession: public Session {
@@ -54,12 +55,12 @@ TEST(ParserTypeTest, UpdateGameTest) {
 
 TEST(ParserTypeTest, InvalidTypeTest) {
     Parser parser;
-    EXPECT_EQ(typeMsg::InvalidType, parser.parse_type("type:destroy"));
+    EXPECT_EQ(errorType::InvalidType, parser.parse_type("type:destroy"));
 }
 
 TEST(ParserTypeTest, NoTypeTest) {
     Parser parser;
-    EXPECT_EQ(typeMsg::NoType, parser.parse_type("tye:join"));
+    EXPECT_EQ(errorType::NoType, parser.parse_type("tye:join"));
 }
 
 TEST(ParserArgumentsTest, GameStateArguments) {
@@ -71,7 +72,8 @@ TEST(ParserArgumentsTest, InvalidGameStateArguments) {
 }
 
 TEST(SessionManagerTest, CreateSessionTest) {
-    UserPtr user = std::make_shared<MockUser>("nick", 1);
+
+    UserPtr user = std::make_shared<User>("nick", 1);
     SessionManager session_manager;
 
     EXPECT_TRUE(session_manager.create_session(user, 1));
@@ -86,7 +88,7 @@ TEST(SessionManagerTest, AddInSessionTest) {
 
     session_manager.create_session(user1, 1);
 
-    EXPECT_FALSE(session_manager.add_user_in_session(user1, 1));
+    EXPECT_EQ(session_manager.add_user_in_session(user1, 1), error::UserExist);
     UserPtr user2 = std::make_shared<MockUser>("nick2", 2);
     EXPECT_TRUE(session_manager.add_user_in_session(user2, 1));
 }
@@ -104,13 +106,13 @@ TEST(EngineServerTest, CreateActionTest) {
 
 TEST(EngineServerTest, JoinActionTest) {
     UserPtr user1 = std::make_shared<MockUser>("nick", 1);
-    std::shared_ptr<MockSessionManager> session_manager = std::make_shared<MockSessionManager>();
+    SessionManager sessionManager;
 
-    EXPECT_CALL(*session_manager, add_user_in_session(1, user1)).Times(1);
+    EXPECT_CALL(sessionManager, add_user_in_session(user1, 1)).Times(1);
 
-    EngineServer server("127.0.0.1", "5555", 1, session_manager);
+    EngineServer server("127.0.0.1", 5555);
     std::string message = "type:join";
-    EXPECT_EQ(JoinSession, server.switch_action(message, user1));
+    EXPECT_EQ(typeMsg::JoinSession, server.switch_action(message, user1));
 }
 
 TEST(EngineServerTest, UpdateActionTest) {
@@ -120,7 +122,7 @@ TEST(EngineServerTest, UpdateActionTest) {
 
     EXPECT_CALL(*session_manager, update_with_user_id(user1->get_id(), message)).Times(1);
 
-    EngineServer server("127.0.0.1", "5555", 1, session_manager);
+    EngineServer server("127.0.0.1", 5555);
 
     EXPECT_EQ(UpdateGame, server.switch_action(message, user1));
 }
@@ -132,6 +134,7 @@ TEST(EngineTest, EngineEventTest) {
     std::vector<UserPtr>all_users = {user1, user2, user3};
     std::vector<UserPtr>users_with_events;
     Engine engine;
+
     EXPECT_EQ(3, engine.get_users_with_events(users_with_events, all_users));
 
     EXPECT_THAT(all_users, users_with_events);
@@ -140,11 +143,11 @@ TEST(EngineTest, EngineEventTest) {
 TEST(SessionTest, NotifyTest) {
     std::shared_ptr<MockUser> user1 = std::make_shared<MockUser>("nick", 1);
     std::shared_ptr<MockUser> user2 = std::make_shared<MockUser>("nick1", 2);
-    EXPECT_CALL(*user1, recieve_message("message")).Times(1);
-    EXPECT_CALL(*user2, recieve_message("message")).Times(1);
+    EXPECT_CALL(*user1, write("message")).Times(1);
+    EXPECT_CALL(*user2, write("message")).Times(1);
     
     Session session(user1, 1);
     ASSERT_TRUE(session.add_user_in_session(user2));
     
-    EXPECT_EQ(2, session.notify_users());
+    EXPECT_EQ(2, session.notifyUsers());
 }

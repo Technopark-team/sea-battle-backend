@@ -59,7 +59,6 @@ int EngineServer::switch_action(const std::string& message, UserPtr user) {
         m_session_manager->startGame(user, userMap, user->getSessionId());
 
 
-
         m_session_manager->notifySession(response, user->getSessionId());
     } else if (type == typeMsg::UpdateGame) {
         Point point = m_parser->parseUpdateGame(message);
@@ -67,7 +66,7 @@ int EngineServer::switch_action(const std::string& message, UserPtr user) {
         m_session_manager->updateStep(user, point, user->getSessionId(), gameState);
 
         if (!gameState) {
-            //error response
+
         } else {
             //todo:serialize struct
         }
@@ -91,7 +90,7 @@ void EngineServer::do_accept() {
 
             std::shared_ptr<User> user = std::make_shared<User>(new_client, read, write, switchF);
 
-            bool flag = clients.insert({user->get_id(), user}).second;
+            clients.insert({user->get_id(), user}).second;
 
             user->read();
         }

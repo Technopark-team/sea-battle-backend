@@ -3,9 +3,9 @@
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include "../../../sbcli/controller/auth.h"
-#include "../../../sbcli/network/network.h"
-#include "../../../sbcli/config/config.h"
+#include "sbcli/controller/auth.h"
+#include "sbcli/network/network.h"
+#include "sbcli/config/config.h"
 
 namespace seabattle {
 namespace client {

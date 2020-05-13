@@ -3,7 +3,7 @@
 
 #include <cstddef>
 #include <string>
-#include "../sbcli/config/config.h"
+#include "sbcli/config/config.h"
 
 namespace seabattle {
 namespace client {

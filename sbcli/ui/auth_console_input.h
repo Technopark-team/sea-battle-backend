@@ -2,7 +2,7 @@
 #define SEA_BATTLE_BACKEND_USER_INPUT_H
 
 #include <memory>
-#include "../sbcli/config/config.h"
+#include "sbcli/config/config.h"
 #include "sbutils/data/data.h"
 #include "ui_interface.h"
 

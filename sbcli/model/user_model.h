@@ -2,8 +2,8 @@
 #define SEA_BATTLE_BACKEND_USER_MODEL_H
 
 #include <memory>
-#include "../sbcli/config/config.h"
-#include "../sbutils/serialization/serializer.h"
+#include "sbcli/config/config.h"
+#include "sbutils/serialization/serializer.h"
 #include "model_inteface.h"
 #include "network/network.h"
 

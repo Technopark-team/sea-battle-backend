@@ -13,6 +13,7 @@ namespace data {
 // TODO: [ВАЖНО!] добавить документацию к методам и свойствам
 // TODO: оставшиеся строковые переменные перевести на enum (да/нет, корабли)
 // TODO: добавить где нужно std::move
+// TODO: сделать enum class
 
 enum Routes {
     GET_GAME_ALL = 1,
@@ -30,9 +31,21 @@ enum Routes {
 };
 
 enum GameModes {
-    SINGLE = 1,
-    LOAD,
-    MULTI,
+    SINGLE_MODE = 1,
+    LOAD_MODE,
+    MULTI_MODE,
+};
+enum ShipType {
+    SHIP4 = 1,
+    SHIP3_1,
+    SHIP3_2,
+    SHIP2_1,
+    SHIP2_2,
+    SHIP2_3,
+    SHIP1_1,
+    SHIP1_2,
+    SHIP1_3,
+    SHIP1_4,
 };
 
 struct UserData {
@@ -42,6 +55,16 @@ struct UserData {
 
     UserData() = default;
     UserData(size_t id) : user_id(id) {}
+};
+
+
+struct GameData {
+    size_t game_id = -1;
+
+    MSGPACK_DEFINE_MAP(game_id);
+
+    GameData() = default;
+    GameData(size_t id) : game_id(id) {}
 };
 
 struct AuthData {
@@ -65,30 +88,30 @@ struct Coordinate {
     Coordinate(size_t coord_x, size_t coord_y) : x(coord_x), y(coord_y) {}
 };
 
-struct ShipsCoordinates {
+struct ShipCoordinates {
     Coordinate begin_coordinate = Coordinate();
     Coordinate end_coordinate = Coordinate();
 
     MSGPACK_DEFINE_MAP(begin_coordinate, end_coordinate);
 
-    ShipsCoordinates() = default;
-    ShipsCoordinates(Coordinate begin_coord, Coordinate end_coord)
+    ShipCoordinates() = default;
+    ShipCoordinates(Coordinate begin_coord, Coordinate end_coord)
         : begin_coordinate(begin_coord), end_coordinate(end_coord) {}
 };
 
 struct PlayerMap {
-    std::map<std::string, ShipsCoordinates> ships = {
-        {"ship4", ShipsCoordinates()},   {"ship3_1", ShipsCoordinates()},
-        {"ship3_2", ShipsCoordinates()}, {"ship2_1", ShipsCoordinates()},
-        {"ship2_2", ShipsCoordinates()}, {"ship2_3", ShipsCoordinates()},
-        {"ship1_1", ShipsCoordinates()}, {"ship1_2", ShipsCoordinates()},
-        {"ship1_3", ShipsCoordinates()}, {"ship1_4", ShipsCoordinates()},
+    std::map<size_t, ShipCoordinates> ships = {
+        {SHIP4, ShipCoordinates()},   {SHIP3_1, ShipCoordinates()},
+        {SHIP3_2, ShipCoordinates()}, {SHIP2_1, ShipCoordinates()},
+        {SHIP2_2, ShipCoordinates()}, {SHIP2_3, ShipCoordinates()},
+        {SHIP1_1, ShipCoordinates()}, {SHIP1_2, ShipCoordinates()},
+        {SHIP1_3, ShipCoordinates()}, {SHIP1_4, ShipCoordinates()},
     };
 
     MSGPACK_DEFINE_MAP(ships);
 
     PlayerMap() = default;
-    PlayerMap(std::map<std::string, ShipsCoordinates> ships) : ships(ships) {}
+    PlayerMap(std::map<size_t, ShipCoordinates> ships) : ships(std::move(ships)) {}
 };
 
 struct PlayerMapToStart {
@@ -116,7 +139,7 @@ struct UserStep {
 struct DataRequest {
     size_t route = -1;
     UserData user_id = UserData();
-    size_t game_id = -1;
+    GameData game_id = -1;
     AuthData auth_data = AuthData();
     PlayerMapToStart player_map = PlayerMapToStart();
     UserStep user_step = UserStep();
@@ -124,7 +147,7 @@ struct DataRequest {
     MSGPACK_DEFINE_MAP(route, user_id, game_id, auth_data, player_map, user_step);
 
     DataRequest() = default;
-    DataRequest(size_t route, UserData user_id, size_t game_id, AuthData auth_data,
+    DataRequest(size_t route, UserData user_id, GameData game_id, AuthData auth_data,
                 PlayerMapToStart player_map, UserStep user_step)
         : route(route),
           user_id(user_id),
@@ -147,14 +170,14 @@ struct UserSessionStatus {
 };
 
 struct PlayerStateMap {
-    std::vector<std::string> killed_ships{};
+    std::vector<size_t> killed_ships{};
     std::vector<Coordinate> strick_points{};
     std::vector<Coordinate> past_points{};
 
     MSGPACK_DEFINE_MAP(killed_ships, strick_points, past_points);
 
     PlayerStateMap() = default;
-    PlayerStateMap(std::vector<std::string> killed_ships, std::vector<Coordinate> strick_points,
+    PlayerStateMap(std::vector<size_t> killed_ships, std::vector<Coordinate> strick_points,
                    std::vector<Coordinate> past_points)
         : killed_ships(std::move(killed_ships)),
           strick_points(std::move(strick_points)),

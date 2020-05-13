@@ -3,11 +3,14 @@
 
 #include <memory>
 #include "../sbcli/config/config.h"
+#include "sbutils/data/data.h"
 #include "ui_interface.h"
 
 namespace seabattle {
 namespace client {
 namespace ui {
+
+// TODO: добавить документацию к методам и свойствам
 
 class AuthConsoleInput : public IUserInput {
  public:
@@ -15,7 +18,7 @@ class AuthConsoleInput : public IUserInput {
     ~AuthConsoleInput() = default;
 
     size_t ReadCommand(config::UserCommand &user_command) override;
-    size_t ReadAuthData(config::AuthData &auth_data);
+    size_t ReadAuthData(utils::data::AuthData &auth_data);
 
 };
 

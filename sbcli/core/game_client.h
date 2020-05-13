@@ -10,6 +10,7 @@
 #include "model/user_model.h"
 #include "ui/auth_console_input.h"
 
+// TODO: добавить документацию к методам и свойствам
 
 namespace seabattle {
 namespace client {
@@ -26,7 +27,7 @@ class GameClient {
     std::unique_ptr<controller::AuthController> auth_controller_;
     std::unique_ptr<controller::MenuController> menu_controller_;
     std::shared_ptr<network::TCPClient> network_client_;
-    net::io_context ioc;
+    net::io_service ioc;
 };
 
 }  // namespace game

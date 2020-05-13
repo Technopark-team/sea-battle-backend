@@ -3,17 +3,20 @@
 #include <boost/bind.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <iostream>
+#include "sbutils/serialization/serializer.h"
 
 using namespace boost::asio;
 using ip::tcp;
 using std::cout;
 using std::endl;
 
+namespace utils = seabattle::utils;
+
 class con_handler : public boost::enable_shared_from_this<con_handler> {
  private:
     tcp::socket sock;
-    std::string message = "Hello From Server!";
-    enum { max_length = 1024 };
+    std::string message{};
+    enum { max_length = 10000 };
     char data[max_length];
 
  public:
@@ -32,15 +35,62 @@ class con_handler : public boost::enable_shared_from_this<con_handler> {
                                          boost::asio::placeholders::error,
                                          boost::asio::placeholders::bytes_transferred));
 
-        sock.async_write_some(boost::asio::buffer(message, max_length),
-                              boost::bind(&con_handler::handle_write, shared_from_this(),
-                                          boost::asio::placeholders::error,
-                                          boost::asio::placeholders::bytes_transferred));
+//        sock.async_write_some(boost::asio::buffer(message, message.length() + 1),
+//                              boost::bind(&con_handler::handle_write, shared_from_this(),
+//                                          boost::asio::placeholders::error,
+//                                          boost::asio::placeholders::bytes_transferred));
     }
 
     void handle_read(const boost::system::error_code& err, size_t bytes_transferred) {
         if (!err) {
-            cout << "Recieved data = " << data << endl;
+            cout << "Received data = " << data << endl;
+            std::shared_ptr<std::stringstream> ss = std::make_shared<std::stringstream>();
+            *ss << data;
+            std::shared_ptr<utils::data::DataRequest> req =
+                utils::serializer::Serializer<utils::data::DataRequest>::Deserialize(
+                    *ss, ss->str().size());
+            std::cout << req->route << std::endl;
+
+            switch (req->route) {
+                case utils::data::Routes::GET_GAME_ALL:
+                    break;
+                case utils::data::Routes::GET_GAME_OPEN:
+                    break;
+                case utils::data::Routes::GET_GAME_STEP:
+                    break;
+                case utils::data::Routes::GET_GAME_STATE:
+                    break;
+                case utils::data::Routes::POST_SIGN_IN: {
+                    std::cout << req->auth_data.login << std::endl;
+                    std::shared_ptr<utils::data::DataResponse> resp =
+                        std::make_shared<utils::data::DataResponse>();
+                    utils::data::UserData user_data = utils::data::UserData(65);
+                    resp->user_data = user_data;
+                    resp->route = utils::data::Routes::POST_SIGN_IN;
+                    std::shared_ptr<std::stringstream> s_resp =
+                        utils::serializer::Serializer<utils::data::DataResponse>::Serialize(*resp);
+                    message = std::move(s_resp->str());
+                    message += "\0";
+                    std::cout << message << std::endl;
+                    break;
+                }
+                case utils::data::Routes::POST_SIGN_UP:
+                    break;
+                case utils::data::Routes::POST_GAME_START:
+                    break;
+                case utils::data::Routes::POST_GAME_STEP:
+                    break;
+                case utils::data::Routes::PUT_GAME_SAVE:
+                    break;
+                case utils::data::Routes::PUT_GAME_STOP:
+                    break;
+            }
+
+            sock.async_write_some(boost::asio::buffer(message, message.length() + 1),
+                                  boost::bind(&con_handler::handle_write, shared_from_this(),
+                                              boost::asio::placeholders::error,
+                                              boost::asio::placeholders::bytes_transferred));
+
         } else {
             std::cerr << "error here1: " << err.message() << std::endl;
 

@@ -30,23 +30,23 @@ class MockAuthController : public controller::AuthController {
     MockAuthController(std::shared_ptr<network::TCPClient> &network_client_) : AuthController(network_client_){};
 //    MOCK_METHOD1(Action, size_t(config::UserCommand&));
     MOCK_METHOD1(Action, size_t(UserCommand&));
-    MOCK_METHOD1(GetUserId, size_t(config::UserData&));
+    MOCK_METHOD1(GetUserData, size_t(utils::data::UserData&));
 };
 
-TEST(MockAuthController, Action_GetUserId) {
+TEST(MockAuthController, Action_GetUserData) {
     net::io_context ioc;
     std::shared_ptr<network::TCPClient> network_client_ = std::make_shared<network::TCPClient>(ioc);
 
     MockAuthController ser(network_client_);
 
-    config::UserData user_data;
+    utils::data::UserData user_data;
 //    config::UserCommand user_command;
     UserCommand user_command;
 
     EXPECT_CALL(ser, Action(user_command)).Times(1);
 //    EXPECT_EQ(ser.Action(user_command), 0);
-    EXPECT_CALL(ser, GetUserId(user_data)).Times(1);
-//    EXPECT_EQ(ser.GetUserId(user_data), 0);
+    EXPECT_CALL(ser, GetUserData(user_data)).Times(1);
+//    EXPECT_EQ(ser.GetUserData(user_data), 0);
 }
 
 }  // namespace test

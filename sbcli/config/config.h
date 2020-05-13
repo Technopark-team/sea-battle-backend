@@ -7,21 +7,7 @@ namespace seabattle {
 namespace client {
 namespace config {
 
-struct UserData {
-    int user_id = 0;
-
-    UserData() = default;
-    UserData(int id) : user_id(id) {}
-};
-
-struct AuthData {
-    std::string login{};
-    std::string password{};
-
-    AuthData() = default;
-    AuthData(std::string log, std::string pass)
-        : login(std::move(log)), password(std::move(password)) {}
-};
+// TODO: добавить струтуру ip/port сервера
 
 struct UserCommand {
     std::string command{};

@@ -139,7 +139,7 @@ struct UserStep {
 struct DataRequest {
     size_t route = -1;
     UserData user_id = UserData();
-    GameData game_id = -1;
+    GameData game_id = GameData();
     AuthData auth_data = AuthData();
     PlayerMapToStart player_map = PlayerMapToStart();
     UserStep user_step = UserStep();
@@ -232,6 +232,7 @@ struct GameStepStatus {
 struct DataResponse {
     size_t route = -1;
     UserData user_data = UserData();
+    GameData game_id = GameData();
     std::vector<size_t> all_games_id{};
     LoadGameStatus load_game_status = LoadGameStatus();
     GameStepStatus step_status = GameStepStatus();

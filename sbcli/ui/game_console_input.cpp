@@ -90,7 +90,6 @@ size_t GameConsoleInput::ReadMap(utils::data::PlayerMap& player_map) {
 }
 
 size_t GameConsoleInput::ReadStep(utils::data::UserStep& user_step) {
-    user_step.user_id = 1;
     user_step.step.x = 1;
     user_step.step.y = 1;
     return 0;

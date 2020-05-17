@@ -10,9 +10,6 @@ namespace seabattle {
 namespace utils {
 namespace data {
 
-// TODO: [ВАЖНО!] добавить документацию к методам и свойствам
-// TODO: оставшиеся строковые переменные перевести на enum (да/нет, корабли)
-// TODO: добавить где нужно std::move
 // TODO: сделать enum class
 
 /**
@@ -35,6 +32,14 @@ enum Routes {
     PUT_GAME_SAVE,
     PUT_GAME_STOP,
 };
+    
+/**
+ * @brief ResponseError is an enumeration describes error in response.
+ */ 
+enum ResponseError {
+    WRONG_STEP = 1,
+    WRONG_MAP,
+}
 
 /**
  * @brief GameModes is an enumeration describes usual game modes.
@@ -322,6 +327,21 @@ struct GameStepStatus {
           stop_game(stop_game),
           end_game(end_game) {}
 };
+    
+/**
+ * @brief Error is a struct returned by server if client has sent wrong data (for map or step in game process).
+ */
+struct Error {
+    size_t error = -1;
+    std::string message{};
+    
+    MSGPACK_DEFINE_MAP(error, message);
+    
+    Error() = default;
+    Error(size_t er, std::string msg)
+        : error(er),
+          message(std::move(msg)) {}
+};
 
 /**
  * @brief DataResponse is a struct returned by server on each client's request.
@@ -339,19 +359,21 @@ struct DataResponse {
     LoadGameStatus load_game_status = LoadGameStatus();
     GameStepStatus step_status = GameStepStatus();
     GameSessionStatus user_session_status = GameSessionStatus();
+    Error error = Error();
 
-    MSGPACK_DEFINE_MAP(route, user_data, game_id, all_games_id, load_game_status, step_status, user_session_status);
+    MSGPACK_DEFINE_MAP(route, user_data, game_id, all_games_id, load_game_status, step_status, user_session_status, error);
 
     DataResponse() = default;
     DataResponse(size_t route, UserData user_data, GameData game_id, std::vector<size_t> all_games_id, LoadGameStatus load_game_status,
-                 GameStepStatus step_status, GameSessionStatus user_session_status)
+                 GameStepStatus step_status, GameSessionStatus user_session_status, Error error)
         : route(route),
           user_data(std::move(user_data)),
           game_id(std::move(game_id)),
           all_games_id(std::move(all_games_id)),
           load_game_status(std::move(load_game_status)),
           step_status(std::move(step_status)),
-          user_session_status(std::move(user_session_status)) {}
+          user_session_status(std::move(user_session_status)),
+          error(std::move(error)) {}
 };
 
 }  // namespace data

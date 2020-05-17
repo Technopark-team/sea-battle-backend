@@ -39,14 +39,13 @@ void SessionManager::notifySession(const std::string &message, size_t id) {
     }
 }
 
-bool SessionManager::eraseUser(UserPtr user, size_t sessionId) {
+std::shared_ptr<EraseState> SessionManager::eraseUser(UserPtr user, size_t sessionId) {
     auto iterator = sessions.find(sessionId);
-    if (iterator != sessions.end()){
-        iterator->second->eraseUser(user);
-        return true;
+    if (iterator == sessions.end()){
+        return nullptr;
     }
-    return false;
+
+    EraseState result = iterator->second->eraseUser(user);
+    std::shared_ptr<EraseState> result_ptr = std::make_shared<EraseState>(result.started, result.winner_id);
+    return result_ptr;
 }
-
-
-

@@ -7,78 +7,73 @@
 #include <algorithm>
 #include <memory>
 
-enum class Result {
-    Miss = 0,
-    Hit,
-    Kill,
-    BadPoint
-};
+#include "Data.h"
 
-struct GameState {
-    int nextStepId;
-    Result result;
-    bool EndGame;
+struct Counters {
+    size_t one_;
+    size_t two_;
+    size_t three_;
+    size_t four_;
 
-    GameState(int nextStepId, Result result, bool EndGame = false):nextStepId(nextStepId), result(result), EndGame(EndGame){}
-};
+    Counters(): one_(0), two_(0), three_(0), four_(0) {}
+    Counters(size_t one, size_t two, size_t three, size_t four): one_(one), two_(two), three_(three), four_(four) {}
 
-struct Point {
-    size_t x;
-    size_t y;
-    Point(size_t x, size_t y): x(x), y(y){}
-    Point():x(0), y(0) {}
-
-    const bool isValid() const {
-        return x < 10 && y < 10;
-    }
-};
-
-struct Ship {
-    Point start;
-    Point end;
-
-    Ship(size_t startX, size_t startY, size_t endX, size_t endY):start(startX, startY), end(endX, endY){}
-
-    const bool isValid() const {
-        return (start.x == end.x || start.y == end.y) && start.isValid() && end.isValid();
-    }
-
-    const size_t length() const {
-        if (start.x == end.x) {
-            return end.y - start.y + 1;
-        } else {
-            return  end.x - start.x + 1;
+    void insert(int length) {
+        switch (length) {
+            case 1:
+                one_ += 1;
+                break;
+            case 2:
+                two_ += 1;
+                break;
+            case 3:
+                three_ += 1;
+                break;
+            case 4:
+                four_ += 1;
+                break;
+            default:
+                break;
         }
     }
+
+    bool operator==(const Counters& rhs) {
+        return one_ == rhs.one_ && two_ == rhs.two_ && three_ == rhs.three_ && four_ == rhs.four_;
+    }
 };
 
-struct Map {
-    std::vector<Ship> ships;
-};
 
 
 class GameMap {
 private:
-    std::vector<std::vector<size_t>> cells;
+    std::vector<std::vector<std::pair<size_t, int>>> cells;
+    std::unordered_map<int, size_t> game_ships_;
     void flushResults(size_t start, size_t end, bool x, size_t constant);
 public:
     GameMap();
     ~GameMap() = default;
 
     Result insertPoint(const Point& point);
+    int Count();
 
-    bool insertShip(const Ship& ship);
+    bool insertShip(int id, const Ship& ship);
     void prepareMap();
 };
+
+
 
 class IGameEngine {
 private:
     std::map<int, GameMap> userMaps;
     int stepId;
     bool validateMap(const Map& map, GameMap& gameMap);
+    bool running;
 public:
-    IGameEngine(): stepId(0){}
+    IGameEngine(): stepId(0), running(false) {}
     ~IGameEngine() = default;
+
+    void EndGame(int user_id, int& winner_id);
+    void StartGame();
 
     bool eraseId(int userId);
 

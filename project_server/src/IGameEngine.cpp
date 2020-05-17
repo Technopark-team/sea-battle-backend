@@ -1,16 +1,22 @@
 #include "IGameEngine.h"
 
 bool IGameEngine::validateMap(const Map& map, GameMap& gameMap) {
+    if (map.ships.size() != 10) {
+        return false;
+    }
+
+    Counters valid = Counters(4, 3, 2, 1);
+    Counters ships = Counters();
+
     for (auto& ship: map.ships) {
-        bool result = gameMap.insertShip(ship);
+        bool result = gameMap.insertShip(ship.first, ship.second);
         if (!result) {
             return false;
         }
-    }
 
-    // todo: check count of ships
-    gameMap.prepareMap();
-    return true;
+        ships.insert(ship.second.length());
+    }
+    return valid == ships;
 }
 
 bool IGameEngine::insertMap(int userId, const Map &map) {
@@ -47,7 +53,12 @@ std::shared_ptr<GameState> IGameEngine::UpdateGame(int userId, const Point &poin
         return std::make_shared<GameState>(stepId, Result::Hit);
     } else {
         //todo:check count of alive ships and set EndGame
-
+        int count = it->second.Count();
+        if (count == 0) {
+            int winner_id = userId;
+            EndGame(userId, winner_id);
+            return std::make_shared<GameState>(stepId, Result::Kill, true);
+        }
         return std::make_shared<GameState>(stepId, Result::Kill);
     }
 }
@@ -56,11 +67,27 @@ bool IGameEngine::eraseId(int userId) {
     return userMaps.erase(userId);
 }
 
+void IGameEngine::EndGame(int user_id, int& winner_id) {
+    auto it = userMaps.begin();
+    if (userMaps.begin()->first == user_id) {
+        it = userMaps.end();
+    }
+
+    if (winner_id == -1) {
+        winner_id = it->first;
+    }
+    running = false;
+}
+
+void IGameEngine::StartGame() {
+    running = true;
+}
+
 
 GameMap::GameMap() {
     cells.resize(10);
     for (auto& line: cells) {
-        line.assign(10, 0);
+        line.assign(10, std::make_pair<int, int>(0, 0));
     }
 }
 
@@ -68,12 +95,16 @@ Result GameMap::insertPoint(const Point& point) {
     if (!point.isValid()) {
         return Result::BadPoint;
     }
-    if (cells[point.y][point.x] == 1) {
-        //todo: check kill or hit and return
-        cells[point.y][point.x] = 2;
+    if (cells[point.y][point.x].first == 1) {
+        auto it = game_ships_.find(cells[point.y][point.x].second);
+        it->second = it->second - 1;
+        cells[point.y][point.x].first = 2;
+        if (it->second < 1) {
+            game_ships_.erase(it);
+            return Result::Kill;
+        }
         return Result::Hit;
     }
-
     return Result::Miss;
 }
 
@@ -82,19 +113,21 @@ void GameMap::flushResults(size_t start, size_t end, bool x, size_t constant) {
     if (x) {
         int i = end;
         while (i >= start) {
-            cells[i][constant] = 0;
+            cells[i][constant].first = 0;
+            cells[i][constant].second = 0;
             i--;
         }
     } else {
         int i = end;
         while (i >= start) {
-            cells[constant][i] = 0;
+            cells[i][constant].first = 0;
+            cells[i][constant].second = 0;
             i--;
         }
     }
 }
 
-bool GameMap::insertShip(const Ship& ship) {
+bool GameMap::insertShip(int id, const Ship& ship) {
     if (!ship.isValid()) {
         return false;
     }
@@ -104,22 +137,18 @@ bool GameMap::insertShip(const Ship& ship) {
         int x = ship.start.x;
 
         if (start - 1 >= 0) {
-            if (cells[start - 1][x] != 1) {
-                cells[start - 1][x] = 2;
-            } else {
+            if (cells[start - 1][x].first == 1) {
                 return false;
             }
+
             if (x - 1 >= 0) {
-                if (cells[start - 1][x - 1] != 1) {
-                    cells[start - 1][x - 1] = 2;
-                } else {
+                if (cells[start - 1][x - 1].first == 1) {
                     return false;
                 }
             }
+
             if (x + 1 <= 9) {
-                if (cells[start - 1][x + 1] != 1) {
-                    cells[start - 1][x + 1] = 2;
-                } else {
+                if (cells[start - 1][x + 1].first == 1) {
                     return false;
                 }
             }
@@ -127,78 +156,62 @@ bool GameMap::insertShip(const Ship& ship) {
 
         while (start <= ship.end.y) {
             if (x - 1 >= 0) {
-                if (cells[start][x - 1] != 1) {
-                    cells[start][x - 1] = 2;
-                } else {
+                if (cells[start][x - 1].first == 1) {
                     flushResults(ship.start.y, start - 1, true, x);
                     return false;
                 }
             }
             if (x + 1 <= 9) {
-                if (cells[start][x + 1] != 1) {
-                    cells[start][x + 1] = 2;
-                } else {
+                if (cells[start][x + 1].first == 1) {
                     flushResults(ship.start.y, start - 1, true, x);
                     return false;
                 }
             }
-            if (cells[start][x] == 1) {
+
+            if (cells[start][x].first == 1) {
                 flushResults(ship.start.y, start - 1, true, x);
                 return false;
             }
+            cells[start][x].first = 1;
+            cells[start][x].second = id;
 
-            cells[start][x] = 1;
             start++;
         }
 
         if (start <= 9) {
-            if (cells[start][x] != 1) {
-                cells[start][x] = 2;
-            } else {
+            if (cells[start][x].first == 1) {
                 flushResults(ship.start.y, start - 1, true, x);
                 return false;
             }
-
             if (x - 1 >= 0) {
-                if (cells[start][x - 1] != 1) {
-                    cells[start][x - 1] = 2;
-                } else {
+                if (cells[start][x - 1].first == 1) {
                     flushResults(ship.start.y, start - 1, true, x);
                     return false;
                 }
             }
             if (x + 1 <= 9) {
-                if (cells[start][x + 1] != 1) {
-                    cells[start][x + 1] = 2;
-                } else {
+                if (cells[start][x + 1].first == 1) {
                     flushResults(ship.start.y, start - 1, true, x);
                     return false;
                 }
             }
         }
-
     } else {
 
         int start = ship.start.x;
         int y = ship.start.y;
 
         if (start - 1 >= 0) {
-            if (cells[y][start - 1] != 1) {
-                cells[y][start - 1] = 2;
-            } else {
+            if (cells[y][start - 1].first == 1) {
                 return false;
             }
             if (y - 1 >= 0) {
-                if (cells[y - 1][start - 1] != 1) {
-                    cells[y - 1][start - 1] = 2;
-                } else {
+                if (cells[y - 1][start - 1].first == 1) {
                     return false;
                 }
             }
             if (y + 1 <= 9) {
-                if (cells[y + 1][start - 1] <= 9) {
-                    cells[y + 1][start - 1] = 2;
-                } else {
+                if (cells[y + 1][start - 1].first == 1) {
                     return false;
                 }
             }
@@ -206,62 +219,59 @@ bool GameMap::insertShip(const Ship& ship) {
 
         while (start <= ship.end.x) {
             if (y - 1 >= 0) {
-                if (cells[y - 1][start] != 1) {
-                    cells[y - 1][start] = 2;
-                } else {
+                if (cells[y - 1][start].first == 1) {
                     flushResults(ship.start.x, start - 1, false, y);
                     return false;
                 }
             }
             if (y + 1 <= 9) {
-                if (cells[y + 1][start] != 1) {
-                    cells[y + 1][start] = 2;
-                } else {
+                if (cells[y + 1][start].first == 1) {
                     flushResults(ship.start.x, start - 1, false, y);
                     return false;
                 }
             }
-            if (cells[y][start] == 1) {
+            if (cells[y][start].first == 1) {
                 flushResults(ship.start.x, start - 1, false, y);
                 return false;
             }
-            cells[y][start] = 1;
+            cells[y][start].first = 1;
+            cells[y][start].second = id;
+
             start++;
         }
 
         if (start <= 9) {
-            if (cells[y][start] != 1) {
-                cells[y][start] = 2;
-            } else {
+            if (cells[y][start].first == 1) {
                 flushResults(ship.start.x, start - 1, false, y);
                 return false;
             }
 
             if (y - 1 >= 0) {
-                if (cells[y - 1][start] != 1) {
-                    cells[y - 1][start] = 2;
-                } else {
+                if (cells[y - 1][start].first == 1) {
                     flushResults(ship.start.x, start - 1, false, y);
                     return false;
                 }
             }
 
             if (y + 1 <= 9) {
-                if (cells[y + 1][start] <= 9) {
-                    cells[y + 1][start] = 2;
-                } else {
+                if (cells[y + 1][start].first == 1) {
                     flushResults(ship.start.x, start - 1, false, y);
                     return false;
                 }
             }
         }
     }
+    game_ships_.insert({id, ship.length()});
     return true;
 }
 
-void GameMap::prepareMap() {
+int GameMap::Count() {
+    return game_ships_.size();
+}
+
+/*void GameMap::prepareMap() {
     for (auto& line: cells) {
         std::replace(line.begin(),line.end(), 2, 0);
     }
-}
+}*/
 

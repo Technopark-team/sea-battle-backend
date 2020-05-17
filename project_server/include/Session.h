@@ -13,8 +13,11 @@ enum class error {
     UserExist,
     Started,
     Wait,
-    NotValidMap
+    NotValidMap,
+    EndGame
+
 };
+
 
 
 class Session {
@@ -27,7 +30,7 @@ public:
     Session(UserPtr user, size_t id);
 
     error add_user_in_session(UserPtr user);
-    bool eraseUser(UserPtr user);
+    EraseState eraseUser(UserPtr user);
 
     error startGame(UserPtr user, const Map& userMap);
     std::shared_ptr<GameState> updateGameState(UserPtr user, const Point& point);

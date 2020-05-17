@@ -25,6 +25,8 @@ error Session::startGame(UserPtr user, const Map& userMap) {
     if (started == 1) {
         return error::Wait;
     }
+
+    game_engine->StartGame();
     game_engine->setStep(user->get_id());
     return error::Started;
 }
@@ -41,7 +43,15 @@ std::shared_ptr<GameState> Session::updateGameState(UserPtr user, const Point& p
     return gameState;
 }
 
-bool Session::eraseUser(UserPtr user) {
+EraseState Session::eraseUser(UserPtr user) {
     game_engine->eraseId(user->get_id());
-    return users.erase(user);
+    users.erase(user);
+
+    if (started == 2) {
+        int winner_id = -1;
+        game_engine->EndGame(user->get_id(), winner_id);
+        started = 0;
+        return EraseState(winner_id);
+    }
+    return EraseState();
 }

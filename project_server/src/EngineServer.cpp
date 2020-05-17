@@ -13,11 +13,23 @@ EngineServer::EngineServer(std::string host, uint32_t port):
 int EngineServer::switch_action(const std::string& message, UserPtr user) {
     std::string response = "true";
 
+    Response rp = Response();
+
     if (message.empty()) {
-        m_session_manager->eraseUser(user, user->getSessionId());
+        std::shared_ptr<EraseState> result = m_session_manager->eraseUser(user, user->getSessionId());
+
+        if (!result) {
+            return 2;
+        }
+
+        if (!result->started) {
+            response = "user_id: "+ std::to_string(user->get_id()) + " disconnected";
+            std::cout << result->started << result->winner_id << std::endl;
+            m_session_manager->notifySession(response, user->getSessionId());
+        }
+
         // todo: real serializer
-        response = "user_id: "+ std::to_string(user->get_id()) + " disconnected";
-        m_session_manager->notifySession(response, user->getSessionId());
+
 
         needClose.push_back(user->get_client()->getFd());
         clients.erase(user->get_id());
@@ -35,10 +47,9 @@ int EngineServer::switch_action(const std::string& message, UserPtr user) {
             user->setSessionId(id);
             response = "session created " + std::to_string(id);
         } else {
-
+            response = "session exist";
         }
-
-        m_session_manager->notifySession(response, id);
+        user->write(response);
     } else if (type == typeMsg::CreateUser) {
         user->set_name(m_parser->parseCreateUser(message));
 
@@ -68,7 +79,7 @@ int EngineServer::switch_action(const std::string& message, UserPtr user) {
         if (!gameState) {
 
         } else {
-            //todo:serialize struct
+            //todo: serialize struct
         }
         m_session_manager->notifySession(response, user->getSessionId());
     }

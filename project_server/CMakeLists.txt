@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 project(project_server)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_C_FLAGS "-g -Wall -Wextra -Werror -Wpedantic -pthread")
+set(CMAKE_C_FLAGS "-g -Wall -Wextra -Werror msgpack-c/include -Wpedantic -pthread")
 
 find_package(Threads)
 

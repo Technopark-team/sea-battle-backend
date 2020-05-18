@@ -10,7 +10,7 @@ namespace config {
 // TODO: добавить струтуру ip/port сервера
 
 enum UserCommandId {
-    EXIT_COMMAND = 1,
+    CLOSE_COMMAND = 1,
     SIGNIN_COMMAND,
     SIGNUP_COMMAND,
     MENU_COMMAND,

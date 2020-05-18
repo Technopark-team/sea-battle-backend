@@ -71,7 +71,7 @@ size_t AuthConsoleInput::ReadCommand(config::UserCommand& user_command) {
             user_command.command = config::MENU_COMMAND; // MENU
             break;
         case 3:
-            user_command.command = config::EXIT_COMMAND; // EXIT
+            user_command.command = config::CLOSE_COMMAND; // EXIT
             break;
     }
 

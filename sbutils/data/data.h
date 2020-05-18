@@ -39,7 +39,7 @@ enum Routes {
 enum ResponseError {
     WRONG_STEP = 1,
     WRONG_MAP,
-}
+};
 
 /**
  * @brief GameModes is an enumeration describes usual game modes.
@@ -69,7 +69,7 @@ enum ShipType {
 /**
  * @brief GameStatus is an enumeration describes current game session status (started or not, client/enemy exit the game, client/enemy win/lose the game).
  */
-enum GameStatus {
+enum GameStatusCode {
     GAME_START = 1,
     GAME_WAIT,
     GAME_STOP,  /**<Game has ended because someone exit the game. */
@@ -349,8 +349,8 @@ struct GameStatus {
           step(std::move(step)),
           next_step(std::move(next_step)),
           step_result(std::move(step_result)),
-          stop_game(game_status),
-          end_game(win_status) {}
+          game_status(game_status),
+          win_status(win_status) {}
 };
     
 /**

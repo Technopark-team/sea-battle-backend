@@ -12,6 +12,7 @@ namespace client {
 namespace model {
 
 // TODO: добавить документацию к методам и свойствам
+// TODO: добавить сохранение данных пользователя в файл ака Cookies для автоматической авторизации. Потом в конструкторе можно сразу инициализировать UserData.
 
 class UserModel : public IModel {
  public:

@@ -1,5 +1,9 @@
-//
-// Created by rufina on 13.05.2020.
-//
-
 #include "game.h"
+
+namespace seabattle {
+namespace client {
+namespace controller {
+
+}
+}
+}

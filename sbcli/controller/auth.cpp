@@ -26,6 +26,7 @@ size_t AuthController::Action(config::UserCommand& user_command) {
 
     // TODO: продумать view, которая рендерит успех/неудачу авторизации/регистрации
     // TODO: предложение пользователю войти в меню или выйти из игры только после успеха
+    // TODO: вынести из контроллера авторизации, так как не его поле деятельности
     console_interface_->ReadCommand(user_command);
     return 0;
 }

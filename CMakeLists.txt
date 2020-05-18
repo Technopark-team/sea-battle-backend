@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 find_package(Boost ${BOOST_VERSION} COMPONENTS thread system REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIRS})
+include_directories(${CURSES_INCLUDE_DIR})
 
 set(Boost_LIBRARY_DIR /usr/local/lib)
 link_directories(${Boost_LIBRARY_DIR})
@@ -18,6 +19,7 @@ set(SERVER_SRC_LIST ${CMAKE_CURRENT_SOURCE_DIR}/tcp_server.cpp)
 
 find_package(GTest REQUIRED)
 find_package(msgpack REQUIRED)
+find_package(Curses REQUIRED)
 
 set(GMock_INCLUDE_DIR "/usr/local/include")
 if (EXISTS "/usr/local/lib/libgmock.a")
@@ -44,6 +46,7 @@ target_link_libraries(seabattle-cli sbcli)
 target_link_libraries(seabattle-cli sbutils)
 target_link_libraries(seabattle-cli ${Boost_LIBRARIES})
 target_link_libraries(seabattle-cli ${msgpack_LIBRARIES})
+target_link_libraries(seabattle-cli ${CURSES_LIBRARIES})
 
 # compile server
 add_executable(test_tcp_server ${SERVER_SRC_LIST})

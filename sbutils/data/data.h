@@ -10,9 +10,6 @@ namespace seabattle {
 namespace utils {
 namespace data {
 
-// TODO: [ВАЖНО!] добавить документацию к методам и свойствам
-// TODO: оставшиеся строковые переменные перевести на enum (да/нет, корабли)
-// TODO: добавить где нужно std::move
 // TODO: сделать enum class
 
 /**
@@ -34,6 +31,14 @@ enum Routes {
 
     PUT_GAME_SAVE,
     PUT_GAME_STOP,
+};
+    
+/**
+ * @brief ResponseError is an enumeration describes error in response.
+ */ 
+enum ResponseError {
+    WRONG_STEP = 1,
+    WRONG_MAP,
 };
 
 /**
@@ -62,11 +67,21 @@ enum ShipType {
 };
 
 /**
- * @brief GameStatus is an enumeration describes current game session status (started or not).
+ * @brief GameStatus is an enumeration describes current game session status (started or not, client/enemy exit the game, client/enemy win/lose the game).
  */
-enum GameStatus {
+enum GameStatusCode {
     GAME_START = 1,
     GAME_WAIT,
+    GAME_STOP,  /**<Game has ended because someone exit the game. */
+    GAME_END,   /**<Game has ended because someone has killed all ships in the game. */
+};
+    
+/**
+ * @brief WinStatus is an enumeration describes current game win status (user win or lose the game).
+ */
+enum WinStatus {
+    WIN = 1,
+    LOSE,
 };
 
 /**
@@ -100,17 +115,20 @@ struct UserData {
 };
 
 /**
- * @brief GameData is a struct stores current game session ID on server and in DB.
+ * @brief GameData is a struct stores current game session ID and enemy's data on server and in DB.
  *
  * It is a base part of main DataRequest struct.
  */
 struct GameData {
     size_t game_id = -1;
+    UserData enemy_id = UserData();
 
-    MSGPACK_DEFINE_MAP(game_id);    /**< Define MSGPACK adaptor for custom struct for further serialization. */
+    MSGPACK_DEFINE_MAP(game_id, enemy_id);    /**< Define MSGPACK adaptor for custom struct for further serialization. */
 
     GameData() = default;
-    GameData(size_t id) : game_id(id) {}
+    GameData(size_t id, UserData enemy) 
+        : game_id(id),
+          enemy_id(std::move(enemy)) {}
 };
 
 /**
@@ -238,15 +256,15 @@ struct DataRequest {
  * It is a base part of main DataResponse struct.
  */
 struct GameSessionStatus {
-    size_t status_game_id = -1;
-    size_t status_play_user = -1;
+    size_t game_status = -1;
+    size_t play_status = -1;
 
-    MSGPACK_DEFINE_MAP(status_game_id, status_play_user);    /**< Define MSGPACK adaptor for custom struct for further serialization. */
+    MSGPACK_DEFINE_MAP(game_status, play_status);    /**< Define MSGPACK adaptor for custom struct for further serialization. */
 
     GameSessionStatus() = default;
-    GameSessionStatus(size_t status_game_id, size_t status_play_user)
-        : status_game_id(status_game_id),
-          status_play_user(status_play_user) {}
+    GameSessionStatus(size_t game_status, size_t play_status)
+        : game_status(game_status),
+          play_status(play_status) {}
 };
 
 /**
@@ -286,41 +304,68 @@ struct LoadGameStatus {
 };
 
 /**
- * @brief GameStepStatus is a struct describes 2 aspects of current game session.
+ * @brief StepStatus is a struct describes result of client/enemy step to renew it on corresponding map.
+ */
+struct StepStatus {
+    size_t past = -1;                                         /**< Did client/enemy past? YES/NO. */
+    size_t strick = -1;                                       /**< Did client/enemy strick? YES/NO. */
+    size_t kill = -1;                                         /**< Did client/enemy kill? YES/NO. */
+    size_t killed_ship = -1;                                  /**< Killed ship type ID (if kill field has "YES"). */
+    ShipCoordinates killed_coordinates = ShipCoordinates();   /**< Killed ship begin and coordinates (if kill field has "YES"). */
+    
+    MSGPACK_DEFINE_MAP(past, strick, kill, killed_ship, killed_coordinates);      /**< Define MSGPACK adaptor for custom struct for further serialization. */
+    
+    StepStatus() = default;
+    StepStatus(size_t past, size_t strick, size_t kill, size_t killed_ship, ShipCoordinates killed_coordinates)
+        : past(past),
+          strick(strick),
+          kill(kill),
+          killed_ship(killed_ship),
+          killed_coordinates(std::move(killed_coordinates)) {}
+};
+    
+/**
+ * @brief GameStatus is a struct describes 2 aspects of current game session.
  *
  * It is a base part of main DataResponse struct.
  * This struct is returned in response on 2 Routes requests POST_GAME_STEP and GET_GAME_STEP.
  * In case of POST_GAME_STEP server responses with the result of CLIENT step (past/strick/killed).
  * In case of GET_GAME_STEP server responses with the result of ENEMY (bot or other player in current game session) step (past/strick/killed).
  */
-struct GameStepStatus {
+struct GameStatus {
     size_t made_step = -1;                                    /**< Did enemy make a step? YES/NO. */
     Coordinate step = Coordinate();                           /**< Enemy step. */
-    size_t past = -1;                                         /**< Did client/enemy past? YES/NO. */
-    size_t strick = -1;                                       /**< Did client/enemy strick? YES/NO. */
-    size_t kill = -1;                                         /**< Did client/enemy kill? YES/NO. */
-    size_t may_go = -1;                                       /**< Can client make a step? YES/NO. */
-    size_t killed_ship = -1;                                  /**< Killed ship type ID (if kill field has "YES"). */
-    ShipCoordinates killed_coordinates = ShipCoordinates();   /**< Killed ship begin and coordinates (if kill field has "YES"). */
-    size_t stop_game = -1;                                    /**< Did enemy stop the game? YES/NO. */
-    size_t end_game = -1;                                     /**< Did game be ended because of someones win? YES/NO. */
+    UserData next_step = UserData();                          /**< Whose step is next? Current client/Enemy. */
+    StepStatus step_result = StepStatus();                    /**< Result of step of client/enemy. */
+    size_t game_status = -1;                                  /**< Did enemy stop the game? GAME_STOP/GAME_END. */
+    size_t win_status = -1;                                   /**< Did game be ended because of someones win? WIN/LOSE. */
 
-    MSGPACK_DEFINE_MAP(made_step, step, past, strick, kill, may_go, killed_ship, killed_coordinates, stop_game, end_game);    /**< Define MSGPACK adaptor for custom struct for further serialization. */
+    MSGPACK_DEFINE_MAP(made_step, step, next_step, game_status, win_status);    /**< Define MSGPACK adaptor for custom struct for further serialization. */
 
-    GameStepStatus() = default;
-    GameStepStatus(size_t made_step, Coordinate step, size_t past, size_t strick,
-                   size_t kill, size_t may_go, size_t killed_ship, ShipCoordinates killed_coordinates,
-                   size_t stop_game, size_t end_game)
+    GameStatus() = default;
+    GameStatus(size_t made_step, Coordinate step, UserData next_step,
+                   StepStatus step_result, size_t game_status, size_t win_status)
         : made_step(made_step),
           step(std::move(step)),
-          past(past),
-          strick(strick),
-          kill(kill),
-          may_go(may_go),
-          killed_ship(killed_ship),
-          killed_coordinates(std::move(killed_coordinates)),
-          stop_game(stop_game),
-          end_game(end_game) {}
+          next_step(std::move(next_step)),
+          step_result(std::move(step_result)),
+          game_status(game_status),
+          win_status(win_status) {}
+};
+    
+/**
+ * @brief Error is a struct returned by server if client has sent wrong data (for map or step in game process).
+ */
+struct Error {
+    size_t error = -1;
+    std::string message{};
+    
+    MSGPACK_DEFINE_MAP(error, message);
+    
+    Error() = default;
+    Error(size_t er, std::string msg)
+        : error(er),
+          message(std::move(msg)) {}
 };
 
 /**
@@ -337,21 +382,23 @@ struct DataResponse {
     GameData game_id = GameData();
     std::vector<size_t> all_games_id{};
     LoadGameStatus load_game_status = LoadGameStatus();
-    GameStepStatus step_status = GameStepStatus();
+    GameStatus step_status = GameStatus();
     GameSessionStatus user_session_status = GameSessionStatus();
+    Error error = Error();
 
-    MSGPACK_DEFINE_MAP(route, user_data, game_id, all_games_id, load_game_status, step_status, user_session_status);
+    MSGPACK_DEFINE_MAP(route, user_data, game_id, all_games_id, load_game_status, step_status, user_session_status, error);
 
     DataResponse() = default;
     DataResponse(size_t route, UserData user_data, GameData game_id, std::vector<size_t> all_games_id, LoadGameStatus load_game_status,
-                 GameStepStatus step_status, GameSessionStatus user_session_status)
+                 GameStatus step_status, GameSessionStatus user_session_status, Error error)
         : route(route),
           user_data(std::move(user_data)),
           game_id(std::move(game_id)),
           all_games_id(std::move(all_games_id)),
           load_game_status(std::move(load_game_status)),
           step_status(std::move(step_status)),
-          user_session_status(std::move(user_session_status)) {}
+          user_session_status(std::move(user_session_status)),
+          error(std::move(error)) {}
 };
 
 }  // namespace data

@@ -15,6 +15,19 @@ enum class typeMsg {
 
 MSGPACK_ADD_ENUM(typeMsg)
 
+enum class error {
+    Success = 0,
+    NotFound,
+    Full,
+    UserExist,
+    Started,
+    Wait,
+    NotValidMap,
+    EndGame
+};
+
+MSGPACK_ADD_ENUM(error)
+
 struct AuthData {
     std::string login_;
     std::string password_;
@@ -44,6 +57,13 @@ struct GameState {
 
     GameState() = default;
     GameState(int nextStepId, Result result, bool EndGame = false): nextStepId(nextStepId), result(result), EndGame(EndGame){}
+
+    GameState& operator=(const GameState& rhs) {
+        nextStepId = rhs.nextStepId;
+        result = rhs.result;
+        EndGame = rhs.EndGame;
+        return *this;
+    }
 };
 
 struct Point {
@@ -63,7 +83,6 @@ struct Point {
 struct Ship {
     Point start;
     Point end;
-
 
     MSGPACK_DEFINE_MAP(start, end);
 
@@ -94,6 +113,12 @@ struct EraseState {
     EraseState() = default;
     EraseState(int winner_id): started(true), winner_id(winner_id) {}
     EraseState(bool started, int winner_id): started(started), winner_id(winner_id) {}
+
+    EraseState& operator= (const EraseState& rhs) {
+        started = rhs.started;
+        winner_id = rhs.winner_id;
+        return *this;
+    }
 };
 
 
@@ -115,9 +140,13 @@ struct Response {
     int user_id_;
     int session_id_;
 
+    Point point_;
     GameState game_state_;
+    EraseState erase_state_;
 
-    MSGPACK_DEFINE_MAP(user_id_, session_id_, game_state_);
+    error error_;
+
+    MSGPACK_DEFINE_MAP(user_id_, session_id_, point_, game_state_ , erase_state_, error_);
 
     Response() = default;
 };

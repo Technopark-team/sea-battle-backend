@@ -1,6 +1,5 @@
 #include "Session.h"
 
-
 Session::Session(UserPtr user, size_t id): id(id), started(0) {
     users.insert(user);
     game_engine = std::make_shared<IGameEngine>();

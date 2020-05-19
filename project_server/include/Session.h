@@ -6,18 +6,6 @@
 #include "IGameEngine.h"
 #include "User.h"
 
-enum class error {
-    Success = 0,
-    NotFound,
-    Full,
-    UserExist,
-    Started,
-    Wait,
-    NotValidMap,
-    EndGame
-
-};
-
 
 
 class Session {

@@ -14,7 +14,7 @@
 class EngineServer: public Server {
 private:
     std::shared_ptr<IEngine> m_engine;
-    std::shared_ptr<Parser> m_parser;
+    std::shared_ptr<IParser> m_parser;
     std::shared_ptr<SessionManager> m_session_manager;
 
     std::mutex mWantReadEvents;

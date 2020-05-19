@@ -57,7 +57,7 @@ public:
     int Count();
 
     bool insertShip(int id, const Ship& ship);
-    void prepareMap();
+    //void prepareMap();
 };
 
 

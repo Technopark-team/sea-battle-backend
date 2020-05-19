@@ -12,76 +12,88 @@ EngineServer::EngineServer(std::string host, uint32_t port):
 
 int EngineServer::switch_action(const std::string& message, UserPtr user) {
     std::string response = "true";
-
-    Response rp = Response();
-
+    std::shared_ptr<Response> rp = std::make_shared<Response>();
     if (message.empty()) {
         std::shared_ptr<EraseState> result = m_session_manager->eraseUser(user, user->getSessionId());
-
         if (!result) {
             return 2;
         }
-
         if (!result->started) {
-            response = "user_id: "+ std::to_string(user->get_id()) + " disconnected";
-            std::cout << result->started << result->winner_id << std::endl;
+
+            m_parser->Serialize(rp, response);
             m_session_manager->notifySession(response, user->getSessionId());
+        } else {
+
         }
-
         // todo: real serializer
-
-
         needClose.push_back(user->get_client()->getFd());
         clients.erase(user->get_id());
         return 1;
     }
 
-    typeMsg type = m_parser->parse_type(message);
+    std::shared_ptr<Request> rq = m_parser->Deserialize(message);
+    typeMsg type = rq->type_;
+
     if (type == typeMsg::CreateSession) {
         // todo: real serializer and parser
-
-        int id = m_parser->parseCreateSession(message);
+        int id = rq->session_id_;
         bool result = m_session_manager->create_session(user, id);
-
         if (result) {
             user->setSessionId(id);
-            response = "session created " + std::to_string(id);
+            rp->user_id_ = rq->user_id_;
+            rp->session_id_ = rq->session_id_;
         } else {
             response = "session exist";
         }
+
+        m_parser->Serialize(rp, response);
         user->write(response);
     } else if (type == typeMsg::CreateUser) {
-        user->set_name(m_parser->parseCreateUser(message));
+        user->set_name(rq->data_.login_);
 
-
+        m_parser->Serialize(rp, response);
         user->write(response);
     } else if (type == typeMsg::JoinSession) {
-        int id = m_parser->parseJoinSession(message);
+        int id = rq->session_id_;
         error result = m_session_manager->add_user_in_session(user, id);
 
         if (result == error::Success) {
             user->setSessionId(id);
-            response = "joined to session " + std::to_string(id);
+            rp->error_ = error::Success;
         }
 
+        m_parser->Serialize(rp, response);
         m_session_manager->notifySession(response, id);
     } else if (type == typeMsg::StartGame) {
-        Map userMap = m_parser->parseStartGame(message);
-        m_session_manager->startGame(user, userMap, user->getSessionId());
+        Map userMap = rq->map_;
+        error result = m_session_manager->startGame(user, userMap, user->getSessionId());
 
+        if (result == error::Started) {
+            rp->game_state_.nextStepId = user->get_id();
+            rp->error_ = error::Started;
 
+        } else if (result == error::NotValidMap) {
+            rp->error_ = error::NotValidMap;
+        } else if (result == error::Wait) {
+            rp->error_ = error::Wait;
+        }
+
+        m_parser->Serialize(rp, response);
         m_session_manager->notifySession(response, user->getSessionId());
     } else if (type == typeMsg::UpdateGame) {
-        Point point = m_parser->parseUpdateGame(message);
+        Point point = rq->point_;
         std::shared_ptr<GameState> gameState = nullptr;
         m_session_manager->updateStep(user, point, user->getSessionId(), gameState);
-
         if (!gameState) {
 
         } else {
-            //todo: serialize struct
+            rp->point_ = point;
+            rp->game_state_ = *gameState;
         }
+        m_parser->Serialize(rp, response);
         m_session_manager->notifySession(response, user->getSessionId());
+    } else if (type == typeMsg::EndGame) {
+
     }
     return 0;
 }
@@ -134,12 +146,17 @@ void EngineServer::run() {
     };
     std::thread manageThread(manageFunction);
 
-    std::thread processThread(processFunction);
+    std::vector<std::thread> process_threads;
+    for (int i = 0; i < 3; i++) {
+        process_threads.emplace_back(processFunction);
+    }
 
     do_accept();
 
     manageThread.join();
-    processThread.join();
+    for (auto& t: process_threads){
+        t.join();
+    }
 }
 
 void EngineServer::process() {

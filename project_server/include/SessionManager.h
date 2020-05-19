@@ -13,7 +13,7 @@ class SessionManager {
 public:
     SessionManager() = default;
 
-    bool create_session(UserPtr user, size_t id);
+    size_t create_session(UserPtr user);
     error add_user_in_session(UserPtr user, size_t id);
     bool delete_session(size_t id);
     std::shared_ptr<EraseState> eraseUser(UserPtr user, size_t sessionId);

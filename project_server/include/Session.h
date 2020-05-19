@@ -10,12 +10,13 @@
 
 class Session {
 private:
+    static size_t next_id;
     size_t id;
     std::set<UserPtr> users;
     size_t started;
     std::shared_ptr<IGameEngine> game_engine;
 public:
-    Session(UserPtr user, size_t id);
+    explicit Session(UserPtr user);
 
     error add_user_in_session(UserPtr user);
     EraseState eraseUser(UserPtr user);
@@ -28,6 +29,8 @@ public:
     bool isFull() {
         return users.size() >= 2;
     }
+
+    size_t GetId();
 };
 
 #endif //PROJECT_SERVER_SESSION_H

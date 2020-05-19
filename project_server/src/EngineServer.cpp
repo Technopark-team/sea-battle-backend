@@ -35,16 +35,11 @@ int EngineServer::switch_action(const std::string& message, UserPtr user) {
     typeMsg type = rq->type_;
 
     if (type == typeMsg::CreateSession) {
-        // todo: real serializer and parser
-        int id = rq->session_id_;
-        bool result = m_session_manager->create_session(user, id);
-        if (result) {
-            user->setSessionId(id);
-            rp->user_id_ = rq->user_id_;
-            rp->session_id_ = rq->session_id_;
-        } else {
-            response = "session exist";
-        }
+        size_t id = m_session_manager->create_session(user);
+
+        user->setSessionId(id);
+        rp->user_id_ = rq->user_id_;
+        rp->session_id_ = id;
 
         m_parser->Serialize(rp, response);
         user->write(response);

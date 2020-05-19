@@ -1,8 +1,9 @@
 #include "SessionManager.h"
 
-bool SessionManager::create_session(UserPtr user, size_t id) {
-    SessionPtr newSession = std::make_shared<Session>(user, id);
-    return sessions.insert({id, newSession}).second;
+size_t SessionManager::create_session(UserPtr user) {
+    SessionPtr newSession = std::make_shared<Session>(user);
+    sessions.insert({newSession->GetId(), newSession});
+    return newSession->GetId();
 }
 
 error SessionManager::add_user_in_session(UserPtr user, size_t id) {

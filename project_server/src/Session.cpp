@@ -1,6 +1,8 @@
 #include "Session.h"
 
-Session::Session(UserPtr user, size_t id): id(id), started(0) {
+size_t Session::next_id = 1;
+
+Session::Session(UserPtr user): id(next_id++), started(0) {
     users.insert(user);
     game_engine = std::make_shared<IGameEngine>();
 }
@@ -53,4 +55,8 @@ EraseState Session::eraseUser(UserPtr user) {
         return EraseState(winner_id);
     }
     return EraseState();
+}
+
+size_t Session::GetId() {
+    return id;
 }

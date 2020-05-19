@@ -28,7 +28,7 @@ class GameModel : public IModel {
     size_t PutGameStop() override;
 
     size_t SetCurrentStep(utils::data::UserStep user_step);
-    size_t GetEnemyState(utils::data::GameStepStatus &enemy_step_status);
+    size_t GetEnemyState(utils::data::GameStatus &enemy_step_status);
 
     size_t SetShips(utils::data::PlayerMap player_map);
     size_t GetShips(utils::data::PlayerMap &player_map);

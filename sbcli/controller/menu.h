@@ -26,7 +26,7 @@ class MenuController : public IController {
      * @param user_command stores single/multi/load/exit req from user
      * @return
      */
-    size_t Action(config::UserCommand &user_command) override;
+    size_t Action(std::shared_ptr<config::ControllerSignal>& controller_signal) override;
 
  private:
     /**

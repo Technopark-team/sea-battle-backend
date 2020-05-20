@@ -231,20 +231,20 @@ struct UserStep {
  */
 struct DataRequest {
     size_t route = -1;
-    UserData user_id = UserData();
-    GameData game_id = GameData();
+    UserData user_data = UserData();
+    GameData game_data = GameData();
     AuthData auth_data = AuthData();
     PlayerMapToStart player_map = PlayerMapToStart();
     UserStep user_step = UserStep();
 
-    MSGPACK_DEFINE_MAP(route, user_id, game_id, auth_data, player_map, user_step);    /**< Define MSGPACK adaptor for custom struct for further serialization. */
+    MSGPACK_DEFINE_MAP(route, user_data, game_data, auth_data, player_map, user_step);    /**< Define MSGPACK adaptor for custom struct for further serialization. */
 
     DataRequest() = default;
-    DataRequest(size_t route, UserData user_id, GameData game_id, AuthData auth_data,
+    DataRequest(size_t route, UserData user_data, GameData game_data, AuthData auth_data,
                 PlayerMapToStart player_map, UserStep user_step)
         : route(route),
-          user_id(std::move(user_id)),
-          game_id(std::move(game_id)),
+          user_data(std::move(user_data)),
+          game_data(std::move(game_data)),
           auth_data(std::move(auth_data)),
           player_map(std::move(player_map)),
           user_step(std::move(user_step)) {}

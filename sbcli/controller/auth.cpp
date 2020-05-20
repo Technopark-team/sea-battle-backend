@@ -12,19 +12,19 @@ AuthController::AuthController(std::shared_ptr<network::TCPClient>& network_clie
       console_interface_(new view::AuthConsoleInput()) {}
 
 size_t AuthController::Action(std::shared_ptr<config::ControllerSignal>& controller_signal) {
+    size_t command = -1;
     size_t auth_status = controller_signal->auth_user_status;
     controller_signal->Clean();
-    size_t command;
     utils::data::AuthData auth_data;
+
+    console_interface_->Run(command, auth_data, auth_status);
+
     if (controller_signal->auth_user_status == config::UserStatus::AUTHORIZED) {
-        console_interface_->RenderAuth(command);
         if (command == 0) {
             // TODO: сделать logout в модели и на сервере
         }
     } else {
-        console_interface_->RenderNonAuth(command);
         if (command == 0) {
-            console_interface_->ReadAuthData(auth_data);
             // TODO: провалидировать auth_data
             user_model_->SetAuthData(auth_data);
 
@@ -38,21 +38,6 @@ size_t AuthController::Action(std::shared_ptr<config::ControllerSignal>& control
         }
     }
     controller_signal->signal = config::Controller::MENU;
-    //    config::UserCommand auth_command;
-    //    utils::data::AuthData auth_data;
-    //
-    //    console_interface_->ReadCommand(auth_command);
-    //
-    //    // TODO: проверить, что введена команда авторизации или регистрации
-    //    console_interface_->ReadAuthData(auth_data);
-    //
-
-    //
-    //    // TODO: продумать view, которая рендерит успех/неудачу авторизации/регистрации
-    //    // TODO: предложение пользователю войти в меню или выйти из игры только после успеха
-    //    // TODO: вынести из контроллера авторизации, так как не его поле деятельности
-    ////    console_interface_->ReadCommand(user_command);
-    //    controller_signal->signal = config::Controller::NONE;
     return 0;
 }
 

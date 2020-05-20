@@ -9,7 +9,7 @@ namespace controller {
 
 AuthController::AuthController(std::shared_ptr<network::TCPClient>& network_client)
     : user_model_(new model::UserModel(network_client)),
-      console_interface_(new ui::AuthConsoleInput()) {}
+      console_interface_(new view::AuthConsoleInput()) {}
 
 size_t AuthController::Action(std::shared_ptr<config::ControllerSignal>& controller_signal) {
     size_t auth_status = controller_signal->auth_user_status;

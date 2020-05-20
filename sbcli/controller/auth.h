@@ -7,7 +7,7 @@
 #include "sbcli/config/config.h"
 #include "sbcli/model/user_model.h"
 #include "sbutils/data/data.h"
-#include "ui/auth_console_input.h"
+#include "view/auth_console_input.h"
 
 namespace seabattle {
 namespace client {
@@ -43,9 +43,9 @@ class AuthController : public IController {
     std::unique_ptr<model::UserModel> user_model_;
 
     /**
-     * This prop is smart pointer to ui::AuthConsoleInput.
+     * This prop is smart pointer to view::AuthConsoleInput.
      */
-    std::unique_ptr<ui::AuthConsoleInput> console_interface_;
+    std::unique_ptr<view::AuthConsoleInput> console_interface_;
 };
 
 }  // namespace controller

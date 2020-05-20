@@ -12,7 +12,6 @@ file(GLOB SOURCES ${SRC_DIR}/core/*.cpp
         ${SRC_DIR}/controller/*.cpp
         ${SRC_DIR}/model/*.cpp
         ${SRC_DIR}/view/*.cpp
-        ${SRC_DIR}/ui/*.cpp
         ${SRC_DIR}/validation/*.cpp)
 
 file(GLOB HEADERS ${SRC_DIR}/core/*.h
@@ -22,7 +21,6 @@ file(GLOB HEADERS ${SRC_DIR}/core/*.h
         ${SRC_DIR}/controller/*.h
         ${SRC_DIR}/model/*.h
         ${SRC_DIR}/view/*.h
-        ${SRC_DIR}/ui/*.h
         ${SRC_DIR}/validation/*.h)
 
 add_library(${PROJECT_NAME} ${SOURCES} ${HEADERS})

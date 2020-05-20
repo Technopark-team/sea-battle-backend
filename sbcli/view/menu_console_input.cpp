@@ -2,7 +2,7 @@
 
 namespace seabattle {
 namespace client {
-namespace ui {
+namespace view {
 
 MenuConsoleInput::MenuConsoleInput() {}
 
@@ -123,6 +123,6 @@ size_t MenuConsoleInput::RenderNonAuth(size_t &command) {
     return 0;
 }
 
-}  // namespace ui
+}  // namespace view
 }  // namespace client
 }  // namespace seabattle

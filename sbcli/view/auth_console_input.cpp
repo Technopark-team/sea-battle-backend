@@ -2,7 +2,7 @@
 
 namespace seabattle {
 namespace client {
-namespace ui {
+namespace view {
 
 AuthConsoleInput::AuthConsoleInput() {}
 
@@ -149,6 +149,6 @@ size_t AuthConsoleInput::ReadAuthData(utils::data::AuthData &auth_data) {
     auth_data.password.assign(password);
     return 0;
 }
-}  // namespace ui
+}  // namespace view
 }  // namespace client
 }  // namespace seabattle

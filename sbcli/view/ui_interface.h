@@ -6,7 +6,7 @@
 
 namespace seabattle {
 namespace client {
-namespace ui {
+namespace view {
 
 class IUserInput {
  public:

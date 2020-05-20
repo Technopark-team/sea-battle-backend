@@ -1,34 +1,37 @@
-#ifndef SEABATTLE_MENU_CONSOLE_INPUT_H
-#define SEABATTLE_MENU_CONSOLE_INPUT_H
+#ifndef SEA_BATTLE_BACKEND_USER_INPUT_H
+#define SEA_BATTLE_BACKEND_USER_INPUT_H
 
 #include <memory>
 #include <ncurses.h>
+#include <locale.h>
 #include "sbcli/config/config.h"
+#include "sbutils/data/data.h"
 #include "ui_interface.h"
-
 
 namespace seabattle {
 namespace client {
-namespace ui {
+namespace view {
 
 // TODO: добавить документацию к методам и свойствам
-// TODO: interface
 
-class MenuConsoleInput {
+class AuthConsoleInput {
  public:
-    explicit MenuConsoleInput();
-    ~MenuConsoleInput() = default;
+    explicit AuthConsoleInput();
+    ~AuthConsoleInput() = default;
+
+    size_t ReadAuthData(utils::data::AuthData &auth_data);
 
     size_t RenderAuth(size_t &choice);
     size_t RenderNonAuth(size_t &choice);
 
-private:
+ private:
     size_t DrawMenuAuth(size_t item);
     size_t DrawMenuNonAuth(size_t item);
+
 };
 
-}  // namespace ui
-}  // namespace client
-}  // namespace seabattle
+}
+}
+}
 
-#endif  // SEABATTLE_MENU_CONSOLE_INPUT_H
+#endif //SEA_BATTLE_BACKEND_USER_INPUT_H

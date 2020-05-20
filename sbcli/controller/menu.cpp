@@ -5,7 +5,7 @@ namespace seabattle {
 namespace client {
 namespace controller {
 
-MenuController::MenuController() : console_interface_(new ui::MenuConsoleInput()) {}
+MenuController::MenuController() : console_interface_(new view::MenuConsoleInput()) {}
 size_t MenuController::Action(std::shared_ptr<config::ControllerSignal>& controller_signal) {
 //    console_interface_->ReadCommand(user_command);
     size_t auth_status = controller_signal->auth_user_status;

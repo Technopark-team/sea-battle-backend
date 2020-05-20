@@ -3,9 +3,9 @@
 
 #include <memory>
 #include <ncurses.h>
+#include "sbcli/config/view.h"
+#include "sbcli/components/menu/menu.h"
 #include "sbcli/config/config.h"
-#include "ui_interface.h"
-
 
 namespace seabattle {
 namespace client {
@@ -19,12 +19,11 @@ class MenuConsoleInput {
     explicit MenuConsoleInput();
     ~MenuConsoleInput() = default;
 
-    size_t RenderAuth(size_t &choice);
-    size_t RenderNonAuth(size_t &choice);
+    size_t Run(size_t &choice, const size_t auth_status);
 
 private:
-    size_t DrawMenuAuth(size_t item);
-    size_t DrawMenuNonAuth(size_t item);
+    component::MainMenu<config::MenuExistUser, config::HelpMainMenu> main_menu_exist_;
+    component::MainMenu<config::MenuNonExistUser, config::HelpMainMenu> main_menu_nonexist_;
 };
 
 }  // namespace view

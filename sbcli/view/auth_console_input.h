@@ -3,10 +3,9 @@
 
 #include <memory>
 #include <ncurses.h>
-#include <locale.h>
+#include "sbcli/config/view.h"
+#include "sbcli/components/auth/auth.h"
 #include "sbcli/config/config.h"
-#include "sbutils/data/data.h"
-#include "ui_interface.h"
 
 namespace seabattle {
 namespace client {
@@ -19,14 +18,11 @@ class AuthConsoleInput {
     explicit AuthConsoleInput();
     ~AuthConsoleInput() = default;
 
-    size_t ReadAuthData(utils::data::AuthData &auth_data);
-
-    size_t RenderAuth(size_t &choice);
-    size_t RenderNonAuth(size_t &choice);
+    size_t Run(size_t &choice, utils::data::AuthData &auth_data, const size_t auth_status);
 
  private:
-    size_t DrawMenuAuth(size_t item);
-    size_t DrawMenuNonAuth(size_t item);
+    component::AuthMenu<config::AuthExistUser, config::HelpMainMenu> auth_menu_exist_;
+    component::AuthMenu<config::AuthNonExistUser, config::HelpMainMenu> auth_menu_nonexist_;
 
 };
 

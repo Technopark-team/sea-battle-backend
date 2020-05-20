@@ -8,7 +8,7 @@
 
 namespace seabattle {
 namespace client {
-namespace ui {
+namespace view {
 
 // TODO: добавить документацию к методам и свойствам
 

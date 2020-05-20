@@ -3,7 +3,7 @@
 
 #include <memory>
 #include "sbcli/config/config.h"
-#include "sbcli/ui/menu_console_input.h"
+#include "sbcli/view/menu_console_input.h"
 #include "controller_interface.h"
 
 namespace seabattle {
@@ -26,13 +26,13 @@ class MenuController : public IController {
      * @param user_command stores single/multi/load/exit req from user
      * @return
      */
-    size_t Action(config::UserCommand &user_command) override;
+    size_t Action(std::shared_ptr<config::ControllerSignal>& controller_signal) override;
 
  private:
     /**
-     * This prop is smart pointer to ui::MenuConsoleInput.
+     * This prop is smart pointer to view::MenuConsoleInput.
      */
-    std::unique_ptr<ui::MenuConsoleInput> console_interface_;
+    std::unique_ptr<view::MenuConsoleInput> console_interface_;
 };
 
 }  // namespace controller

@@ -7,8 +7,7 @@
 #include "config/config.h"
 #include "controller/auth.h"
 #include "controller/menu.h"
-#include "model/user_model.h"
-#include "ui/auth_console_input.h"
+#include "controller/game.h"
 
 // TODO: добавить документацию к методам и свойствам
 
@@ -21,12 +20,15 @@ namespace net = boost::asio;            // from <boost/asio.hpp>
 class GameClient {
  public:
     GameClient();
+    ~GameClient();
     size_t run();
 
  private:
     std::unique_ptr<controller::AuthController> auth_controller_;
     std::unique_ptr<controller::MenuController> menu_controller_;
+    std::unique_ptr<controller::GameController> game_controller_;
     std::shared_ptr<network::TCPClient> network_client_;
+    std::shared_ptr<config::ControllerSignal> controller_signal_;
     net::io_service ioc;
 };
 

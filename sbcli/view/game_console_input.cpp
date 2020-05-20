@@ -2,7 +2,7 @@
 
 namespace seabattle {
 namespace client {
-namespace ui {
+namespace view {
 
 GameConsoleInput::GameConsoleInput() {}
 
@@ -95,6 +95,6 @@ size_t GameConsoleInput::ReadStep(utils::data::UserStep& user_step) {
     return 0;
 }
 
-}  // namespace ui
+}  // namespace view
 }  // namespace client
 }  // namespace seabattle

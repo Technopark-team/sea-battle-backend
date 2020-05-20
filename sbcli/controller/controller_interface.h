@@ -14,7 +14,7 @@ class IController {
     virtual ~IController() = default;
 
  private:
-    virtual size_t Action(config::UserCommand &user_command) = 0;
+    virtual size_t Action(std::shared_ptr<config::ControllerSignal> &controller_signal) = 0;
 };
 
 }  // namespace controller

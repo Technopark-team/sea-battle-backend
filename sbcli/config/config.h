@@ -13,6 +13,7 @@ namespace config {
 enum UserCommandId {
     SIGNIN_COMMAND = 1,
     SIGNUP_COMMAND,
+    INPUT_COMMAND,
     MENU_COMMAND,
     LOGOUT_COMMAND,
     CLOSE_COMMAND,
@@ -43,7 +44,7 @@ struct UserCommand {
 
 struct ControllerSignal {
     size_t signal = -1;
-    size_t auth_user_status = -1;
+    size_t auth_user_status = config::UserStatus::NOT_AUTHORIZED;
     utils::data::UserData user_data = utils::data::UserData();
     UserCommand command = UserCommand();
 

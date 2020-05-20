@@ -2,6 +2,7 @@
 #define SEA_BATTLE_BACKEND_SERIALIZER_H
 
 #include <memory>
+#include <sstream>
 #include "sbutils/data/data.h"
 
 namespace seabattle {

@@ -1,19 +1,18 @@
 #include "menu.h"
-#include <iostream>
 
 namespace seabattle {
 namespace client {
 namespace controller {
 
 MenuController::MenuController() : console_interface_(new view::MenuConsoleInput()) {}
+
 size_t MenuController::Action(std::shared_ptr<config::ControllerSignal>& controller_signal) {
-//    console_interface_->ReadCommand(user_command);
+    size_t command = -1;
     size_t auth_status = controller_signal->auth_user_status;
-    std::cout << controller_signal->user_data.user_id << std::endl;
     controller_signal->Clean();
-    size_t command;
+
+    console_interface_->Run(command, auth_status);
     if (controller_signal->auth_user_status == config::UserStatus::AUTHORIZED) {
-        console_interface_->RenderAuth(command);
         switch (command) {
             case 0:
                 controller_signal->command = config::UserCommandId::SINGLE_COMMAND;
@@ -37,7 +36,6 @@ size_t MenuController::Action(std::shared_ptr<config::ControllerSignal>& control
                 break;
         }
     } else {
-        console_interface_->RenderNonAuth(command);
         switch (command) {
             case 0:
                 controller_signal->command = config::UserCommandId::SIGNIN_COMMAND;

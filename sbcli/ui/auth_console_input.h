@@ -2,6 +2,8 @@
 #define SEA_BATTLE_BACKEND_USER_INPUT_H
 
 #include <memory>
+#include <ncurses.h>
+#include <locale.h>
 #include "sbcli/config/config.h"
 #include "sbutils/data/data.h"
 #include "ui_interface.h"
@@ -12,13 +14,19 @@ namespace ui {
 
 // TODO: добавить документацию к методам и свойствам
 
-class AuthConsoleInput : public IUserInput {
+class AuthConsoleInput {
  public:
     explicit AuthConsoleInput();
     ~AuthConsoleInput() = default;
 
-    size_t ReadCommand(config::UserCommand &user_command) override;
     size_t ReadAuthData(utils::data::AuthData &auth_data);
+
+    size_t RenderAuth(size_t &choice);
+    size_t RenderNonAuth(size_t &choice);
+
+ private:
+    size_t DrawMenuAuth(size_t item);
+    size_t DrawMenuNonAuth(size_t item);
 
 };
 

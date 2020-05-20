@@ -1,5 +1,4 @@
 #include "auth_console_input.h"
-#include <ncurses.h>
 
 namespace seabattle {
 namespace client {
@@ -9,78 +8,145 @@ AuthConsoleInput::AuthConsoleInput() {}
 
 // TODO: консольный ввод меню/выход
 
-size_t AuthConsoleInput::ReadCommand(config::UserCommand& user_command) {
-//    user_command.command = config::MENU_COMMAND;
-    // TODO: https://code-live.ru/post/ncurses-input-output/
-    const char items[4][5] = {
-        "Auth",
-        "Rega",
-        "Menu",
-        "Exit"
-    };
+size_t AuthConsoleInput::RenderAuth(size_t &command) {
+    int key, menuitem;
+
+    menuitem = 0;
+    const size_t MENU_MAX = 2;
 
     initscr();
 
-    unsigned choice = 0; //Выбор пользователя
-    unsigned exit = 0;
-
-    curs_set(0); //"Убиваем" курсор
-    //Включаем режим удобной работы с функциональными клавишами, другими словами KEY_UP и KEY_DOWN без этого не работали бы
-    keypad(stdscr, true);
-
-    while ( !exit )
-    {
-         clear();
-        for ( unsigned i = 0; i < 4; i++ ) //Проходим по всем элементам меню
-        {
-            if ( i == choice ) //Если текущий элемент совпадает с выбором пользователя
-                addch('>'); //Выводим указатель
-            else
-                addch(' '); //Иначе выводим " ", для равновесия
-
-            printw("%s\n", items[i]);
-        }
-
-        //Получаем нажатие пользователя
-        switch ( getch() )
-        {
-            case KEY_UP:
-                if ( choice ) //Если возможно, переводим указатель вверх
-                    choice--;
-                break;
+    DrawMenuAuth(menuitem);
+    keypad(stdscr, TRUE);
+    noecho(); /* Disable echo */
+    do {
+        key = getch();
+        switch (key) {
             case KEY_DOWN:
-                if ( choice != 3 ) //Если возможно, переводим указатель вниз
-                    choice++;
+                menuitem++;
+                if (menuitem > MENU_MAX - 1) menuitem = 0;
                 break;
-            case KEY_LEFT:
-                exit = 1;
+            case KEY_UP:
+                menuitem--;
+                if (menuitem < 0) menuitem = MENU_MAX - 1;
+                break;
+            default:
                 break;
         }
-    }
+        DrawMenuAuth(menuitem);
+    } while (key != '\n');
+
+    echo(); /* re-enable echo */
+
+    /* At this point, the value of the selected menu is kept in the
+       menuitem variable. The program can branch off to whatever subroutine
+       is required to carry out that function
+    */
 
     endwin();
-
-    switch (choice) {
-        case 0:
-            user_command.command = config::SIGNIN_COMMAND; // SIGNIN
-            break;
-        case 1:
-            user_command.command = config::SIGNUP_COMMAND; // SIGNUP
-            break;
-        case 2:
-            user_command.command = config::MENU_COMMAND; // MENU
-            break;
-        case 3:
-            user_command.command = config::CLOSE_COMMAND; // EXIT
-            break;
-    }
+    command = menuitem;
 
     return 0;
 }
 
-size_t AuthConsoleInput::ReadAuthData(utils::data::AuthData& auth_data) {
-    auth_data.login = "log";
-    auth_data.password = "pas";
+size_t AuthConsoleInput::DrawMenuAuth(size_t item) {
+    setlocale(LC_ALL, "");
+    const int MENUMAX = 2;
+    int c;
+    char mainmenu[] = "Authorization menu";
+    char menu[MENUMAX][50] = {"Log out", "Exit to main menu"};
+
+    clear();
+    addstr(mainmenu);
+    for (c = 0; c < MENUMAX; c++) {
+        if (c == item) attron(A_REVERSE); /* highlight selection */
+        mvaddstr(3 + (c * 2), 20, menu[c]);
+        attroff(A_REVERSE); /* remove highlight */
+    }
+    mvaddstr(17, 25,
+             "Use arrow keys to move; Enter to select:");
+    refresh();
+    return 0;
+}
+
+size_t AuthConsoleInput::DrawMenuNonAuth(size_t item) {
+    setlocale(LC_ALL, "");
+    const int MENUMAX = 2;
+    int c;
+    char mainmenu[] = "Authorization menu";
+    char menu[MENUMAX][50] = {"Input", "Exit to main menu"};
+
+    clear();
+    addstr(mainmenu);
+    for (c = 0; c < MENUMAX; c++) {
+        if (c == item) attron(A_REVERSE); /* highlight selection */
+        mvaddstr(3 + (c * 2), 20, menu[c]);
+        attroff(A_REVERSE); /* remove highlight */
+    }
+    mvaddstr(17, 25,
+             "Use arrow keys to move; Enter to select:");
+    refresh();
+    return 0;
+}
+
+size_t AuthConsoleInput::RenderNonAuth(size_t &command) {
+    int key, menuitem;
+
+    menuitem = 0;
+    const size_t MENU_MAX = 2;
+
+    initscr();
+
+    DrawMenuNonAuth(menuitem);
+    keypad(stdscr, TRUE);
+    noecho(); /* Disable echo */
+    do {
+        key = getch();
+        switch (key) {
+            case KEY_DOWN:
+                menuitem++;
+                if (menuitem > MENU_MAX - 1) menuitem = 0;
+                break;
+            case KEY_UP:
+                menuitem--;
+                if (menuitem < 0) menuitem = MENU_MAX - 1;
+                break;
+            default:
+                break;
+        }
+        DrawMenuNonAuth(menuitem);
+    } while (key != '\n');
+
+    echo(); /* re-enable echo */
+
+    /* At this point, the value of the selected menu is kept in the
+       menuitem variable. The program can branch off to whatever subroutine
+       is required to carry out that function
+    */
+
+    endwin();
+    command = menuitem;
+    return 0;
+}
+
+size_t AuthConsoleInput::ReadAuthData(utils::data::AuthData &auth_data) {
+    setlocale(LC_ALL, "");
+    char name[46];
+    char password[9];
+
+    initscr();
+    clear();
+    mvprintw(3, 10, "Login: ");
+    refresh();
+    getnstr(name, 45);
+    mvprintw(5, 6, "Password: ");
+    refresh();
+    noecho();
+    getnstr(password, 8);
+
+    endwin();
+    auth_data.login.assign(name);
+    auth_data.password.assign(password);
     return 0;
 }
 }  // namespace ui

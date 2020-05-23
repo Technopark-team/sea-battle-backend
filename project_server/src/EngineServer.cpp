@@ -8,10 +8,11 @@ EngineServer::EngineServer(std::string host, uint32_t port):
     m_engine = std::make_shared<Engine>();
     m_parser = std::make_shared<Parser>();
     m_session_manager = std::make_shared<SessionManager>();
+    access_object = std::make_shared<DBAccess>();
 }
 
 int EngineServer::switch_action(const std::string& message, UserPtr user) {
-    std::string response = "true";
+    std::string response;
     std::shared_ptr<Response> rp = std::make_shared<Response>();
     if (message.empty()) {
         std::shared_ptr<EraseState> result = m_session_manager->eraseUser(user, user->getSessionId());
@@ -19,11 +20,11 @@ int EngineServer::switch_action(const std::string& message, UserPtr user) {
             return 2;
         }
         if (!result->started) {
-
+            rp->erase_state_ = *result;
             m_parser->Serialize(rp, response);
             m_session_manager->notifySession(response, user->getSessionId());
         } else {
-
+            rp->erase_state_ = *result;
         }
         // todo: real serializer
         needClose.push_back(user->get_client()->getFd());
@@ -45,6 +46,9 @@ int EngineServer::switch_action(const std::string& message, UserPtr user) {
         user->write(response);
     } else if (type == typeMsg::CreateUser) {
         user->set_name(rq->data_.login_);
+        //todo: auth??
+
+        access_object->AddUser(rq->data_.login_, rq->data_.password_);
 
         m_parser->Serialize(rp, response);
         user->write(response);
@@ -107,9 +111,7 @@ void EngineServer::do_accept() {
             auto switchF = std::bind(&EngineServer::switch_action, this, std::placeholders::_1, std::placeholders::_2);
 
             std::shared_ptr<User> user = std::make_shared<User>(new_client, read, write, switchF);
-
-            clients.insert({user->get_id(), user}).second;
-
+            clients.insert({user->get_id(), user});
             user->read();
         }
         usleep(1000);

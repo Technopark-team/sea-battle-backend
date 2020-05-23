@@ -45,11 +45,12 @@ int EngineServer::switch_action(const std::string& message, UserPtr user) {
         m_parser->Serialize(rp, response);
         user->write(response);
     } else if (type == typeMsg::CreateUser) {
-        user->set_name(rq->data_.login_);
         //todo: auth??
 
-        access_object->AddUser(rq->data_.login_, rq->data_.password_);
-
+        bool result = access_object->AddUser(rq->data_.login_, rq->data_.password_);
+        if (result) {
+            user->set_name(rq->data_.login_);
+        }
         m_parser->Serialize(rp, response);
         user->write(response);
     } else if (type == typeMsg::JoinSession) {
@@ -60,7 +61,6 @@ int EngineServer::switch_action(const std::string& message, UserPtr user) {
             user->setSessionId(id);
             rp->error_ = error::Success;
         }
-
         m_parser->Serialize(rp, response);
         m_session_manager->notifySession(response, id);
     } else if (type == typeMsg::StartGame) {

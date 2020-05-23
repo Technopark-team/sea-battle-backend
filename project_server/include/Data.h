@@ -4,22 +4,24 @@
 #include <msgpack.hpp>
 #include <string>
 
-enum class typeMsg {
+enum class Route {
     CreateSession = 1,
     UpdateGame,
     JoinSession,
     StartGame,
     CreateUser,
+    Enter,
     EndGame
 };
 
-MSGPACK_ADD_ENUM(typeMsg)
+MSGPACK_ADD_ENUM(Route)
 
 enum class error {
     Success = 0,
     NotFound,
     Full,
     UserExist,
+    InvalidLogIn,
     Started,
     Wait,
     NotValidMap,
@@ -125,7 +127,7 @@ struct EraseState {
 struct Request {
     int user_id_;
     int session_id_;
-    typeMsg type_;
+    Route type_;
     AuthData data_;
     Point point_;
     Map map_;
@@ -133,7 +135,7 @@ struct Request {
     MSGPACK_DEFINE_MAP(user_id_, session_id_, type_, data_, point_, map_);
 
     Request() = default;
-    Request(const AuthData& data, typeMsg type): data_(data), type_(type) {}
+    Request(const AuthData& data, Route type): data_(data), type_(type) {}
 };
 
 struct Response {

@@ -42,7 +42,7 @@ void SessionManager::notifySession(const std::string &message, size_t id) {
 
 std::shared_ptr<EraseState> SessionManager::eraseUser(UserPtr user, size_t sessionId) {
     auto iterator = sessions.find(sessionId);
-    if (iterator == sessions.end()){
+    if (iterator == sessions.end()) {
         return nullptr;
     }
 

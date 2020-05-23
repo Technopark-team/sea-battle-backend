@@ -33,9 +33,9 @@ int EngineServer::switch_action(const std::string& message, UserPtr user) {
     }
 
     std::shared_ptr<Request> rq = m_parser->Deserialize(message);
-    typeMsg type = rq->type_;
+    Route type = rq->type_;
 
-    if (type == typeMsg::CreateSession) {
+    if (type == Route::CreateSession) {
         size_t id = m_session_manager->create_session(user);
 
         user->setSessionId(id);
@@ -44,54 +44,63 @@ int EngineServer::switch_action(const std::string& message, UserPtr user) {
 
         m_parser->Serialize(rp, response);
         user->write(response);
-    } else if (type == typeMsg::CreateUser) {
-        //todo: auth??
-
+    } else if (type == Route::CreateUser) {
+        //todo: auth?
         bool result = access_object->AddUser(rq->data_.login_, rq->data_.password_);
         if (result) {
             user->set_name(rq->data_.login_);
+            rp->error_ = error::Success;
+        } else {
+            rp->error_ = error::UserExist;
         }
         m_parser->Serialize(rp, response);
         user->write(response);
-    } else if (type == typeMsg::JoinSession) {
+    } else if (type == Route::Enter) {
+        bool result = access_object->CheckUser(rq->data_.login_, rq->data_.password_);
+        if (result) {
+            user->set_name(rq->data_.login_);
+            rp->error_ = error::Success;
+        } else {
+            rp->error_ = error::InvalidLogIn;
+        }
+        m_parser->Serialize(rp, response);
+        user->write(response);
+    } else if (type == Route::JoinSession) {
         int id = rq->session_id_;
         error result = m_session_manager->add_user_in_session(user, id);
-
         if (result == error::Success) {
             user->setSessionId(id);
             rp->error_ = error::Success;
         }
         m_parser->Serialize(rp, response);
         m_session_manager->notifySession(response, id);
-    } else if (type == typeMsg::StartGame) {
+    } else if (type == Route::StartGame) {
         Map userMap = rq->map_;
         error result = m_session_manager->startGame(user, userMap, user->getSessionId());
-
         if (result == error::Started) {
             rp->game_state_.nextStepId = user->get_id();
             rp->error_ = error::Started;
-
         } else if (result == error::NotValidMap) {
             rp->error_ = error::NotValidMap;
         } else if (result == error::Wait) {
             rp->error_ = error::Wait;
         }
-
         m_parser->Serialize(rp, response);
         m_session_manager->notifySession(response, user->getSessionId());
-    } else if (type == typeMsg::UpdateGame) {
+    } else if (type == Route::UpdateGame) {
         Point point = rq->point_;
         std::shared_ptr<GameState> gameState = nullptr;
         m_session_manager->updateStep(user, point, user->getSessionId(), gameState);
         if (!gameState) {
-
+            rp->error_ = error::NotFound;
         } else {
+            rp->error_ = error::Success;
             rp->point_ = point;
             rp->game_state_ = *gameState;
         }
         m_parser->Serialize(rp, response);
         m_session_manager->notifySession(response, user->getSessionId());
-    } else if (type == typeMsg::EndGame) {
+    } else if (type == Route::EndGame) {
 
     }
     return 0;
@@ -144,6 +153,7 @@ void EngineServer::run() {
     std::thread manageThread(manageFunction);
 
     std::vector<std::thread> process_threads;
+    process_threads.reserve(3);
     for (int i = 0; i < 3; i++) {
         process_threads.emplace_back(processFunction);
     }
@@ -151,7 +161,7 @@ void EngineServer::run() {
     do_accept();
 
     manageThread.join();
-    for (auto& t: process_threads){
+    for (auto& t: process_threads) {
         t.join();
     }
 }

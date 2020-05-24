@@ -8,28 +8,28 @@ Session::Session(UserPtr user): id(next_id++), started(0) {
 }
 
 
-error Session::add_user_in_session(UserPtr user) {
+Error Session::add_user_in_session(UserPtr user) {
     if (isFull()) {
-        return error::Full;
+        return Error::Full;
     }
     if (users.insert(user).second) {
-        return error::Success;
+        return Error::Success;
     }
-    return error::UserExist;
+    return Error::UserExist;
 }
 
-error Session::startGame(UserPtr user, const Map& userMap) {
+Error Session::startGame(UserPtr user, const Map& userMap) {
     if (!game_engine->insertMap(user->get_id(), userMap)) {
-        return error::NotValidMap;
+        return Error::NotValidMap;
     }
     started++;
     if (started == 1) {
-        return error::Wait;
+        return Error::Wait;
     }
 
     game_engine->StartGame();
     game_engine->setStep(user->get_id());
-    return error::Started;
+    return Error::Started;
 }
 
 void Session::notifyUsers(const std::string& message) {

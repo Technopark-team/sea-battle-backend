@@ -52,7 +52,6 @@ std::shared_ptr<GameState> IGameEngine::UpdateGame(int userId, const Point &poin
     } else if (result == Result::Hit) {
         return std::make_shared<GameState>(stepId, Result::Hit);
     } else {
-        //todo:check count of alive ships and set EndGame
         int count = it->second.Count();
         if (count == 0) {
             int winner_id = userId;
@@ -72,7 +71,6 @@ void IGameEngine::EndGame(int user_id, int& winner_id) {
     if (userMaps.begin()->first == user_id) {
         it = userMaps.end();
     }
-
     if (winner_id == -1) {
         winner_id = it->first;
     }
@@ -109,24 +107,6 @@ Result GameMap::insertPoint(const Point& point) {
 }
 
 
-void GameMap::flushResults(size_t start, size_t end, bool x, size_t constant) {
-    if (x) {
-        int i = end;
-        while (i >= start) {
-            cells[i][constant].first = 0;
-            cells[i][constant].second = 0;
-            i--;
-        }
-    } else {
-        int i = end;
-        while (i >= start) {
-            cells[i][constant].first = 0;
-            cells[i][constant].second = 0;
-            i--;
-        }
-    }
-}
-
 bool GameMap::insertShip(int id, const Ship& ship) {
     if (!ship.isValid()) {
         return false;
@@ -157,19 +137,16 @@ bool GameMap::insertShip(int id, const Ship& ship) {
         while (start <= ship.end.y) {
             if (x - 1 >= 0) {
                 if (cells[start][x - 1].first == 1) {
-                    flushResults(ship.start.y, start - 1, true, x);
                     return false;
                 }
             }
             if (x + 1 <= 9) {
                 if (cells[start][x + 1].first == 1) {
-                    flushResults(ship.start.y, start - 1, true, x);
                     return false;
                 }
             }
 
             if (cells[start][x].first == 1) {
-                flushResults(ship.start.y, start - 1, true, x);
                 return false;
             }
             cells[start][x].first = 1;
@@ -180,18 +157,15 @@ bool GameMap::insertShip(int id, const Ship& ship) {
 
         if (start <= 9) {
             if (cells[start][x].first == 1) {
-                flushResults(ship.start.y, start - 1, true, x);
                 return false;
             }
             if (x - 1 >= 0) {
                 if (cells[start][x - 1].first == 1) {
-                    flushResults(ship.start.y, start - 1, true, x);
                     return false;
                 }
             }
             if (x + 1 <= 9) {
                 if (cells[start][x + 1].first == 1) {
-                    flushResults(ship.start.y, start - 1, true, x);
                     return false;
                 }
             }
@@ -220,18 +194,15 @@ bool GameMap::insertShip(int id, const Ship& ship) {
         while (start <= ship.end.x) {
             if (y - 1 >= 0) {
                 if (cells[y - 1][start].first == 1) {
-                    flushResults(ship.start.x, start - 1, false, y);
                     return false;
                 }
             }
             if (y + 1 <= 9) {
                 if (cells[y + 1][start].first == 1) {
-                    flushResults(ship.start.x, start - 1, false, y);
                     return false;
                 }
             }
             if (cells[y][start].first == 1) {
-                flushResults(ship.start.x, start - 1, false, y);
                 return false;
             }
             cells[y][start].first = 1;
@@ -242,20 +213,17 @@ bool GameMap::insertShip(int id, const Ship& ship) {
 
         if (start <= 9) {
             if (cells[y][start].first == 1) {
-                flushResults(ship.start.x, start - 1, false, y);
                 return false;
             }
 
             if (y - 1 >= 0) {
                 if (cells[y - 1][start].first == 1) {
-                    flushResults(ship.start.x, start - 1, false, y);
                     return false;
                 }
             }
 
             if (y + 1 <= 9) {
                 if (cells[y + 1][start].first == 1) {
-                    flushResults(ship.start.x, start - 1, false, y);
                     return false;
                 }
             }

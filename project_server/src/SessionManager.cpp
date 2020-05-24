@@ -6,10 +6,10 @@ size_t SessionManager::create_session(UserPtr user) {
     return newSession->GetId();
 }
 
-error SessionManager::add_user_in_session(UserPtr user, size_t id) {
+Error SessionManager::add_user_in_session(UserPtr user, size_t id) {
     auto it = sessions.find(id);
     if (it == sessions.end()) {
-        return error::NotFound;
+        return Error::NotFound;
     }
     return it->second->add_user_in_session(user);
 }
@@ -19,12 +19,12 @@ bool SessionManager::delete_session(size_t id) {
 }
 
 
-error SessionManager::startGame(UserPtr user, const Map& userMap, size_t id) {
+Error SessionManager::startGame(UserPtr user, const Map& userMap, size_t id) {
     auto it = sessions.find(id);
     if (it == sessions.end()) {
-        return error::NotFound;
+        return Error::NotFound;
     }
-    error result = it->second->startGame(user, userMap);
+    Error result = it->second->startGame(user, userMap);
     return result;
 }
 

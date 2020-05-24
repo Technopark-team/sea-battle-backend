@@ -18,10 +18,10 @@ private:
 public:
     explicit Session(UserPtr user);
 
-    error add_user_in_session(UserPtr user);
+    Error add_user_in_session(UserPtr user);
     EraseState eraseUser(UserPtr user);
 
-    error startGame(UserPtr user, const Map& userMap);
+    Error startGame(UserPtr user, const Map& userMap);
     std::shared_ptr<GameState> updateGameState(UserPtr user, const Point& point);
 
     void notifyUsers(const std::string& message);

@@ -10,6 +10,6 @@ file(GLOB tests "${PROJECT_SOURCE_DIR}/test/*.cpp")
 
 add_executable(${test_name} ${tests} tests.cpp main.cpp)
 
-target_link_libraries(${test_name} ${library_name} gmock_main gmock -pthread)
+target_link_libraries(${test_name} ${library_name} DBAccess_lib gmock_main gmock -pthread)
 
 add_test(NAME ${test_name} COMMAND ${test_name})

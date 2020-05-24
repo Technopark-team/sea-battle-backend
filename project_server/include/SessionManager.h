@@ -14,11 +14,11 @@ public:
     SessionManager() = default;
 
     size_t create_session(UserPtr user);
-    error add_user_in_session(UserPtr user, size_t id);
+    Error add_user_in_session(UserPtr user, size_t id);
     bool delete_session(size_t id);
     std::shared_ptr<EraseState> eraseUser(UserPtr user, size_t sessionId);
 
-    error startGame(UserPtr user, const Map& map, size_t id);
+    Error startGame(UserPtr user, const Map& map, size_t id);
     void updateStep(UserPtr user, const Point& point, size_t id, std::shared_ptr<GameState>& gameState);
 
     void notifySession(const std::string& message, size_t id);

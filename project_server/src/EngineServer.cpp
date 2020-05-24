@@ -45,13 +45,12 @@ int EngineServer::switch_action(const std::string& message, UserPtr user) {
         m_parser->Serialize(rp, response);
         user->write(response);
     } else if (type == Route::CreateUser) {
-        //todo: auth?
         bool result = access_object->AddUser(rq->data_.login_, rq->data_.password_);
         if (result) {
             user->set_name(rq->data_.login_);
-            rp->error_ = error::Success;
+            rp->error_ = Error::Success;
         } else {
-            rp->error_ = error::UserExist;
+            rp->error_ = Error::UserExist;
         }
         m_parser->Serialize(rp, response);
         user->write(response);
@@ -59,31 +58,31 @@ int EngineServer::switch_action(const std::string& message, UserPtr user) {
         bool result = access_object->CheckUser(rq->data_.login_, rq->data_.password_);
         if (result) {
             user->set_name(rq->data_.login_);
-            rp->error_ = error::Success;
+            rp->error_ = Error::Success;
         } else {
-            rp->error_ = error::InvalidLogIn;
+            rp->error_ = Error::InvalidLogIn;
         }
         m_parser->Serialize(rp, response);
         user->write(response);
     } else if (type == Route::JoinSession) {
         int id = rq->session_id_;
-        error result = m_session_manager->add_user_in_session(user, id);
-        if (result == error::Success) {
+        Error result = m_session_manager->add_user_in_session(user, id);
+        if (result == Error::Success) {
             user->setSessionId(id);
-            rp->error_ = error::Success;
+            rp->error_ = Error::Success;
         }
         m_parser->Serialize(rp, response);
         m_session_manager->notifySession(response, id);
     } else if (type == Route::StartGame) {
         Map userMap = rq->map_;
-        error result = m_session_manager->startGame(user, userMap, user->getSessionId());
-        if (result == error::Started) {
+        Error result = m_session_manager->startGame(user, userMap, user->getSessionId());
+        if (result == Error::Started) {
             rp->game_state_.nextStepId = user->get_id();
-            rp->error_ = error::Started;
-        } else if (result == error::NotValidMap) {
-            rp->error_ = error::NotValidMap;
-        } else if (result == error::Wait) {
-            rp->error_ = error::Wait;
+            rp->error_ = Error::Started;
+        } else if (result == Error::NotValidMap) {
+            rp->error_ = Error::NotValidMap;
+        } else if (result == Error::Wait) {
+            rp->error_ = Error::Wait;
         }
         m_parser->Serialize(rp, response);
         m_session_manager->notifySession(response, user->getSessionId());
@@ -92,9 +91,9 @@ int EngineServer::switch_action(const std::string& message, UserPtr user) {
         std::shared_ptr<GameState> gameState = nullptr;
         m_session_manager->updateStep(user, point, user->getSessionId(), gameState);
         if (!gameState) {
-            rp->error_ = error::NotFound;
+            rp->error_ = Error::NotFound;
         } else {
-            rp->error_ = error::Success;
+            rp->error_ = Error::Success;
             rp->point_ = point;
             rp->game_state_ = *gameState;
         }
@@ -191,4 +190,3 @@ void EngineServer::process() {
         }
     }
 }
-

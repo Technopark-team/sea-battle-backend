@@ -16,7 +16,7 @@ enum class Route {
 
 MSGPACK_ADD_ENUM(Route)
 
-enum class error {
+enum class Error {
     Success = 0,
     NotFound,
     Full,
@@ -28,7 +28,7 @@ enum class error {
     EndGame
 };
 
-MSGPACK_ADD_ENUM(error)
+MSGPACK_ADD_ENUM(Error)
 
 struct AuthData {
     std::string login_;
@@ -146,7 +146,7 @@ struct Response {
     GameState game_state_;
     EraseState erase_state_;
 
-    error error_;
+    Error error_;
 
     MSGPACK_DEFINE_MAP(user_id_, session_id_, point_, game_state_ , erase_state_, error_);
 

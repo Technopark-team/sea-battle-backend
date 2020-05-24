@@ -1,5 +1,3 @@
-set(CMAKE_CXX_FLAGS "-lhiredis -lredis++")
-
 include_directories(${includes_l})
 
 add_library(DBAccess_lib SHARED ${PROJECT_SOURCE_DIR}/DBAccess/DBAccess.cpp)

@@ -48,7 +48,6 @@ class GameMap {
 private:
     std::vector<std::vector<std::pair<size_t, int>>> cells;
     std::unordered_map<int, size_t> game_ships_;
-    void flushResults(size_t start, size_t end, bool x, size_t constant);
 public:
     GameMap();
     ~GameMap() = default;

@@ -5,10 +5,11 @@
 #include "IParser.h"
 #include "IEngine.h"
 #include "IUser.h"
+#include "IGameEngine.h"
 
 using ::testing::InSequence;
 
-int mockFunction(const std::string&, std::shared_ptr<User>) {
+int mockFunction(const std::string& str, std::shared_ptr<User>) {
     return 0;
 }
 
@@ -48,40 +49,32 @@ public:
 };*/
 
 
+TEST(GameTest, InsertMap) {
+    IGameEngine GameEngine;
+    std::string coordinates = "0 0 0 3\n3 3 3 3\n4 0 5 0\n9 0 9 1\n6 3 6 3\n3 5 3 5\n8 4 8 4\n0 9 2 9\n5 6 6 6\n9 7 9 9\n";
+    std::stringstream stream(coordinates);
+    Map map;
 
-TEST(ParserTypeTest, CreateSessionTest) {
-    Parser parser;
-    EXPECT_EQ(typeMsg::CreateSession, parser.parse_type("type:create"));
-}
-
-TEST(ParserTypeTest, JoinSessionTest) {
-    Parser parser;
-    EXPECT_EQ(typeMsg::JoinSession, parser.parse_type("type:join"));
-}
-
-TEST(ParserTypeTest, UpdateGameTest) {
-    Parser parser;
-    EXPECT_EQ(typeMsg::UpdateGame, parser.parse_type("type:update"));
-}
-
-
-TEST(ParserArgumentsTest, GameStateArguments) {
-
-}
-
-TEST(ParserArgumentsTest, InvalidGameStateArguments) {
-
+    for (int i = 0; i < 10; i++) {
+        size_t x_s = 0;
+        size_t y_s = 0;
+        stream >> x_s >> y_s;
+        size_t x_e = 0;
+        size_t y_e = 0;
+        stream >> x_e >> y_e;
+        Ship ship(x_s, y_s, x_e, y_e);
+        map.ships.insert({i, ship});
+    }
+    EXPECT_TRUE(GameEngine.insertMap(1, map));
 }
 
 TEST(SessionManagerTest, CreateSessionTest) {
-    std::shared_ptr<ClientSocket> cl = std::make_shared<MockClientSocket>(1);
+    std::shared_ptr<ClientSocket> cl = std::make_shared<MockClientSocket>(5);
 
-    UserPtr user = std::make_shared<User>(cl, );
+    //UserPtr user = std::make_shared<User>(cl);
     SessionManager session_manager;
 
-    EXPECT_TRUE(session_manager.create_session(user, 1));
-
-    EXPECT_FALSE(session_manager.create_session(user, 1));
+    //EXPECT_TRUE(session_manager.create_session(user));
 }
 
 /*TEST(SessionManagerTest, AddInSessionTest) {

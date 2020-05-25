@@ -37,55 +37,55 @@ size_t GameConsoleInput::ReadCommand(config::UserCommand& user_command) {
  */
 
 size_t GameConsoleInput::ReadMap(utils::data::PlayerMap& player_map) {
-    player_map.ships.at(utils::data::SHIP4).begin_coordinate.x = 0;
-    player_map.ships.at(utils::data::SHIP4).begin_coordinate.y = 0;
-    player_map.ships.at(utils::data::SHIP4).end_coordinate.x = 3;
-    player_map.ships.at(utils::data::SHIP4).end_coordinate.y = 0;
+    player_map.ships.at(utils::data::ShipType::SHIP4).begin_coordinate.x = 0;
+    player_map.ships.at(utils::data::ShipType::SHIP4).begin_coordinate.y = 0;
+    player_map.ships.at(utils::data::ShipType::SHIP4).end_coordinate.x = 3;
+    player_map.ships.at(utils::data::ShipType::SHIP4).end_coordinate.y = 0;
 
-    player_map.ships.at(utils::data::SHIP3_1).begin_coordinate.x = 5;
-    player_map.ships.at(utils::data::SHIP3_1).begin_coordinate.y = 0;
-    player_map.ships.at(utils::data::SHIP3_1).end_coordinate.x = 7;
-    player_map.ships.at(utils::data::SHIP3_1).end_coordinate.y = 0;
+    player_map.ships.at(utils::data::ShipType::SHIP3_1).begin_coordinate.x = 5;
+    player_map.ships.at(utils::data::ShipType::SHIP3_1).begin_coordinate.y = 0;
+    player_map.ships.at(utils::data::ShipType::SHIP3_1).end_coordinate.x = 7;
+    player_map.ships.at(utils::data::ShipType::SHIP3_1).end_coordinate.y = 0;
 
-    player_map.ships.at(utils::data::SHIP3_2).begin_coordinate.x = 9;
-    player_map.ships.at(utils::data::SHIP3_2).begin_coordinate.y = 0;
-    player_map.ships.at(utils::data::SHIP3_2).end_coordinate.x = 9;
-    player_map.ships.at(utils::data::SHIP3_2).end_coordinate.y = 2;
+    player_map.ships.at(utils::data::ShipType::SHIP3_2).begin_coordinate.x = 9;
+    player_map.ships.at(utils::data::ShipType::SHIP3_2).begin_coordinate.y = 0;
+    player_map.ships.at(utils::data::ShipType::SHIP3_2).end_coordinate.x = 9;
+    player_map.ships.at(utils::data::ShipType::SHIP3_2).end_coordinate.y = 2;
 
-    player_map.ships.at(utils::data::SHIP2_1).begin_coordinate.x = 9;
-    player_map.ships.at(utils::data::SHIP2_1).begin_coordinate.y = 4;
-    player_map.ships.at(utils::data::SHIP2_1).end_coordinate.x = 9;
-    player_map.ships.at(utils::data::SHIP2_1).end_coordinate.y = 5;
+    player_map.ships.at(utils::data::ShipType::SHIP2_1).begin_coordinate.x = 9;
+    player_map.ships.at(utils::data::ShipType::SHIP2_1).begin_coordinate.y = 4;
+    player_map.ships.at(utils::data::ShipType::SHIP2_1).end_coordinate.x = 9;
+    player_map.ships.at(utils::data::ShipType::SHIP2_1).end_coordinate.y = 5;
 
-    player_map.ships.at(utils::data::SHIP2_2).begin_coordinate.x = 9;
-    player_map.ships.at(utils::data::SHIP2_2).begin_coordinate.y = 7;
-    player_map.ships.at(utils::data::SHIP2_2).end_coordinate.x = 9;
-    player_map.ships.at(utils::data::SHIP2_2).end_coordinate.y = 8;
+    player_map.ships.at(utils::data::ShipType::SHIP2_2).begin_coordinate.x = 9;
+    player_map.ships.at(utils::data::ShipType::SHIP2_2).begin_coordinate.y = 7;
+    player_map.ships.at(utils::data::ShipType::SHIP2_2).end_coordinate.x = 9;
+    player_map.ships.at(utils::data::ShipType::SHIP2_2).end_coordinate.y = 8;
 
-    player_map.ships.at(utils::data::SHIP2_3).begin_coordinate.x = 6;
-    player_map.ships.at(utils::data::SHIP2_3).begin_coordinate.y = 9;
-    player_map.ships.at(utils::data::SHIP2_3).end_coordinate.x = 7;
-    player_map.ships.at(utils::data::SHIP2_3).end_coordinate.y = 9;
+    player_map.ships.at(utils::data::ShipType::SHIP2_3).begin_coordinate.x = 6;
+    player_map.ships.at(utils::data::ShipType::SHIP2_3).begin_coordinate.y = 9;
+    player_map.ships.at(utils::data::ShipType::SHIP2_3).end_coordinate.x = 7;
+    player_map.ships.at(utils::data::ShipType::SHIP2_3).end_coordinate.y = 9;
 
-    player_map.ships.at(utils::data::SHIP1_1).begin_coordinate.x = 4;
-    player_map.ships.at(utils::data::SHIP1_1).begin_coordinate.y = 9;
-    player_map.ships.at(utils::data::SHIP1_1).end_coordinate.x = 4;
-    player_map.ships.at(utils::data::SHIP1_1).end_coordinate.y = 9;
+    player_map.ships.at(utils::data::ShipType::SHIP1_1).begin_coordinate.x = 4;
+    player_map.ships.at(utils::data::ShipType::SHIP1_1).begin_coordinate.y = 9;
+    player_map.ships.at(utils::data::ShipType::SHIP1_1).end_coordinate.x = 4;
+    player_map.ships.at(utils::data::ShipType::SHIP1_1).end_coordinate.y = 9;
 
-    player_map.ships.at(utils::data::SHIP1_2).begin_coordinate.x = 2;
-    player_map.ships.at(utils::data::SHIP1_2).begin_coordinate.y = 9;
-    player_map.ships.at(utils::data::SHIP1_2).end_coordinate.x = 2;
-    player_map.ships.at(utils::data::SHIP1_2).end_coordinate.y = 9;
+    player_map.ships.at(utils::data::ShipType::SHIP1_2).begin_coordinate.x = 2;
+    player_map.ships.at(utils::data::ShipType::SHIP1_2).begin_coordinate.y = 9;
+    player_map.ships.at(utils::data::ShipType::SHIP1_2).end_coordinate.x = 2;
+    player_map.ships.at(utils::data::ShipType::SHIP1_2).end_coordinate.y = 9;
 
-    player_map.ships.at(utils::data::SHIP1_3).begin_coordinate.x = 0;
-    player_map.ships.at(utils::data::SHIP1_3).begin_coordinate.y = 9;
-    player_map.ships.at(utils::data::SHIP1_3).end_coordinate.x = 0;
-    player_map.ships.at(utils::data::SHIP1_3).end_coordinate.y = 9;
+    player_map.ships.at(utils::data::ShipType::SHIP1_3).begin_coordinate.x = 0;
+    player_map.ships.at(utils::data::ShipType::SHIP1_3).begin_coordinate.y = 9;
+    player_map.ships.at(utils::data::ShipType::SHIP1_3).end_coordinate.x = 0;
+    player_map.ships.at(utils::data::ShipType::SHIP1_3).end_coordinate.y = 9;
 
-    player_map.ships.at(utils::data::SHIP1_4).begin_coordinate.x = 0;
-    player_map.ships.at(utils::data::SHIP1_4).begin_coordinate.y = 7;
-    player_map.ships.at(utils::data::SHIP1_4).end_coordinate.x = 0;
-    player_map.ships.at(utils::data::SHIP1_4).end_coordinate.y = 7;
+    player_map.ships.at(utils::data::ShipType::SHIP1_4).begin_coordinate.x = 0;
+    player_map.ships.at(utils::data::ShipType::SHIP1_4).begin_coordinate.y = 7;
+    player_map.ships.at(utils::data::ShipType::SHIP1_4).end_coordinate.x = 0;
+    player_map.ships.at(utils::data::ShipType::SHIP1_4).end_coordinate.y = 7;
     return 0;
 }
 

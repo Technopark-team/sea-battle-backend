@@ -464,7 +464,8 @@ enum class TestRoute {
 };
 
 enum class TestError {
-    Success = 0,
+    Default = -1,
+    Success = 1,
     NotFound,
     Full,
     UserExist,
@@ -487,15 +488,16 @@ struct TestAuthData {
 
 
 enum class TestResult {
-    Miss = 0,
+    Default = -1,
+    Miss = 1,
     Hit,
     Kill,
     BadPoint
 };
 
 struct TestGameState {
-    int next_step_id_;
-    TestResult result_;
+    int next_step_id_ = -1;
+    TestResult result_ = TestResult::Default;
     bool end_game_;
 
     MSGPACK_DEFINE_MAP(next_step_id_, result_, end_game_);
@@ -518,7 +520,7 @@ struct TestPoint {
     MSGPACK_DEFINE_MAP(x_, y_);
 
     TestPoint(size_t x, size_t y): x_(x), y_(y){}
-    TestPoint():x_(0), y_(0) {}
+    TestPoint():x_(-1), y_(-1) {}
 
     const bool isValid() const {
         return x_ < 10 && y_ < 10;
@@ -569,8 +571,8 @@ struct TestEraseState {
 
 
 struct TestDataRequest {
-    int user_id_;
-    int session_id_;
+    int user_id_ = -1;
+    int session_id_ = -1;
     TestRoute type_;
     TestAuthData data_;
     TestPoint point_;
@@ -583,14 +585,14 @@ struct TestDataRequest {
 };
 
 struct TestDataResponse {
-    int user_id_;
-    int session_id_;
+    int user_id_ = -1;
+    int session_id_ = -1;
 
     TestPoint point_;
     TestGameState game_state_;
     TestEraseState erase_state_;
 
-    TestError error_;
+    TestError error_ = TestError::Default;
 
     MSGPACK_DEFINE_MAP(user_id_, session_id_, point_, game_state_ , erase_state_, error_);
 

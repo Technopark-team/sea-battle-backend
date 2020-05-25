@@ -51,52 +51,53 @@ enum class Result {
 MSGPACK_ADD_ENUM(Result);
 
 struct GameState {
-    int nextStepId;
-    Result result;
-    bool EndGame;
+    int next_step_id_;
+    Result result_;
+    bool end_game_;
 
-    MSGPACK_DEFINE_MAP(nextStepId, result, EndGame);
+    MSGPACK_DEFINE_MAP(next_step_id_, result_, end_game_);
 
     GameState() = default;
-    GameState(int nextStepId, Result result, bool EndGame = false): nextStepId(nextStepId), result(result), EndGame(EndGame){}
+    GameState(int next_step_id, Result result, bool end_game = false): next_step_id_(next_step_id), result_(result), end_game_(end_game){}
 
     GameState& operator=(const GameState& rhs) {
-        nextStepId = rhs.nextStepId;
-        result = rhs.result;
-        EndGame = rhs.EndGame;
+        next_step_id_ = rhs.next_step_id_;
+        result_ = rhs.result_;
+        end_game_ = rhs.end_game_;
         return *this;
     }
 };
 
 struct Point {
-    size_t x;
-    size_t y;
+    size_t x_;
+    size_t y_;
 
-    MSGPACK_DEFINE_MAP(x, y);
+    MSGPACK_DEFINE_MAP(x_, y_);
 
-    Point(size_t x, size_t y): x(x), y(y){}
-    Point():x(0), y(0) {}
+    Point(size_t x, size_t y): x_(x), y_(y){}
+    Point():x_(0), y_(0) {}
 
     const bool isValid() const {
-        return x < 10 && y < 10;
+        return x_ < 10 && y_ < 10;
     }
 };
 
 struct Ship {
-    Point start;
-    Point end;
+    Point start_;
+    Point end_;
 
-    MSGPACK_DEFINE_MAP(start, end);
+    MSGPACK_DEFINE_MAP(start_, end_);
 
     Ship() = default;
-    Ship(size_t startX, size_t startY, size_t endX, size_t endY):start(startX, startY), end(endX, endY){}
+    Ship(size_t start_x, size_t start_y, size_t end_x, size_t end_y):start_(start_x, start_y), end_(end_x, end_y) {}
+    Ship(const Point& start, const Point& end): start_(start), end_(end) {}
 
-    const bool isValid() const {
-        return (start.x == end.x || start.y == end.y) && start.isValid() && end.isValid();
+    const bool IsValid() const {
+        return (start_.x_ == end_.x_ || start_.y_ == end_.y_) && start_.isValid() && end_.isValid();
     }
 
-    const size_t length() const {
-        return (start.x == end.x)?(end.y - start.y + 1):(end.x - start.x + 1);
+    const size_t Length() const {
+        return (start_.x_ == end_.x_)?(end_.y_ - start_.y_ + 1):(end_.x_ - start_.x_ + 1);
     }
 };
 
@@ -107,24 +108,24 @@ struct Map {
 };
 
 struct EraseState {
-    bool started = false;
-    int winner_id = -1;
+    bool started_ = false;
+    int winner_id_ = -1;
 
-    MSGPACK_DEFINE_MAP(started, winner_id);
+    MSGPACK_DEFINE_MAP(started_, winner_id_);
 
     EraseState() = default;
-    EraseState(int winner_id): started(true), winner_id(winner_id) {}
-    EraseState(bool started, int winner_id): started(started), winner_id(winner_id) {}
+    EraseState(int winner_id): started_(true), winner_id_(winner_id) {}
+    EraseState(bool started, int winner_id): started_(started), winner_id_(winner_id) {}
 
     EraseState& operator= (const EraseState& rhs) {
-        started = rhs.started;
-        winner_id = rhs.winner_id;
+        started_ = rhs.started_;
+        winner_id_ = rhs.winner_id_;
         return *this;
     }
 };
 
 
-struct Request {
+struct DataRequest {
     int user_id_;
     int session_id_;
     Route type_;
@@ -134,11 +135,11 @@ struct Request {
 
     MSGPACK_DEFINE_MAP(user_id_, session_id_, type_, data_, point_, map_);
 
-    Request() = default;
-    Request(const AuthData& data, Route type): data_(data), type_(type) {}
+    DataRequest() = default;
+    DataRequest(const AuthData& data, Route type): data_(data), type_(type) {}
 };
 
-struct Response {
+struct DataResponse {
     int user_id_;
     int session_id_;
 
@@ -150,7 +151,7 @@ struct Response {
 
     MSGPACK_DEFINE_MAP(user_id_, session_id_, point_, game_state_ , erase_state_, error_);
 
-    Response() = default;
+    DataResponse() = default;
 };
 
 

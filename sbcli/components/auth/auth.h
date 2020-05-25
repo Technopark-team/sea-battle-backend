@@ -14,7 +14,7 @@ class AuthMenu {
     ~AuthMenu() = default;
 
     size_t Render(size_t &res_choice);
-    size_t ReadAuthData(char* login, int log_len, char* pass, int pass_len);
+    size_t ReadAuthData(char* login_, int log_len, char* pass, int pass_len);
 
  private:
     size_t Draw_(size_t item);
@@ -74,13 +74,13 @@ size_t AuthMenu<ItemsT, HelpT>::Render(size_t &res_choice) {
 }
 
 template <class ItemsT, class HelpT>
-size_t AuthMenu<ItemsT, HelpT>::ReadAuthData(char* login, int log_len, char* pass, int pass_len) {
+size_t AuthMenu<ItemsT, HelpT>::ReadAuthData(char* login_, int log_len, char* pass, int pass_len) {
 
     initscr();
     clear();
     mvprintw(3, 10, "Логин: ");
     refresh();
-    getnstr(login, log_len);
+    getnstr(login_, log_len);
     mvprintw(5, 10, "Пароль: ");
     refresh();
     noecho();

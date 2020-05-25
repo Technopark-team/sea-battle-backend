@@ -31,10 +31,10 @@ class AuthController : public IController {
 
     /**
      * This method provides access to user model to get its ID after success auth/reg.
-     * @param user_data
+     * @param user_id
      * @return
      */
-    size_t GetUserData(utils::data::UserData &user_data);
+    size_t GetUserData(int &user_id);
 
  private:
     /**

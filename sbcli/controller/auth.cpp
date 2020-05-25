@@ -15,7 +15,7 @@ size_t AuthController::Action(std::shared_ptr<config::ControllerSignal>& control
     size_t command = -1;
     size_t auth_status = controller_signal->auth_user_status;
     controller_signal->Clean();
-    utils::data::AuthData auth_data;
+    utils::data::TestAuthData auth_data;
 
     console_interface_->Run(command, auth_data, auth_status);
 
@@ -31,9 +31,9 @@ size_t AuthController::Action(std::shared_ptr<config::ControllerSignal>& control
             // TODO: вызвать PostSignin()/PostSignup() в зависимости от команды авторизации или
             // регистрации
             // TODO: это неблокирующая операция, требуется синхронизировать асинхронную операцию
-            user_model_->PostSignin();
+            user_model_->CreateUser();
             std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-            GetUserData(controller_signal->user_data);
+            GetUserData(controller_signal->user_id);
             controller_signal->auth_user_status = config::UserStatus::AUTHORIZED;
         }
     }
@@ -41,8 +41,8 @@ size_t AuthController::Action(std::shared_ptr<config::ControllerSignal>& control
     return 0;
 }
 
-size_t AuthController::GetUserData(utils::data::UserData& user_data) {
-    user_model_->GetUserData(user_data);
+size_t AuthController::GetUserData(int &user_id) {
+    user_model_->GetUserData(user_id);
     return 0;
 }
 

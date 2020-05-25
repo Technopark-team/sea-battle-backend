@@ -1,8 +1,8 @@
 #ifndef SEA_BATTLE_BACKEND_SERIALIZER_H
 #define SEA_BATTLE_BACKEND_SERIALIZER_H
 
-#include <iostream>
 #include <memory>
+#include <sstream>
 #include "sbutils/data/data.h"
 
 namespace seabattle {
@@ -22,9 +22,6 @@ class Serializer {
 
 template <class T>
 Serializer<T>::Serializer() {}
-
-// TODO: сделать статическими
-// TODO: вынести в файл cpp
 
 template <class T>
 std::shared_ptr<std::stringstream> Serializer<T>::Serialize(T& data) {

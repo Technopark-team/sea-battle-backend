@@ -2,11 +2,12 @@
 #define SEA_BATTLE_BACKEND_AUTH_H
 
 #include <memory>
+#include <locale.h>
+#include "controller_interface.h"
 #include "sbcli/config/config.h"
 #include "sbcli/model/user_model.h"
 #include "sbutils/data/data.h"
-#include "controller_interface.h"
-#include "ui/auth_console_input.h"
+#include "view/auth_console_input.h"
 
 namespace seabattle {
 namespace client {
@@ -21,13 +22,12 @@ class AuthController : public IController {
     ~AuthController() = default;
 
     /**
-     * This method takes user's cmd for auth/reg, next takes log/pass and calls model for async net
-     * communication with server to fill UserData struct. The last step is to take user's cmd for
-     * menu/exit as callback after success auth/reg.
-     * @param user_command stores menu/exit req from user
+     * This method takes signal for using controller in next step, auth_user_status for defining
+     * whether user has authorized, user_id to define user, command to define command for controllers
+     * @param controller_signal
      * @return
      */
-    size_t Action(config::UserCommand &user_command) override;
+    size_t Action(std::shared_ptr<config::ControllerSignal> &controller_signal) override;
 
     /**
      * This method provides access to user model to get its ID after success auth/reg.
@@ -43,9 +43,9 @@ class AuthController : public IController {
     std::unique_ptr<model::UserModel> user_model_;
 
     /**
-     * This prop is smart pointer to ui::AuthConsoleInput.
+     * This prop is smart pointer to view::AuthConsoleInput.
      */
-    std::unique_ptr<ui::AuthConsoleInput> console_interface_;
+    std::unique_ptr<view::AuthConsoleInput> console_interface_;
 };
 
 }  // namespace controller

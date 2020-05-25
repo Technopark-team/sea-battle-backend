@@ -23,12 +23,13 @@ class GameModel : public IModel {
     size_t PutGameSave() override;
     size_t GetGameOpen() override;
     size_t PostGameStep() override;
+    // TODO: реализовать SetInterval для этого запроса
     size_t GetGameState() override;
     size_t GetGameAll() override;
     size_t PutGameStop() override;
 
     size_t SetCurrentStep(utils::data::UserStep user_step);
-    size_t GetEnemyState(utils::data::GameStatus &enemy_step_status);
+    size_t GetEnemyState(utils::data::GameStatus &enemy_game_status);
 
     size_t SetShips(utils::data::PlayerMap player_map);
     size_t GetShips(utils::data::PlayerMap &player_map);

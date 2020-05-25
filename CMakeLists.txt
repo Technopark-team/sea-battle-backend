@@ -3,9 +3,12 @@ cmake_minimum_required(VERSION 3.14)
 project(seabattle C CXX)
 set(CMAKE_CXX_STANDARD 17)
 
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -std=c++17 -lncursesw")
+
 find_package(Boost ${BOOST_VERSION} COMPONENTS thread system REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIRS})
+include_directories(${CURSES_INCLUDE_DIR})
 
 set(Boost_LIBRARY_DIR /usr/local/lib)
 link_directories(${Boost_LIBRARY_DIR})
@@ -15,9 +18,11 @@ set(SEABATTLE_UTILS_LIB "${CMAKE_CURRENT_SOURCE_DIR}/sbutils")
 
 set(CLIENT_SRC_LIST ${CMAKE_CURRENT_SOURCE_DIR}/seabattle_cli.cpp)
 set(SERVER_SRC_LIST ${CMAKE_CURRENT_SOURCE_DIR}/tcp_server.cpp)
+set(TEST_UI ${CMAKE_CURRENT_SOURCE_DIR}/test_ui.cpp)
 
 find_package(GTest REQUIRED)
 find_package(msgpack REQUIRED)
+find_package(Curses REQUIRED)
 
 set(GMock_INCLUDE_DIR "/usr/local/include")
 if (EXISTS "/usr/local/lib/libgmock.a")
@@ -44,12 +49,17 @@ target_link_libraries(seabattle-cli sbcli)
 target_link_libraries(seabattle-cli sbutils)
 target_link_libraries(seabattle-cli ${Boost_LIBRARIES})
 target_link_libraries(seabattle-cli ${msgpack_LIBRARIES})
+target_link_libraries(seabattle-cli ${CURSES_LIBRARIES})
 
 # compile server
 add_executable(test_tcp_server ${SERVER_SRC_LIST})
 target_link_libraries(test_tcp_server sbutils)
 target_link_libraries(test_tcp_server ${Boost_LIBRARIES})
 target_link_libraries(test_tcp_server ${msgpack_LIBRARIES})
+
+# compile test_ui
+add_executable(test_ui ${TEST_UI})
+target_link_libraries(test_ui ${CURSES_LIBRARIES})
 
 set(TESTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 

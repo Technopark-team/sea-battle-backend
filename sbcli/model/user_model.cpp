@@ -52,7 +52,6 @@ size_t UserModel::GeneralCallback_(std::stringstream& response) {
     std::shared_ptr<utils::data::DataResponse> resp =
         utils::serializer::Serializer<utils::data::DataResponse>::Deserialize(
             response, response.str().size());
-    std::cout << resp->route << std::endl;
 
     switch (resp->route) {
         case utils::data::Routes::POST_SIGN_IN: {

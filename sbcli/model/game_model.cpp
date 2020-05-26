@@ -13,13 +13,11 @@ size_t GameModel::PostGameStep() { return 0; }
 size_t GameModel::GetGameState() { return 0; }
 size_t GameModel::GetGameAll() { return 0; }
 size_t GameModel::PutGameStop() { return 0; }
-size_t GameModel::SetCurrentStep(utils::data::UserStep user_step) { return 0; }
-size_t GameModel::GetEnemyState(utils::data::GameStatus& enemy_game_status) { return 0; }
-size_t GameModel::SetShips(utils::data::PlayerMap player_map) { return 0; }
-size_t GameModel::GetShips(utils::data::PlayerMap& player_map) { return 0; }
-size_t GameModel::GetGameId(utils::data::GameData& game_data) { return 0; }
-size_t GameModel::GetStateShips(utils::data::PlayerStateMap& player_state_map) { return 0; }
-size_t GameModel::SetStateShips(utils::data::PlayerStateMap player_state_map) { return 0; }
+
+size_t GameModel::SetCurrentStep(utils::data::TestPoint user_step) { return 0; }
+size_t GameModel::SetShips(utils::data::TestMap player_map) { return 0; }
+size_t GameModel::GetShips(utils::data::TestMap& player_map) { return 0; }
+size_t GameModel::GetGameId(int& session_id) { return 0; }
 
 size_t GameModel::GeneralCallback_(std::stringstream& response) { return 0; }
 

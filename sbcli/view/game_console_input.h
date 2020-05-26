@@ -18,8 +18,8 @@ class GameConsoleInput : public IUserInput {
     ~GameConsoleInput() = default;
 
     size_t ReadCommand(config::UserCommand &user_command) override;
-    size_t ReadMap(utils::data::PlayerMap &player_map);
-    size_t ReadStep(utils::data::UserStep &user_step);
+    size_t ReadMap(utils::data::TestMap &player_map);
+    size_t ReadStep(utils::data::TestPoint &user_step);
 
 };
 

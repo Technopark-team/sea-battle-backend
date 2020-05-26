@@ -18,7 +18,7 @@ class AuthConsoleInput {
     explicit AuthConsoleInput();
     ~AuthConsoleInput() = default;
 
-    size_t Run(size_t &choice, utils::data::AuthData &auth_data, const size_t auth_status);
+    size_t Run(size_t &choice, utils::data::TestAuthData &auth_data, const size_t auth_status);
 
  private:
     component::AuthMenu<config::AuthExistUser, config::HelpMainMenu> auth_menu_exist_;

@@ -45,16 +45,16 @@ struct UserCommand {
 struct ControllerSignal {
     size_t signal = -1;
     size_t auth_user_status = config::UserStatus::NOT_AUTHORIZED;
-    utils::data::UserData user_data = utils::data::UserData();
+    int user_id = -1;
     UserCommand command = UserCommand();
 
     ControllerSignal() = default;
     ControllerSignal(size_t signal) : signal(signal) {}
-    ControllerSignal(size_t signal, size_t auth_user_status, utils::data::UserData user_data,
+    ControllerSignal(size_t signal, size_t auth_user_status, int user_id,
                      UserCommand command)
         : signal(signal),
           auth_user_status(auth_user_status),
-          user_data(std::move(user_data)),
+          user_id(std::move(user_id)),
           command(std::move(command)) {}
 
     void Clean() {

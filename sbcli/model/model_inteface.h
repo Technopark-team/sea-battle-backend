@@ -13,8 +13,7 @@ class IModel {
  public:
     virtual ~IModel() = default;
 
-    virtual size_t PostSignup() { return 0; };
-    virtual size_t PostSignin() { return 0; };
+    virtual size_t CreateUser() { return 0; };
     virtual size_t PostGameSingle() { return 0; };
     virtual size_t PostGameMulti() { return 0; };
     virtual size_t PutGameSave() { return 0; };

@@ -142,14 +142,14 @@ struct DataRequest {
 struct DataResponse {
     int user_id_;
     int session_id_;
-
+    Route type_;
     Point point_;
     GameState game_state_;
     EraseState erase_state_;
 
     Error error_;
 
-    MSGPACK_DEFINE_MAP(user_id_, session_id_, point_, game_state_ , erase_state_, error_);
+    MSGPACK_DEFINE_MAP(user_id_, session_id_, type_, point_, game_state_ , erase_state_, error_);
 
     DataResponse() = default;
 };

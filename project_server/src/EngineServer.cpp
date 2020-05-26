@@ -5,100 +5,104 @@
 
 EngineServer::EngineServer(std::string host, uint32_t port):
                             Server(std::move(host), port) {
-    m_engine = std::make_shared<Engine>();
-    m_parser = std::make_shared<Parser>();
-    m_session_manager = std::make_shared<SessionManager>();
-    access_object = std::make_shared<DBAccess>();
+    engine_ = std::make_shared<Engine>();
+    parser_ = std::make_shared<Parser>();
+    session_manager_ = std::make_shared<SessionManager>();
+    access_object_ = std::make_shared<DBAccess>();
 }
 
-int EngineServer::switch_action(const std::string& message, UserPtr user) {
+int EngineServer::SwitchAction(const std::string& message, UserPtr user) {
     std::string response;
-    std::shared_ptr<Response> rp = std::make_shared<Response>();
+    std::shared_ptr<DataResponse> rp = std::make_shared<DataResponse>();
     if (message.empty()) {
-        std::shared_ptr<EraseState> result = m_session_manager->eraseUser(user, user->getSessionId());
+        std::shared_ptr<EraseState> result = session_manager_->EraseUser(user, user->GetSessionId());
         if (!result) {
             return 2;
         }
-        if (!result->started) {
+        rp->type_ = Route::EndGame;
+        if (!result->started_) {
             rp->erase_state_ = *result;
-            m_parser->Serialize(rp, response);
-            m_session_manager->notifySession(response, user->getSessionId());
         } else {
             rp->erase_state_ = *result;
+            parser_->Serialize(rp, response);
+            session_manager_->NotifySession(response, user->GetSessionId());
         }
-        // todo: real serializer
-        needClose.push_back(user->get_client()->getFd());
-        clients.erase(user->get_id());
+        parser_->Serialize(rp, response);
+        session_manager_->NotifySession(response, user->GetSessionId());
+        need_close_.push_back(user->GetClient()->GetFd());
+        clients_.erase(user->GetId());
         return 1;
     }
 
-    std::shared_ptr<Request> rq = m_parser->Deserialize(message);
+    std::shared_ptr<DataRequest> rq = parser_->Deserialize(message);
     Route type = rq->type_;
+    rp->type_ = rq->type_;
 
     if (type == Route::CreateSession) {
-        size_t id = m_session_manager->create_session(user);
+        size_t id = session_manager_->CreateSession(user);
 
-        user->setSessionId(id);
-        rp->user_id_ = rq->user_id_;
+        user->SetSessionId(id);
+        rp->user_id_ = user->GetId();
         rp->session_id_ = id;
 
-        m_parser->Serialize(rp, response);
+        parser_->Serialize(rp, response);
         user->write(response);
     } else if (type == Route::CreateUser) {
-        bool result = access_object->AddUser(rq->data_.login_, rq->data_.password_);
+        bool result = access_object_->AddUser(rq->data_.login_, rq->data_.password_);
         if (result) {
-            user->set_name(rq->data_.login_);
+            user->SetName(rq->data_.login_);
             rp->error_ = Error::Success;
         } else {
             rp->error_ = Error::UserExist;
         }
-        m_parser->Serialize(rp, response);
+        parser_->Serialize(rp, response);
         user->write(response);
     } else if (type == Route::Enter) {
-        bool result = access_object->CheckUser(rq->data_.login_, rq->data_.password_);
+        bool result = access_object_->CheckUser(rq->data_.login_, rq->data_.password_);
         if (result) {
-            user->set_name(rq->data_.login_);
+            user->SetName(rq->data_.login_);
             rp->error_ = Error::Success;
         } else {
             rp->error_ = Error::InvalidLogIn;
         }
-        m_parser->Serialize(rp, response);
+        parser_->Serialize(rp, response);
         user->write(response);
     } else if (type == Route::JoinSession) {
         int id = rq->session_id_;
-        Error result = m_session_manager->add_user_in_session(user, id);
+        Error result = session_manager_->AddUserInSession(user, id);
         if (result == Error::Success) {
-            user->setSessionId(id);
+            user->SetSessionId(id);
             rp->error_ = Error::Success;
         }
-        m_parser->Serialize(rp, response);
-        m_session_manager->notifySession(response, id);
+        parser_->Serialize(rp, response);
+        session_manager_->NotifySession(response, id);
     } else if (type == Route::StartGame) {
         Map userMap = rq->map_;
-        Error result = m_session_manager->startGame(user, userMap, user->getSessionId());
+        Error result = session_manager_->StartGame(user, userMap, user->GetSessionId());
         if (result == Error::Started) {
-            rp->game_state_.nextStepId = user->get_id();
+            rp->game_state_.next_step_id_ = user->GetId();
             rp->error_ = Error::Started;
         } else if (result == Error::NotValidMap) {
             rp->error_ = Error::NotValidMap;
         } else if (result == Error::Wait) {
             rp->error_ = Error::Wait;
         }
-        m_parser->Serialize(rp, response);
-        m_session_manager->notifySession(response, user->getSessionId());
+
+        parser_->Serialize(rp, response);
+        session_manager_->NotifySession(response, user->GetSessionId());
     } else if (type == Route::UpdateGame) {
         Point point = rq->point_;
-        std::shared_ptr<GameState> gameState = nullptr;
-        m_session_manager->updateStep(user, point, user->getSessionId(), gameState);
-        if (!gameState) {
+        std::shared_ptr<GameState> game_state = nullptr;
+        session_manager_->UpdateStep(user, point, user->GetSessionId(), game_state);
+        if (!game_state) {
             rp->error_ = Error::NotFound;
         } else {
             rp->error_ = Error::Success;
             rp->point_ = point;
-            rp->game_state_ = *gameState;
+            rp->game_state_ = *game_state;
         }
-        m_parser->Serialize(rp, response);
-        m_session_manager->notifySession(response, user->getSessionId());
+        parser_->Serialize(rp, response);
+        session_manager_->NotifySession(response, user->GetSessionId());
     } else if (type == Route::EndGame) {
 
     }
@@ -107,85 +111,85 @@ int EngineServer::switch_action(const std::string& message, UserPtr user) {
 
 
 
-void EngineServer::do_accept() {
+void EngineServer::DoAccept() {
     while (true) {
-        std::shared_ptr<ClientSocket> new_client = m_socket->accept_client();
+        std::shared_ptr<ClientSocket> new_client = m_socket->AcceptClient();
 
-        if (new_client && new_client->getFd() > -1) {
-            std::cout << "new client's sd is " << new_client->getFd() << std::endl;
+        if (new_client && new_client->GetFd() > -1) {
+            std::cout << "new client's sd is " << new_client->GetFd() << std::endl;
 
-            auto read = std::bind(&EngineServer::asyncRead, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-            auto write = std::bind(&EngineServer::asyncWrite, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-            auto switchF = std::bind(&EngineServer::switch_action, this, std::placeholders::_1, std::placeholders::_2);
+            auto read = std::bind(&EngineServer::AsyncRead, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+            auto write = std::bind(&EngineServer::AsyncWrite, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+            auto switchF = std::bind(&EngineServer::SwitchAction, this, std::placeholders::_1, std::placeholders::_2);
 
             std::shared_ptr<User> user = std::make_shared<User>(new_client, read, write, switchF);
-            clients.insert({user->get_id(), user});
+            clients_.insert({user->GetId(), user});
             user->read();
         }
         usleep(1000);
     }
 }
 
-void EngineServer::asyncRead(std::shared_ptr<ClientSocket> client, std::string& message, std::function<void(int)> callback) {
+void EngineServer::AsyncRead(std::shared_ptr<ClientSocket> client, std::string& message, std::function<void(int)> callback) {
     Event event = Event(client, message, event::WantRead, callback);
 
-    auto result = std::find_if(wantReadEvents.begin(), wantReadEvents.end(), [&event](Event& ev){
-        return event.client->getFd() == ev.client->getFd();});
+    auto result = std::find_if(want_read_events_.begin(), want_read_events_.end(), [&event](Event& ev){
+        return event.client->GetFd() == ev.client->GetFd();});
 
-    if (result == wantReadEvents.end()) {
-        wantReadEvents.push_back(event);
+    if (result == want_read_events_.end()) {
+        want_read_events_.push_back(event);
     }
 }
 
-void EngineServer::asyncWrite(std::shared_ptr<ClientSocket> client, std::string& message, std::function<void(int)> callback) {
+void EngineServer::AsyncWrite(std::shared_ptr<ClientSocket> client, std::string& message, std::function<void(int)> callback) {
     Event event = Event(client, message, event::WantWrite, callback);
-    workEvents.push(event);
+    work_events_.push(event);
 }
 
 void EngineServer::run() {
-    auto manageFunction = [this]() {
-        m_engine->ManageClients(wantReadEvents, workEvents, mWantReadEvents, mWorkEvents);
+    auto ManageFunction = [this]() {
+        engine_->ManageClients(want_read_events_, work_events_, m_want_read_events_, m_work_events_);
     };
-    auto processFunction = [this]() {
-        process();
+    auto ProcessFunction = [this]() {
+        Process();
     };
-    std::thread manageThread(manageFunction);
+    std::thread manage_thread(ManageFunction);
 
     std::vector<std::thread> process_threads;
     process_threads.reserve(3);
     for (int i = 0; i < 3; i++) {
-        process_threads.emplace_back(processFunction);
+        process_threads.emplace_back(ProcessFunction);
     }
 
-    do_accept();
+    DoAccept();
 
-    manageThread.join();
+    manage_thread.join();
     for (auto& t: process_threads) {
         t.join();
     }
 }
 
-void EngineServer::process() {
+void EngineServer::Process() {
     while (true) {
         std::string msg;
         std::shared_ptr<ClientSocket> cl = std::make_shared<ClientSocket>(4, false);
         Event event (cl, msg, event::WantRead);
         {
-            std::unique_lock<std::mutex> lock(mWorkEvents);
-            if (workEvents.empty()) {
+            std::unique_lock<std::mutex> lock(m_work_events_);
+            if (work_events_.empty()) {
                 lock.unlock();
                 usleep(1000);
                 continue;
             }
-            event = workEvents.front();
-            workEvents.pop();
+            event = work_events_.front();
+            work_events_.pop();
         }
         if (event._status == event::WantRead) {
-            int result = event.client->receive(msg);
+            int result = event.client->Receive(msg);
             event._data.get().assign(msg);
             event.callback(errno);
         } else {
-            event.client->send_msg(event._data.get());
+            event.client->SendMsg(event._data.get());
             event.callback(errno);
         }
     }

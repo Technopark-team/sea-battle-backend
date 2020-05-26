@@ -12,18 +12,18 @@
 
 class Socket {
 protected:
-    int sock_fd;
+    int sock_fd_;
 public:
-    Socket() noexcept(false) : sock_fd(-1){}
-    explicit Socket(int socket): sock_fd(socket){};
+    Socket() noexcept(false) : sock_fd_(-1){}
+    explicit Socket(int socket): sock_fd_(socket){};
 
     virtual ~Socket(){
 
     }
 
-    void setNonBlocking(bool option);
-    int getFd();
-    void close();
+    void SetNonBlocking(bool option);
+    int GetFd();
+    void Close();
 };
 
 #endif //PROJECT_SERVER_SOCKET_H

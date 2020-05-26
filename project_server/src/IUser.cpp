@@ -1,19 +1,19 @@
 #include "IUser.h"
-size_t IUser::next_id = 1;
+size_t IUser::next_id_ = 1;
 
-IUser::IUser(std::shared_ptr<ClientSocket> sock): m_socket(sock), id(next_id++){
+IUser::IUser(std::shared_ptr<ClientSocket> sock): socket_(sock), id_(next_id_++){
 
 }
 
-size_t IUser::get_id() {
-    return id;
+size_t IUser::GetId() {
+    return id_;
 }
 
-void IUser::set_name(const std::string& username) {
-    name = username;
+void IUser::SetName(const std::string& username) {
+    name_ = username;
 }
 
-std::shared_ptr<ClientSocket> IUser::get_client() {
-    return m_socket;
+std::shared_ptr<ClientSocket> IUser::GetClient() {
+    return socket_;
 }
 

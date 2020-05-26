@@ -10,25 +10,23 @@
 
 class Session {
 private:
-    static size_t next_id;
-    size_t id;
-    std::set<UserPtr> users;
-    size_t started;
-    std::shared_ptr<IGameEngine> game_engine;
+    static size_t next_id_;
+    size_t id_;
+    std::set<UserPtr> users_;
+    size_t started_;
+    std::shared_ptr<IGameEngine> game_engine_;
 public:
     explicit Session(UserPtr user);
 
-    Error add_user_in_session(UserPtr user);
-    EraseState eraseUser(UserPtr user);
+    Error AddUserInSession(UserPtr user);
+    EraseState EraseUser(UserPtr user);
 
-    Error startGame(UserPtr user, const Map& userMap);
-    std::shared_ptr<GameState> updateGameState(UserPtr user, const Point& point);
+    Error StartGame(UserPtr user, const Map& user_map);
+    std::shared_ptr<GameState> UpdateGameState(UserPtr user, const Point& point);
 
-    void notifyUsers(const std::string& message);
+    void NotifyUsers(const std::string& message);
 
-    bool isFull() {
-        return users.size() >= 2;
-    }
+    bool IsFull();
 
     size_t GetId();
 };

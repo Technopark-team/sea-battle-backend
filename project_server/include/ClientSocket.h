@@ -8,13 +8,13 @@ class ClientSocket: public Socket {
 public:
     explicit ClientSocket(int socket, bool option = true): Socket(socket) {
         if (option) {
-            setNonBlocking(true);
+            SetNonBlocking(true);
         }
     }
 
     ~ClientSocket() = default;
-    int receive(std::string& msg);
-    int send_msg(const std::string& msg);
+    int Receive(std::string& msg);
+    int SendMsg(const std::string& msg);
 
 };
 

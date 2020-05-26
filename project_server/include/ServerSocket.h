@@ -17,7 +17,7 @@
 class ServerSocket: public Socket {
 public:
     ServerSocket(const std::string& host, uint32_t port) noexcept(false);
-    std::shared_ptr<ClientSocket> accept_client();
+    std::shared_ptr<ClientSocket> AcceptClient();
 };
 
 

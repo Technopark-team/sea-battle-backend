@@ -8,12 +8,12 @@
 
 class Engine: public IEngine {
 private:
-    std::mutex mNeedDelete;
+    std::mutex m_need_delete_;
 public:
     Engine(): IEngine() {}
-    void ManageClients(std::vector<Event>& wantReadEvents, std::queue<Event>& workEvents,
-            std::mutex& mWantReadEvents, std::mutex& mWorkEvents) override;
-    void deleteEvents(std::vector<Event>& wantReadEvents, std::vector<size_t>& needDelete, std::mutex& mWantReadEvents);
+    void ManageClients(std::vector<Event>& want_read_events, std::queue<Event>& work_events,
+            std::mutex& m_want_read_events, std::mutex& m_work_events) override;
+    void DeleteEvents(std::vector<Event>& want_read_events, std::vector<size_t>& need_delete, std::mutex& m_want_read_events);
 };
 
 

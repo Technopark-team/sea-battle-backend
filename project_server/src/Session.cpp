@@ -1,62 +1,66 @@
 #include "Session.h"
 
-size_t Session::next_id = 1;
+size_t Session::next_id_ = 1;
 
-Session::Session(UserPtr user): id(next_id++), started(0) {
-    users.insert(user);
-    game_engine = std::make_shared<IGameEngine>();
+Session::Session(UserPtr user): id_(next_id_++), started_(0) {
+    users_.insert(user);
+    game_engine_ = std::make_shared<IGameEngine>();
 }
 
 
-Error Session::add_user_in_session(UserPtr user) {
-    if (isFull()) {
+Error Session::AddUserInSession(UserPtr user) {
+    if (IsFull()) {
         return Error::Full;
     }
-    if (users.insert(user).second) {
+    if (users_.insert(user).second) {
         return Error::Success;
     }
     return Error::UserExist;
 }
 
-Error Session::startGame(UserPtr user, const Map& userMap) {
-    if (!game_engine->insertMap(user->get_id(), userMap)) {
+Error Session::StartGame(UserPtr user, const Map& user_map) {
+    if (!game_engine_->InsertMap(user->GetId(), user_map)) {
         return Error::NotValidMap;
     }
-    started++;
-    if (started == 1) {
+    started_++;
+    if (started_ == 1) {
         return Error::Wait;
     }
 
-    game_engine->StartGame();
-    game_engine->setStep(user->get_id());
+    game_engine_->StartGame();
+    game_engine_->SetStep(user->GetId());
     return Error::Started;
 }
 
-void Session::notifyUsers(const std::string& message) {
-    for (auto& user: users) {
+void Session::NotifyUsers(const std::string& message) {
+    for (auto& user: users_) {
         user->write(message);
     }
 }
 
 
-std::shared_ptr<GameState> Session::updateGameState(UserPtr user, const Point& point) {
-    std::shared_ptr<GameState> gameState = game_engine->UpdateGame(user->get_id(), point);
-    return gameState;
+std::shared_ptr<GameState> Session::UpdateGameState(UserPtr user, const Point& point) {
+    std::shared_ptr<GameState> game_state = game_engine_->UpdateGame(user->GetId(), point);
+    return game_state;
 }
 
-EraseState Session::eraseUser(UserPtr user) {
-    game_engine->eraseId(user->get_id());
-    users.erase(user);
+EraseState Session::EraseUser(UserPtr user) {
+    game_engine_->EraseId(user->GetId());
+    users_.erase(user);
 
-    if (started == 2) {
+    if (started_ == 2) {
         int winner_id = -1;
-        game_engine->EndGame(user->get_id(), winner_id);
-        started = 0;
+        game_engine_->EndGame(user->GetId(), winner_id);
+        started_ = 0;
         return EraseState(winner_id);
     }
     return EraseState();
 }
 
+bool Session::IsFull() {
+    return users_.size() >= 2;
+}
+
 size_t Session::GetId() {
-    return id;
+    return id_;
 }

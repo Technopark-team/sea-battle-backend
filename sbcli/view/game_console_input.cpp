@@ -86,6 +86,7 @@ size_t GameConsoleInput::ReadMap(utils::data::TestMap& player_map) {
     player_map.ships.at(9).start_.y_ = 7;
     player_map.ships.at(9).end_.x_ = 0;
     player_map.ships.at(9).end_.y_ = 7;
+
     return 0;
 }
 

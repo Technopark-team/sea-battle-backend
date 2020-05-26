@@ -14,14 +14,12 @@ class IModel {
     virtual ~IModel() = default;
 
     virtual size_t CreateUser() { return 0; };
-    virtual size_t PostGameSingle() { return 0; };
-    virtual size_t PostGameMulti() { return 0; };
-    virtual size_t PutGameSave() { return 0; };
-    virtual size_t GetGameOpen() { return 0; };
-    virtual size_t PostGameStep() { return 0; };
-    virtual size_t GetGameState() { return 0; };
-    virtual size_t PutGameStop() { return 0; };
-    virtual size_t GetGameAll() { return 0; };
+    virtual size_t CreateSession() { return 0; };
+    virtual size_t UpdateGame() { return 0; };
+    virtual size_t JoinSession() { return 0; };
+    virtual size_t StartGame() { return 0; };
+    virtual size_t Enter() { return 0; };
+    virtual size_t EndGame() { return 0; };
 
 
  private:

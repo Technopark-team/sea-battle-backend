@@ -48,6 +48,7 @@ size_t UserModel::GeneralCallback_(std::stringstream& response) {
             response, response.str().size());
 
     SetUserData(resp->user_id_);
+
     return 0;
 }
 

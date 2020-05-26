@@ -54,7 +54,7 @@ public:
 
     ~GameMap() = default;
 
-    Result InsertPoint(const Point& point);
+    Result InsertPoint(const Point& point, int& ship_id);
     int Count();
 
     bool InsertShip(int id, const Ship& ship);
@@ -68,6 +68,7 @@ private:
     int step_id_;
     bool running_;
     std::map<int, GameMap> user_maps_;
+    std::map<int, Map> user_ships_;
 public:
     IGameEngine(): step_id_(0), running_(false) {}
     ~IGameEngine() = default;

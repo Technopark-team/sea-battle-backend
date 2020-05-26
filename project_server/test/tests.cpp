@@ -76,6 +76,11 @@ TEST(GameTest, InsertMap) {
     EXPECT_EQ(2, g->next_step_id_);
     EXPECT_EQ(Result::Kill, g->result_);
 
+    EXPECT_EQ(3, g->killed_ship_.start_.x_);
+    EXPECT_EQ(3, g->killed_ship_.start_.y_);
+    EXPECT_EQ(3, g->killed_ship_.end_.x_);
+    EXPECT_EQ(3, g->killed_ship_.end_.y_);
+
     g = GameEngine->UpdateGame(2, {3, 3});
     EXPECT_EQ(1, g->next_step_id_);
     EXPECT_EQ(Result::Miss, g->result_);
@@ -135,12 +140,18 @@ TEST(MapTest, InsertPoints) {
     IGameEngine engine;
     std::shared_ptr<GameMap> gm = engine.ValidateMap(map);
 
-    EXPECT_EQ(Result::Hit, gm->InsertPoint({0, 0}));
-    EXPECT_EQ(Result::Kill, gm->InsertPoint({3, 3}));
-    EXPECT_EQ(Result::Miss, gm->InsertPoint({2, 2}));
+    int killed_ship = -1;
+
+    EXPECT_EQ(Result::Hit, gm->InsertPoint({0, 0}, killed_ship));
+    EXPECT_EQ(-1, killed_ship);
+
+    EXPECT_EQ(Result::Kill, gm->InsertPoint({3, 3}, killed_ship));
+    EXPECT_EQ(1, killed_ship);
+
+    EXPECT_EQ(Result::Miss, gm->InsertPoint({2, 2}, killed_ship));
     EXPECT_EQ(9, gm->Count());
 
-    EXPECT_EQ(Result::Miss, gm->InsertPoint({0, 0}));
+    EXPECT_EQ(Result::Miss, gm->InsertPoint({0, 0}, killed_ship));
 }
 
 TEST(SessionTest, SessionGameTest) {
@@ -209,6 +220,8 @@ TEST(SessionTest, SessionGameTest) {
     EXPECT_EQ(es.started_, t_es.started_);
 }
 
+
+
 TEST(TestParser, Deserialize) {
     std::string coordinates = "0 0 0 3\n3 3 3 3\n4 0 5 0\n9 0 9 1\n6 3 6 3\n3 5 3 5\n8 4 8 4\n0 9 2 9\n5 6 6 6\n9 7 9 9\n";
     std::stringstream stream(coordinates);
@@ -266,7 +279,10 @@ TEST(TestParser, Serialize) {
     rp->user_id_ = 1;
     rp->point_ = {2, 3};
     rp->erase_state_ = EraseState(2);
-    rp->game_state_ = GameState(3, Result::Hit);
+
+    Ship ship = Ship({3, 3}, {3, 2});
+
+    rp->game_state_ = GameState(3, Result::Hit, ship);
 
     std::string response;
     Parser parser;
@@ -286,6 +302,12 @@ TEST(TestParser, Serialize) {
     EXPECT_EQ(rp->erase_state_.winner_id_, rp1->erase_state_.winner_id_);
     EXPECT_EQ(rp->game_state_.result_, rp1->game_state_.result_);
     EXPECT_EQ(rp->game_state_.next_step_id_, rp1->game_state_.next_step_id_);
+
+    EXPECT_EQ(rp->game_state_.killed_ship_.start_.x_, rp->game_state_.killed_ship_.start_.x_);
+    EXPECT_EQ(rp->game_state_.killed_ship_.start_.y_, rp->game_state_.killed_ship_.start_.y_);
+    EXPECT_EQ(rp->game_state_.killed_ship_.end_.x_, rp->game_state_.killed_ship_.end_.x_);
+    EXPECT_EQ(rp->game_state_.killed_ship_.end_.y_, rp->game_state_.killed_ship_.end_.y_);
+
 }
 
 TEST(DBAccess, TestObj){
@@ -298,3 +320,4 @@ TEST(DBAccess, TestObj){
     EXPECT_FALSE(obj.CheckUser("usr", "pass"));
     EXPECT_FALSE(obj.AddUser("user", "password"));
 }
+

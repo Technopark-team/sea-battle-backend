@@ -50,23 +50,7 @@ enum class Result {
 
 MSGPACK_ADD_ENUM(Result)
 
-struct GameState {
-    int next_step_id_;
-    Result result_;
-    bool end_game_;
 
-    MSGPACK_DEFINE_MAP(next_step_id_, result_, end_game_)
-
-    GameState() = default;
-    GameState(int next_step_id, Result result, bool end_game = false): next_step_id_(next_step_id), result_(result), end_game_(end_game){}
-
-    GameState& operator=(const GameState& rhs) {
-        next_step_id_ = rhs.next_step_id_;
-        result_ = rhs.result_;
-        end_game_ = rhs.end_game_;
-        return *this;
-    }
-};
 
 struct Point {
     size_t x_;
@@ -105,6 +89,26 @@ struct Map {
     std::map<int, Ship> ships;
     MSGPACK_DEFINE_MAP(ships)
     Map() = default;
+};
+
+struct GameState {
+    int next_step_id_;
+    Result result_;
+    Ship killed_ship_;
+    bool end_game_;
+
+    MSGPACK_DEFINE_MAP(next_step_id_, result_, killed_ship_, end_game_)
+
+    GameState() = default;
+    GameState(int next_step_id, Result result, const Ship& killed_ship, bool end_game = false): next_step_id_(next_step_id), killed_ship_(killed_ship), result_(result), end_game_(end_game){}
+    GameState(int next_step_id, Result result, bool end_game = false): next_step_id_(next_step_id), result_(result), end_game_(end_game){}
+
+    GameState& operator=(const GameState& rhs) {
+        next_step_id_ = rhs.next_step_id_;
+        result_ = rhs.result_;
+        end_game_ = rhs.end_game_;
+        return *this;
+    }
 };
 
 struct EraseState {

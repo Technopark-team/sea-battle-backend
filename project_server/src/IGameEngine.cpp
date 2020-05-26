@@ -29,6 +29,7 @@ bool IGameEngine::InsertMap(int user_id, const Map& map) {
     std::shared_ptr<GameMap> gm = ValidateMap(map);
     if (gm) {
         user_maps_.insert({user_id, *gm});
+        user_ships_.insert({user_id, map});
         return true;
     }
     return false;
@@ -47,8 +48,8 @@ std::shared_ptr<GameState> IGameEngine::UpdateGame(int user_id, const Point& poi
     if (id == user_id) {
         id = user_maps_.end()->first;
     }
-
-    Result result = user_maps_.find(id)->second.InsertPoint(point);
+    int ship_id = -1;
+    Result result = user_maps_.find(id)->second.InsertPoint(point, ship_id);
 
     if (result == Result::BadPoint) {
         return nullptr;
@@ -59,17 +60,19 @@ std::shared_ptr<GameState> IGameEngine::UpdateGame(int user_id, const Point& poi
         return std::make_shared<GameState>(step_id_, result);
     } else {
         int count = user_maps_.find(id)->second.Count();
+        Ship killed_ship = user_ships_.find(id)->second.ships.find(ship_id)->second;
         if (count == 0) {
             int winner_id = user_id;
+
             EndGame(user_id, winner_id);
-            return std::make_shared<GameState>(step_id_, result, true);
+            return std::make_shared<GameState>(step_id_, result, killed_ship,true);
         }
-        return std::make_shared<GameState>(step_id_, result);
+        return std::make_shared<GameState>(step_id_, result, killed_ship);
     }
 }
 
 bool IGameEngine::EraseId(int user_id) {
-    return user_maps_.erase(user_id);
+    return user_maps_.erase(user_id) && user_ships_.erase(user_id);
 }
 
 void IGameEngine::EndGame(int user_id, int& winner_id) {
@@ -84,6 +87,7 @@ void IGameEngine::EndGame(int user_id, int& winner_id) {
     }
 
     user_maps_.clear();
+    user_ships_.clear();
     running_ = false;
 }
 
@@ -112,7 +116,7 @@ GameMap::GameMap(const GameMap& rhs) {
     }
 }
 
-Result GameMap::InsertPoint(const Point& point) {
+Result GameMap::InsertPoint(const Point& point, int& ship_id) {
     if (!point.isValid()) {
         return Result::BadPoint;
     }
@@ -121,6 +125,7 @@ Result GameMap::InsertPoint(const Point& point) {
         it->second = it->second - 1;
         cells_[point.y_][point.x_].first = 2;
         if (it->second < 1) {
+            ship_id = it->first;
             game_ships_.erase(it);
             return Result::Kill;
         }

@@ -588,6 +588,7 @@ struct TestDataResponse {
     int user_id_ = -1;
     int session_id_ = -1;
 
+    TestRoute type_;
     TestPoint point_;
     TestGameState game_state_;
     TestEraseState erase_state_;

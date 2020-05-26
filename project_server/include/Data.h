@@ -34,7 +34,7 @@ struct AuthData {
     std::string login_;
     std::string password_;
 
-    MSGPACK_DEFINE_MAP(login_, password_);
+    MSGPACK_DEFINE_MAP(login_, password_)
 
     AuthData() = default;
     AuthData(const std::string& login, const std::string& password): login_(login), password_(password) {}
@@ -48,14 +48,14 @@ enum class Result {
     BadPoint
 };
 
-MSGPACK_ADD_ENUM(Result);
+MSGPACK_ADD_ENUM(Result)
 
 struct GameState {
     int next_step_id_;
     Result result_;
     bool end_game_;
 
-    MSGPACK_DEFINE_MAP(next_step_id_, result_, end_game_);
+    MSGPACK_DEFINE_MAP(next_step_id_, result_, end_game_)
 
     GameState() = default;
     GameState(int next_step_id, Result result, bool end_game = false): next_step_id_(next_step_id), result_(result), end_game_(end_game){}
@@ -72,7 +72,7 @@ struct Point {
     size_t x_;
     size_t y_;
 
-    MSGPACK_DEFINE_MAP(x_, y_);
+    MSGPACK_DEFINE_MAP(x_, y_)
 
     Point(size_t x, size_t y): x_(x), y_(y){}
     Point():x_(0), y_(0) {}
@@ -86,7 +86,7 @@ struct Ship {
     Point start_;
     Point end_;
 
-    MSGPACK_DEFINE_MAP(start_, end_);
+    MSGPACK_DEFINE_MAP(start_, end_)
 
     Ship() = default;
     Ship(size_t start_x, size_t start_y, size_t end_x, size_t end_y):start_(start_x, start_y), end_(end_x, end_y) {}
@@ -103,7 +103,7 @@ struct Ship {
 
 struct Map {
     std::map<int, Ship> ships;
-    MSGPACK_DEFINE_MAP(ships);
+    MSGPACK_DEFINE_MAP(ships)
     Map() = default;
 };
 
@@ -111,7 +111,7 @@ struct EraseState {
     bool started_ = false;
     int winner_id_ = -1;
 
-    MSGPACK_DEFINE_MAP(started_, winner_id_);
+    MSGPACK_DEFINE_MAP(started_, winner_id_)
 
     EraseState() = default;
     EraseState(int winner_id): started_(true), winner_id_(winner_id) {}
@@ -124,7 +124,6 @@ struct EraseState {
     }
 };
 
-
 struct DataRequest {
     int user_id_;
     int session_id_;
@@ -133,10 +132,10 @@ struct DataRequest {
     Point point_;
     Map map_;
 
-    MSGPACK_DEFINE_MAP(user_id_, session_id_, type_, data_, point_, map_);
+    MSGPACK_DEFINE_MAP(user_id_, session_id_, type_, data_, point_, map_)
 
     DataRequest() = default;
-    DataRequest(const AuthData& data, Route type): data_(data), type_(type) {}
+    DataRequest(const AuthData& data, Route type): type_(type), data_(data) {}
 };
 
 struct DataResponse {
@@ -149,7 +148,7 @@ struct DataResponse {
 
     Error error_;
 
-    MSGPACK_DEFINE_MAP(user_id_, session_id_, type_, point_, game_state_ , erase_state_, error_);
+    MSGPACK_DEFINE_MAP(user_id_, session_id_, type_, point_, game_state_ , erase_state_, error_)
 
     DataResponse() = default;
 };

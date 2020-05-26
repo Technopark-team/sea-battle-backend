@@ -120,9 +120,9 @@ void EngineServer::DoAccept() {
 
             auto read = std::bind(&EngineServer::AsyncRead, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
             auto write = std::bind(&EngineServer::AsyncWrite, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-            auto switchF = std::bind(&EngineServer::SwitchAction, this, std::placeholders::_1, std::placeholders::_2);
+            auto switch_f = std::bind(&EngineServer::SwitchAction, this, std::placeholders::_1, std::placeholders::_2);
 
-            std::shared_ptr<User> user = std::make_shared<User>(new_client, read, write, switchF);
+            std::shared_ptr<User> user = std::make_shared<User>(new_client, read, write, switch_f);
             clients_.insert({user->GetId(), user});
             user->read();
         }
@@ -185,7 +185,7 @@ void EngineServer::Process() {
             work_events_.pop();
         }
         if (event._status == event::WantRead) {
-            int result = event.client->Receive(msg);
+            event.client->Receive(msg);
             event._data.get().assign(msg);
             event.callback(errno);
         } else {

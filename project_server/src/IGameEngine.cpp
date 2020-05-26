@@ -82,6 +82,8 @@ void IGameEngine::EndGame(int user_id, int& winner_id) {
     if (winner_id == -1) {
         winner_id = id;
     }
+
+    user_maps_.clear();
     running_ = false;
 }
 
@@ -110,8 +112,6 @@ GameMap::GameMap(const GameMap& rhs) {
     }
 }
 
-
-
 Result GameMap::InsertPoint(const Point& point) {
     if (!point.isValid()) {
         return Result::BadPoint;
@@ -128,7 +128,6 @@ Result GameMap::InsertPoint(const Point& point) {
     }
     return Result::Miss;
 }
-
 
 bool GameMap::InsertShip(int id, const Ship& ship) {
     if (!ship.IsValid()) {

@@ -22,7 +22,7 @@ void User::WriteHandler(int error) {
 
 void User::ReadHandler(int error) {
     auto usr = shared_from_this();
-    int res = m_switch_(buffer_, usr);
+    m_switch_(buffer_, usr);
 }
 
 void User::SetSessionId(size_t session) {

@@ -19,6 +19,7 @@ public:
 class MockUser: public User {
 public:
     MockUser(std::shared_ptr<ClientSocket> sock): User(sock){}
+    MOCK_METHOD(void, write, (const std::string& msg));
 };
 
 
@@ -56,7 +57,7 @@ TEST(GameTest, InsertMap) {
 
     EXPECT_TRUE(GameEngine->InsertMap(1, map));
     EXPECT_TRUE(GameEngine->InsertMap(2, map2));
-
+    GameEngine->StartGame();
     GameEngine->SetStep(1);
     std::shared_ptr<GameState> gs = std::make_shared<GameState>();
 
@@ -78,6 +79,11 @@ TEST(GameTest, InsertMap) {
     g = GameEngine->UpdateGame(2, {3, 3});
     EXPECT_EQ(1, g->next_step_id_);
     EXPECT_EQ(Result::Miss, g->result_);
+    int winner_id = -1;
+
+    GameEngine->EndGame(1, winner_id);
+    EXPECT_EQ(2, winner_id);
+
 }
 
 TEST(SessionManagerTest, CreateJoinSessionTest) {
@@ -137,6 +143,158 @@ TEST(MapTest, InsertPoints) {
     EXPECT_EQ(Result::Miss, gm->InsertPoint({0, 0}));
 }
 
-TEST(ParserTest, SerializeDeserializeTest) {
+TEST(SessionTest, SessionGameTest) {
+    std::shared_ptr<ClientSocket> cl = std::make_shared<MockClientSocket>(5);
+    std::shared_ptr<ClientSocket> cl1 = std::make_shared<MockClientSocket>(7);
+    std::shared_ptr<ClientSocket> cl2 = std::make_shared<MockClientSocket>(6);
+    std::shared_ptr<ClientSocket> cl3 = std::make_shared<MockClientSocket>(8);
 
+    UserPtr user = std::make_shared<MockUser>(cl);
+    UserPtr user1 = std::make_shared<MockUser>(cl1);
+    UserPtr user2 = std::make_shared<MockUser>(cl2);
+    UserPtr user3 = std::make_shared<MockUser>(cl3);
+
+    Session session(user);
+    EXPECT_EQ(Error::Success, session.AddUserInSession(user1));
+
+    std::string coordinates = "0 0 0 3\n3 3 3 3\n4 0 5 0\n9 0 9 1\n6 3 6 3\n3 5 3 5\n8 4 8 4\n0 9 2 9\n5 6 6 6\n9 7 9 9\n";
+    std::string coordinates2 = "0 0 0 3\n3 3 3 3\n4 1 5 1\n9 0 9 1\n2 6 2 6\n0 5 0 5\n8 4 8 4\n0 9 2 9\n5 6 6 6\n9 6 9 8\n";
+    std::stringstream stream(coordinates);
+    std::stringstream stream2(coordinates2);
+    Map map;
+    Map map2;
+
+    for (int i = 0; i < 10; i++) {
+        size_t x_s = 0;
+        size_t y_s = 0;
+        stream >> x_s >> y_s;
+        size_t x_e = 0;
+        size_t y_e = 0;
+        stream >> x_e >> y_e;
+        Ship ship(x_s, y_s, x_e, y_e);
+        map.ships.insert({i, ship});
+    }
+
+    for (int i = 0; i < 10; i++) {
+        size_t x_s = 0;
+        size_t y_s = 0;
+        stream2 >> x_s >> y_s;
+        size_t x_e = 0;
+        size_t y_e = 0;
+        stream2 >> x_e >> y_e;
+        Ship ship(x_s, y_s, x_e, y_e);
+        map2.ships.insert({i, ship});
+    }
+
+    EXPECT_EQ(Error::Wait, session.StartGame(user, map));
+    EXPECT_EQ(Error::Started, session.StartGame(user1, map2));
+    int winner_id = user1->GetId();
+    EraseState t_es(winner_id);
+    EraseState es = session.EraseUser(user);
+
+    EXPECT_EQ(es.winner_id_, t_es.winner_id_);
+    EXPECT_EQ(es.started_, t_es.started_);
+
+    EXPECT_EQ(Error::Success, session.AddUserInSession(user2));
+    EXPECT_EQ(Error::Full, session.AddUserInSession(user3));
+
+    EXPECT_EQ(Error::Wait, session.StartGame(user2, map));
+    EXPECT_EQ(Error::Started, session.StartGame(user1, map2));
+
+    winner_id = user1->GetId();
+    t_es = EraseState(winner_id);
+    es = session.EraseUser(user2);
+
+    EXPECT_EQ(es.winner_id_, t_es.winner_id_);
+    EXPECT_EQ(es.started_, t_es.started_);
+}
+
+TEST(TestParser, Deserialize) {
+    std::string coordinates = "0 0 0 3\n3 3 3 3\n4 0 5 0\n9 0 9 1\n6 3 6 3\n3 5 3 5\n8 4 8 4\n0 9 2 9\n5 6 6 6\n9 7 9 9\n";
+    std::stringstream stream(coordinates);
+    Map map;
+
+    for (int i = 0; i < 10; i++) {
+        size_t x_s = 0;
+        size_t y_s = 0;
+        stream >> x_s >> y_s;
+        size_t x_e = 0;
+        size_t y_e = 0;
+        stream >> x_e >> y_e;
+        Ship ship(x_s, y_s, x_e, y_e);
+        map.ships.insert({i, ship});
+    }
+
+
+    DataRequest rq;
+    rq.data_ = AuthData("grisha", "og");
+    rq.type_ = Route::Enter;
+    rq.session_id_ = 1;
+    rq.user_id_ = 1;
+    rq.map_ = map;
+    rq.point_ = {2, 3};
+
+    std::string x;
+    std::stringstream ss(x);
+    msgpack::pack(ss, rq);
+
+    Parser parser;
+
+    std::shared_ptr<DataRequest> rq1 = parser.Deserialize(ss.str());
+
+    EXPECT_EQ(rq1->type_, rq.type_);
+    EXPECT_EQ(rq1->data_.login_, rq.data_.login_);
+    EXPECT_EQ(rq1->data_.password_, rq.data_.password_);
+    EXPECT_EQ(rq1->user_id_, rq.user_id_);
+    EXPECT_EQ(rq1->point_.x_, rq.point_.x_);
+    EXPECT_EQ(rq1->point_.y_, rq.point_.y_);
+
+    for (auto m: rq.map_.ships) {
+        Ship sh = rq1->map_.ships.find(m.first)->second;
+        EXPECT_EQ(sh.end_.x_, m.second.end_.x_);
+        EXPECT_EQ(sh.end_.y_, m.second.end_.y_);
+        EXPECT_EQ(sh.start_.x_, m.second.start_.x_);
+        EXPECT_EQ(sh.start_.y_, m.second.start_.y_);
+    }
+}
+
+TEST(TestParser, Serialize) {
+    std::shared_ptr<DataResponse> rp = std::make_shared<DataResponse>();
+
+    rp->type_ = Route::Enter;
+    rp->session_id_ = 1;
+    rp->user_id_ = 1;
+    rp->point_ = {2, 3};
+    rp->erase_state_ = EraseState(2);
+    rp->game_state_ = GameState(3, Result::Hit);
+
+    std::string response;
+    Parser parser;
+
+    parser.Serialize(rp, response);
+
+    std::shared_ptr<DataResponse> rp1 = std::make_shared<DataResponse>();
+    msgpack::object_handle oh = msgpack::unpack(response.data(), response.size());
+    msgpack::object obj = oh.get();
+    obj.convert(*rp1);
+
+    EXPECT_EQ(rp->type_, rp1->type_);
+    EXPECT_EQ(rp->session_id_, rp1->session_id_);
+    EXPECT_EQ(rp->point_.x_, rp1->point_.x_);
+    EXPECT_EQ(rp->point_.y_, rp1->point_.y_);
+    EXPECT_EQ(rp->erase_state_.started_, rp1->erase_state_.started_);
+    EXPECT_EQ(rp->erase_state_.winner_id_, rp1->erase_state_.winner_id_);
+    EXPECT_EQ(rp->game_state_.result_, rp1->game_state_.result_);
+    EXPECT_EQ(rp->game_state_.next_step_id_, rp1->game_state_.next_step_id_);
+}
+
+TEST(DBAccess, TestObj){
+    DBAccess obj;
+
+    obj.AddUser("user", "pswrd");
+    EXPECT_TRUE(obj.CheckUser("user", "pswrd"));
+
+    EXPECT_FALSE(obj.CheckUser("user", "password"));
+    EXPECT_FALSE(obj.CheckUser("usr", "pass"));
+    EXPECT_FALSE(obj.AddUser("user", "password"));
 }

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 project(project_server)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "-std=c++1z -g -I msgpack-c/include -pthread -fPIC")
+set(CMAKE_CXX_FLAGS "-Werror -Wpedantic -std=c++1z -g -I msgpack-c/include -pthread -fPIC")
 
 find_package(Threads)
 

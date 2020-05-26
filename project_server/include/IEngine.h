@@ -28,8 +28,8 @@ struct Event {
     }
 
     std::shared_ptr<ClientSocket> client;
-    event _status;
     std::reference_wrapper<std::string> _data;
+    event _status;
     std::function<void (int)> callback;
     size_t id;
 

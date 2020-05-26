@@ -20,13 +20,8 @@ int EngineServer::SwitchAction(const std::string& message, UserPtr user) {
             return 2;
         }
         rp->type_ = Route::EndGame;
-        if (!result->started_) {
-            rp->erase_state_ = *result;
-        } else {
-            rp->erase_state_ = *result;
-            parser_->Serialize(rp, response);
-            session_manager_->NotifySession(response, user->GetSessionId());
-        }
+        rp->erase_state_ = *result;
+
         parser_->Serialize(rp, response);
         session_manager_->NotifySession(response, user->GetSessionId());
         need_close_.push_back(user->GetClient()->GetFd());
@@ -103,8 +98,6 @@ int EngineServer::SwitchAction(const std::string& message, UserPtr user) {
         }
         parser_->Serialize(rp, response);
         session_manager_->NotifySession(response, user->GetSessionId());
-    } else if (type == Route::EndGame) {
-
     }
     return 0;
 }

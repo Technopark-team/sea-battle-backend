@@ -121,6 +121,8 @@ TEST(SessionManagerTest, CreateJoinSessionTest) {
     EXPECT_EQ(Error::Success, session_manager.AddUserInSession(user3, 1));
 }
 
+
+
 TEST(MapTest, InsertPoints) {
     std::string coordinates = "0 0 0 3\n3 3 3 3\n4 0 5 0\n9 0 9 1\n6 3 6 3\n3 5 3 5\n8 4 8 4\n0 9 2 9\n5 6 6 6\n9 7 9 9\n";
     std::stringstream stream(coordinates);
@@ -320,4 +322,3 @@ TEST(DBAccess, TestObj){
     EXPECT_FALSE(obj.CheckUser("usr", "pass"));
     EXPECT_FALSE(obj.AddUser("user", "password"));
 }
-

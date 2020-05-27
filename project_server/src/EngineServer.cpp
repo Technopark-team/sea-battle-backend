@@ -32,14 +32,12 @@ int EngineServer::SwitchAction(const std::string& message, UserPtr user) {
     std::shared_ptr<DataRequest> rq = parser_->Deserialize(message);
     Route type = rq->type_;
     rp->type_ = rq->type_;
+    rp->user_id_ = user->GetId();
 
     if (type == Route::CreateSession) {
         size_t id = session_manager_->CreateSession(user);
-
         user->SetSessionId(id);
-        rp->user_id_ = user->GetId();
         rp->session_id_ = id;
-
         parser_->Serialize(rp, response);
         user->write(response);
     } else if (type == Route::CreateUser) {

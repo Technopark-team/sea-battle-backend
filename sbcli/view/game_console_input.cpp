@@ -4,10 +4,15 @@ namespace seabattle {
 namespace client {
 namespace view {
 
-GameConsoleInput::GameConsoleInput() {}
+GameConsoleInput::GameConsoleInput() : game_menu_() {}
+
+size_t GameConsoleInput::Run(size_t& choice) {
+    game_menu_.Render(choice);
+    return 0;
+}
 
 size_t GameConsoleInput::ReadCommand(config::UserCommand& user_command) {
-    user_command.command = config::STEP_COMMAND;
+    user_command.command = config::UserCommandId::STEP_COMMAND;
     return 0;
 }
 

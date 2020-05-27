@@ -16,9 +16,11 @@ link_directories(${Boost_LIBRARY_DIR})
 
 set(SEABATTLE_CLI_LIB "${CMAKE_CURRENT_SOURCE_DIR}/sbcli")
 set(SEABATTLE_UTILS_LIB "${CMAKE_CURRENT_SOURCE_DIR}/sbutils")
+set(SEABATTLE_SERVER_LIB "${CMAKE_CURRENT_SOURCE_DIR}/project_server")
 
 set(CLIENT_SRC_LIST ${CMAKE_CURRENT_SOURCE_DIR}/seabattle_cli.cpp)
-set(SERVER_SRC_LIST ${CMAKE_CURRENT_SOURCE_DIR}/tcp_server.cpp)
+set(TEST_SERVER_SRC_LIST ${CMAKE_CURRENT_SOURCE_DIR}/tcp_server.cpp)
+set(SERVER_SRC_LIST ${CMAKE_CURRENT_SOURCE_DIR}/project_server/main.cpp)
 set(TEST_UI ${CMAKE_CURRENT_SOURCE_DIR}/test_ui.cpp)
 
 find_package(GTest REQUIRED)
@@ -43,20 +45,26 @@ include_directories(${GMock_INCLUDE_DIR})
 
 add_subdirectory(${SEABATTLE_CLI_LIB})
 add_subdirectory(${SEABATTLE_UTILS_LIB})
+add_subdirectory(${SEABATTLE_SERVER_LIB})
 
 # compile client
-add_executable(seabattle-cli ${CLIENT_SRC_LIST})
-target_link_libraries(seabattle-cli sbcli)
-target_link_libraries(seabattle-cli sbutils)
-target_link_libraries(seabattle-cli ${Boost_LIBRARIES})
-target_link_libraries(seabattle-cli ${msgpack_LIBRARIES})
-target_link_libraries(seabattle-cli ${CURSES_LIBRARIES})
+add_executable(seabattle-client ${CLIENT_SRC_LIST})
+target_link_libraries(seabattle-client sbcli)
+target_link_libraries(seabattle-client sbutils)
+target_link_libraries(seabattle-client ${Boost_LIBRARIES})
+target_link_libraries(seabattle-client ${msgpack_LIBRARIES})
+target_link_libraries(seabattle-client ${CURSES_LIBRARIES})
 
-# compile server
+# compile test server
 add_executable(test_tcp_server ${SERVER_SRC_LIST})
 target_link_libraries(test_tcp_server sbutils)
 target_link_libraries(test_tcp_server ${Boost_LIBRARIES})
 target_link_libraries(test_tcp_server ${msgpack_LIBRARIES})
+
+# compile server
+add_executable(seabattle_server ${SERVER_SRC_LIST})
+target_link_libraries(seabattle_server ${Boost_LIBRARIES})
+target_link_libraries(seabattle_server ${msgpack_LIBRARIES})
 
 # compile test_ui
 add_executable(test_ui ${TEST_UI})

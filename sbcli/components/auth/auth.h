@@ -2,6 +2,7 @@
 #define SEABATTLE_SBCLI_COMPONENTS_AUTH_AUTH_H_
 
 #include <ncurses.h>
+#include <memory>
 
 namespace seabattle {
 namespace client {
@@ -29,10 +30,10 @@ size_t AuthMenu<ItemsT, HelpT>::Draw_(size_t item) {
     addstr(menu_items_.menu_name);
     for (int c = 0; c < menu_items_.len; c++) {
         if (c == item) attron(A_REVERSE); /* highlight selection */
-        mvaddstr(3 + (c * 2), 20, menu_items_.items[c]);
+        mvaddstr(20 + (c * 2), 50, menu_items_.items[c]);
         attroff(A_REVERSE); /* remove highlight */
     }
-    mvaddstr(17, 25, help_items_.help_message);
+    mvaddstr(43, 17, help_items_.help_message);
     refresh();
     return 0;
 }
@@ -43,7 +44,6 @@ size_t AuthMenu<ItemsT, HelpT>::Render(size_t &res_choice) {
 
     menuitem = 0;
 
-    initscr();
 
     Draw_(menuitem);
     keypad(stdscr, TRUE);
@@ -66,7 +66,6 @@ size_t AuthMenu<ItemsT, HelpT>::Render(size_t &res_choice) {
     };
 
     echo();
-    endwin();
 
     res_choice = menuitem;
 
@@ -78,10 +77,12 @@ size_t AuthMenu<ItemsT, HelpT>::ReadAuthData(char* login_, int log_len, char* pa
 
     initscr();
     clear();
-    mvprintw(3, 10, "Логин: ");
+//    mvprintw(3, 10, "Логин: ");
+    mvprintw(3, 10, "Login: ");
     refresh();
     getnstr(login_, log_len);
-    mvprintw(5, 10, "Пароль: ");
+//    mvprintw(5, 10, "Пароль: ");
+    mvprintw(5, 10, "Password: ");
     refresh();
     noecho();
     getnstr(pass, pass_len);

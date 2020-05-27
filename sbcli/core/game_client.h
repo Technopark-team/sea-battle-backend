@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <locale.h>
 #include "config/config.h"
 #include "controller/auth.h"
 #include "controller/menu.h"

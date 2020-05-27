@@ -1,70 +1,94 @@
-#include <ncurses.h>
+#include <ncurses.h>			/* ncurses.h includes stdio.h */
+#include <string.h>
+#include "sbcli/config/view.h"
+#include "sbcli/blocks/field.h"
+#include "sbcli/blocks/ships.h"
+#include <locale.h>
 
-#define MENUMAX 6
+#include <iostream>
 
-void drawmenu(int item)
+/**
+ * -------------------------------------------------------------------------------------------------------------------------------------------------------
+ *1
+ *2
+ *3
+ *4
+ *5                                         Ваше поле                           ║                               Поле противника
+ *6                    0    1    2    3    4    5    6    7    8    9           ║             0    1    2    3    4    5    6    7    8    9
+ *7                  ┌────┬────┬────┬────┬────┬────┬────┬────┬────┬────┐        ║          ┌────┬────┬────┬────┬────┬────┬────┬────┬────┬────┐
+ *8                A │    │    │    │    │    │    │    │    │    │    │        ║        A │    │    │    │    │    │    │    │    │    │    │
+ *1                  ├────┼────┼────┼────┼────┼────┼────┼────┼────┼────┤        ║          ├────┼────┼────┼────┼────┼────┼────┼────┼────┼────┤                |
+ *2                B │    │    │    │    │    │    │    │    │    │    │        ║        B │    │    │    │    │    │    │    │    │    │    │
+ *3                  ├────┼────┼────┼────┼────┼────┼────┼────┼────┼────┤        ║          ├────┼────┼────┼────┼────┼────┼────┼────┼────┼────┤
+ *4                C │    │    │    │    │    │    │    │    │    │    │        ║        C │    │    │    │    │    │    │    │    │    │    │
+ *5                  ├────┼────┼────┼────┼────┼────┼────┼────┼────┼────┤        ║          ├────┼────┼────┼────┼────┼────┼────┼────┼────┼────┤
+ *6                D │    │    │    │    │    │    │    │    │    │    │        ║        D │    │    │    │    │    │    │    │    │    │    │
+ *7                  ├────┼────┼────┼────┼────┼────┼────┼────┼────┼────┤        ║          ├────┼────┼────┼────┼────┼────┼────┼────┼────┼────┤
+ *8                E │    │    │    │    │    │    │    │    │    │    │        ║        E │    │    │    │    │    │    │    │    │    │    │
+ *1                  ├────┼────┼────┼────┼────┼────┼────┼────┼────┼────┤        ║          ├────┼────┼────┼────┼────┼────┼────┼────┼────┼────┤
+ *2                F │    │    │    │    │    │    │    │    │    │    │        ║        F │    │    │    │    │    │    │    │    │    │    │
+ *3                  ├────┼────┼────┼────┼────┼────┼────┼────┼────┼────┤        ║          ├────┼────┼────┼────┼────┼────┼────┼────┼────┼────┤
+ *4                G │    │    │    │    │    │    │    │    │    │    │        ║        G │    │    │    │    │    │    │    │    │    │    │
+ *5                  ├────┼────┼────┼────┼────┼────┼────┼────┼────┼────┤        ║          ├────┼────┼────┼────┼────┼────┼────┼────┼────┼────┤
+ *6                H │    │    │    │    │    │    │    │    │    │    │        ║        H │    │    │    │    │    │    │    │    │    │    │
+ *7                  ├────┼────┼────┼────┼────┼────┼────┼────┼────┼────┤        ║          ├────┼────┼────┼────┼────┼────┼────┼────┼────┼────┤
+ *8                I │    │    │    │    │    │    │    │    │    │    │        ║        I │    │    │    │    │    │    │    │    │    │    │
+ *1                  ├────┼────┼────┼────┼────┼────┼────┼────┼────┼────┤        ║          ├────┼────┼────┼────┼────┼────┼────┼────┼────┼────┤
+ *2                J │    │    │    │    │    │    │    │    │    │    │        ║        J │    │    │    │    │    │    │    │    │    │    │
+ *3                  └────┴────┴────┴────┴────┴────┴────┴────┴────┴────┘        ║          └────┴────┴────┴────┴────┴────┴────┴────┴────┴────┘
+ *4                                                                             ║
+ *5                Ваши корабли:                                                ║        Ваши корабли:
+ *6                        1. Четырехпалубный - ▒│▒│▒│▒                         ║                1. Четырехпалубный - ▒│▒│▒│▒
+ *7                        2. Трехпалубный    - ▒│▒│▒                           ║                2. Трехпалубный    - ▒│▒│▒
+ *8                        3. Трехпалубный    - ▒│▒│▒                           ║                3. Трехпалубный    - ▒│▒│▒
+ *1                        4. Двухпалубный    - ▒│▒                             ║                4. Двухпалубный    - ▒│▒
+ *2                        5. Двухпалубный    - ▒│▒                             ║                5. Двухпалубный    - ▒│▒
+ *3                        6. Двухпалубный    - ▒│▒                             ║                6. Двухпалубный    - ▒│▒
+ *4                        7. Однопалубный    - ▒                               ║                7. Однопалубный    - ▒
+ *5                        8. Однопалубный    - ▒                               ║                8. Однопалубный    - ▒
+ *6                        9. Однопалубный    - ▒                               ║                9. Однопалубный    - ▒
+ *7                        10. Однопалубный   - ▒                               ║                10. Однопалубный   - ▒
+ *8
+ *1                # Для (выхода в меню | завершения игры) нажмите Q
+ *2                # Для выбора корабля из списка используйте клавиши ВВЕРХ/ВНИЗ/ПРОБЕЛ
+ *3                # Для выбора клетки для установки корабля используйте клавиши ВВЕРХ/ВНИЗ/ВЛЕВО/ВПРАВО/ПРОБЕЛ или ESC для возвращения к выбору корабля из списка
+ *4                # Для выбора положения корабля на поле используйте клавиши ВВЕРХ/ВНИЗ/ВЛЕВО/ВПРАВО/ПРОБЕЛ или ESC для возвращения к выбору корабля из списка
+ *5
+ */
+int main()
 {
-    int c;
-    char mainmenu[] = "Main Menu";
-    char menu[MENUMAX][21] = {		/* 6 items for MENUMAX */
-            "Answer E-mail",
-            "Off to the Web",
-            "Word processing",
-            "Financial management",
-            "Maintenance",
-            "Shutdown"
-    };
+    // https://stackoverflow.com/a/42172616
+    std::cout << "\e[8;45;155t";
+
+    setlocale(LC_ALL, "");
+
+    initscr();				/* start the curses mode */
 
     clear();
-    addstr(mainmenu);
-    for(c=0;c<MENUMAX;c++)
-    {
-        if( c==item )
-            attron(A_REVERSE);	/* highlight selection */
-        mvaddstr(3+(c*2),20,menu[c]);
-        attroff(A_REVERSE);		/* remove highlight */
+    mvaddstr(4, 41, seabattle::client::block::UserFieldName().name);
+    mvaddstr(4, 108, seabattle::client::block::EnemyFieldName().name);
+    mvaddstr(4, 77, seabattle::client::block::Delimiter().name);
+    for (int c = 0; c < seabattle::client::block::Field().len; c++) {
+        mvaddstr(5 + c, 16, seabattle::client::block::Field().field[c]);
+        mvaddstr(5 + c, 86, seabattle::client::block::Field().field[c]);
+        mvaddstr(5 + c, 77, seabattle::client::block::Delimiter().name);
     }
-    mvaddstr(17,25,"Use arrow keys to move; Enter to select:");
+
+    mvaddstr(27, 77, seabattle::client::block::Delimiter().name);
+    mvaddstr(28, 77, seabattle::client::block::Delimiter().name);
+
+    mvaddstr(28, 16, seabattle::client::block::UserListName().name);
+    mvaddstr(28, 86, seabattle::client::block::EnemyListName().name);
+    for (int c = 0; c < seabattle::client::block::ShipsView().len; c++) {
+        mvaddstr(29 + c, 16, seabattle::client::block::ShipsView().name[c]);
+        mvaddstr(29 + c, 86, seabattle::client::block::ShipsView().name[c]);
+        mvaddstr(29 + c, 77, seabattle::client::block::Delimiter().name);
+    }
+
     refresh();
-}
 
-int main(void)
-{
-    int key,menuitem;
-
-    menuitem = 0;
-
-    initscr();
-
-    drawmenu(menuitem);
-    keypad(stdscr,TRUE);
-    noecho();			/* Disable echo */
-    do
-    {
-        key = getch();
-        switch(key)
-        {
-            case KEY_DOWN:
-                menuitem++;
-                if(menuitem > MENUMAX-1) menuitem = 0;
-                break;
-            case KEY_UP:
-                menuitem--;
-                if(menuitem < 0) menuitem = MENUMAX-1;
-                break;
-            default:
-                break;
-        }
-        drawmenu(menuitem);
-    } while(key != '\n');
-
-    echo();				/* re-enable echo */
-
-/* At this point, the value of the selected menu is kept in the
-   menuitem variable. The program can branch off to whatever subroutine
-   is required to carry out that function
-*/
-
+    getch();
     endwin();
+
     return 0;
 }

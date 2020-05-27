@@ -7,7 +7,8 @@ namespace view {
 
 AuthConsoleInput::AuthConsoleInput() : auth_menu_exist_(), auth_menu_nonexist_() {}
 
-size_t AuthConsoleInput::Run(size_t &choice, utils::data::TestAuthData &auth_data, const size_t auth_status) {
+size_t AuthConsoleInput::Run(size_t& choice, utils::data::TestAuthData& auth_data,
+                             const config::UserStatus auth_status) {
     switch (auth_status) {
         case (config::UserStatus::AUTHORIZED):
             auth_menu_exist_.Render(choice);

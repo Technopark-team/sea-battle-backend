@@ -20,6 +20,7 @@ class UserModel : public IModel {
     ~UserModel() = default;
 
     size_t CreateUser() override;
+    size_t Enter() override;
     size_t GetUserData(int &user_id);
     size_t SetUserData(int user_id);
     size_t GetAuthData(utils::data::TestAuthData &auth_data);

@@ -2,11 +2,10 @@
 #define SEA_BATTLE_BACKEND_AUTH_H
 
 #include <memory>
-#include <locale.h>
 #include "controller_interface.h"
 #include "sbcli/config/config.h"
 #include "sbcli/model/user_model.h"
-#include "sbutils/data/data.h"
+#include "sbutils/data/test_data.h"
 #include "view/auth_console_input.h"
 
 namespace seabattle {

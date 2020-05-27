@@ -2,7 +2,7 @@
 #define SEABATTLE_MENU_CONSOLE_INPUT_H
 
 #include <memory>
-#include <ncurses.h>
+//#include <ncurses.h>
 #include "sbcli/config/view.h"
 #include "sbcli/components/menu/menu.h"
 #include "sbcli/config/config.h"
@@ -19,7 +19,7 @@ class MenuConsoleInput {
     explicit MenuConsoleInput();
     ~MenuConsoleInput() = default;
 
-    size_t Run(size_t &choice, const size_t auth_status);
+    size_t Run(size_t &choice, const config::UserStatus auth_status);
 
 private:
     component::MainMenu<config::MenuExistUser, config::HelpMainMenu> main_menu_exist_;

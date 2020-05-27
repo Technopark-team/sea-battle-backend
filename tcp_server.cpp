@@ -55,7 +55,21 @@ class con_handler : public boost::enable_shared_from_this<con_handler> {
                     std::cout << req->data_.login_ << std::endl;
                     std::shared_ptr<utils::data::TestDataResponse> resp =
                         std::make_shared<utils::data::TestDataResponse>();
+                    resp->type_ = utils::data::TestRoute::CreateUser;
                     resp->user_id_ = 65;
+                    std::shared_ptr<std::stringstream> s_resp =
+                        utils::serializer::Serializer<utils::data::TestDataResponse>::Serialize(*resp);
+                    message = std::move(s_resp->str());
+                    message += "\0";
+                    std::cout << message << std::endl;
+                    break;
+                }
+                case utils::data::TestRoute::Enter: {
+                    std::cout << req->data_.login_ << std::endl;
+                    std::shared_ptr<utils::data::TestDataResponse> resp =
+                        std::make_shared<utils::data::TestDataResponse>();
+                    resp->type_ = utils::data::TestRoute::Enter;
+                    resp->user_id_ = 67;
                     std::shared_ptr<std::stringstream> s_resp =
                         utils::serializer::Serializer<utils::data::TestDataResponse>::Serialize(*resp);
                     message = std::move(s_resp->str());

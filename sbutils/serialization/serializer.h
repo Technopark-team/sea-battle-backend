@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <sstream>
-#include "sbutils/data/data.h"
+#include "sbutils/data/test_data.h"
 
 namespace seabattle {
 namespace utils {

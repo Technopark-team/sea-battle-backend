@@ -2,7 +2,7 @@
 #define SEA_BATTLE_BACKEND_CONFIG_H
 
 #include <string>
-#include "sbutils/data/data.h"
+#include "sbutils/data/test_data.h"
 
 namespace seabattle {
 namespace client {
@@ -10,7 +10,8 @@ namespace config {
 
 // TODO: добавить струтуру ip/port сервера
 
-enum UserCommandId {
+enum class UserCommandId {
+    DEFAULT_COMMAND = -1,
     SIGNIN_COMMAND = 1,
     SIGNUP_COMMAND,
     INPUT_COMMAND,
@@ -23,12 +24,13 @@ enum UserCommandId {
     STEP_COMMAND,
 };
 
-enum UserStatus {
+enum class UserStatus {
     AUTHORIZED = 1,
     NOT_AUTHORIZED,
 };
 
-enum Controller {
+enum class Controller {
+    DEFAULT = -1,
     AUTH = 1,
     MENU,
     GAME,
@@ -36,29 +38,29 @@ enum Controller {
 };
 
 struct UserCommand {
-    size_t command{};
+    UserCommandId command = UserCommandId::DEFAULT_COMMAND;
 
     UserCommand() = default;
-    UserCommand(size_t com) : command(com) {}
+    UserCommand(UserCommandId com) : command(std::move(com)) {}
 };
 
 struct ControllerSignal {
-    size_t signal = -1;
-    size_t auth_user_status = config::UserStatus::NOT_AUTHORIZED;
+    Controller signal = Controller::DEFAULT;
+    UserStatus auth_user_status = UserStatus::NOT_AUTHORIZED;
     int user_id = -1;
     UserCommand command = UserCommand();
 
     ControllerSignal() = default;
-    ControllerSignal(size_t signal) : signal(signal) {}
-    ControllerSignal(size_t signal, size_t auth_user_status, int user_id,
+    ControllerSignal(Controller signal) : signal(std::move(signal)) {}
+    ControllerSignal(Controller signal, UserStatus auth_user_status, int user_id,
                      UserCommand command)
         : signal(signal),
-          auth_user_status(auth_user_status),
+          auth_user_status(std::move(auth_user_status)),
           user_id(std::move(user_id)),
           command(std::move(command)) {}
 
     void Clean() {
-        signal = -1;
+        signal = Controller::DEFAULT;
         command = UserCommand();
     }
 };

@@ -1,0 +1,42 @@
+#ifndef SEABATTLE_MENU_H
+#define SEABATTLE_MENU_H
+
+#include <memory>
+#include "sbcli/config/config.h"
+#include "sbcli/view/menu_console_input.h"
+#include "controller_interface.h"
+
+namespace seabattle {
+namespace client {
+namespace controller {
+
+// TODO: добавить View для отображения меню с функцией render(some_data = null)
+
+/**
+ * Controller for user menu. It provides several choises for user: Single Game, Multiplayer Game,
+ * Load Game, Exit.
+ */
+class MenuController : public IController {
+ public:
+    explicit MenuController();
+    ~MenuController() = default;
+
+    /**
+     * This method takes user's cmd for single/multi/load/exit.
+     * @param user_command stores single/multi/load/exit req from user
+     * @return
+     */
+    size_t Action(std::shared_ptr<config::ControllerSignal>& controller_signal) override;
+
+ private:
+    /**
+     * This prop is smart pointer to view::MenuConsoleInput.
+     */
+    std::unique_ptr<view::MenuConsoleInput> console_interface_;
+};
+
+}  // namespace controller
+}  // namespace client
+}  // namespace seabattle
+
+#endif  // SEABATTLE_MENU_H

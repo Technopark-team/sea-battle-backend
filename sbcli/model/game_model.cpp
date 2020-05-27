@@ -48,7 +48,6 @@ size_t GameModel::CreateSession() { return 0; }
 size_t GameModel::UpdateGame() { return 0; }
 size_t GameModel::JoinSession() { return 0; }
 size_t GameModel::StartGame() { return 0; }
-size_t GameModel::Enter() { return 0; }
 size_t GameModel::EndGame() { return 0; }
 
 size_t GameModel::GeneralCallback_(std::stringstream& response) {

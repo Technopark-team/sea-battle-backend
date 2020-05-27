@@ -21,7 +21,6 @@ class IModel {
     virtual size_t Enter() { return 0; };
     virtual size_t EndGame() { return 0; };
 
-
  private:
     virtual size_t GeneralCallback_(std::stringstream& response) = 0;
 };

@@ -2,10 +2,10 @@
 #define SEABATTLE_GAME_MODEL_H
 
 #include <memory>
-#include "model_inteface.h"
-#include "network/network.h"
 #include "sbcli/config/config.h"
 #include "sbutils/serialization/serializer.h"
+#include "model_inteface.h"
+#include "network/network.h"
 
 namespace seabattle {
 namespace client {
@@ -32,7 +32,6 @@ class GameModel : public IModel {
     size_t UpdateGame() override;
     size_t JoinSession() override;
     size_t StartGame() override;
-    size_t Enter() override;
     size_t EndGame() override;
 
  private:

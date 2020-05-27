@@ -16,8 +16,8 @@ execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
 execute_process(COMMAND ${CMAKE_COMMAND} --build .
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/googletest-download )
 
-add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
-        ${CMAKE_BINARY_DIR}/googletest-build)
+#add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
+#        ${CMAKE_BINARY_DIR}/googletest-build)
 
 set(includes ${PROJECT_SOURCE_DIR}/include)
 include_directories(${includes})

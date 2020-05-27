@@ -67,8 +67,8 @@ int EngineServer::SwitchAction(const std::string& message, UserPtr user) {
         Error result = session_manager_->AddUserInSession(user, id);
         if (result == Error::Success) {
             user->SetSessionId(id);
-            rp->error_ = Error::Success;
         }
+        rp->error_ = result;
         parser_->Serialize(rp, response);
         session_manager_->NotifySession(response, id);
     } else if (type == Route::StartGame) {
@@ -77,13 +77,8 @@ int EngineServer::SwitchAction(const std::string& message, UserPtr user) {
 
         if (result == Error::Started) {
             rp->game_state_.next_step_id_ = user->GetId();
-            rp->error_ = Error::Started;
-        } else if (result == Error::NotValidMap) {
-            rp->error_ = Error::NotValidMap;
-        } else if (result == Error::Wait) {
-            rp->error_ = Error::Wait;
         }
-
+        rp->error_ = result;
         parser_->Serialize(rp, response);
         session_manager_->NotifySession(response, user->GetSessionId());
     } else if (type == Route::UpdateGame) {

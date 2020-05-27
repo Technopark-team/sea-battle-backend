@@ -53,12 +53,10 @@ public:
     GameMap(const GameMap& rhs);
 
     ~GameMap() = default;
-
     Result InsertPoint(const Point& point, int& ship_id);
     int Count();
 
     bool InsertShip(int id, const Ship& ship);
-    //void prepareMap();
 };
 
 

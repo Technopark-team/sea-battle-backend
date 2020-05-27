@@ -74,6 +74,7 @@ int EngineServer::SwitchAction(const std::string& message, UserPtr user) {
     } else if (type == Route::StartGame) {
         Map userMap = rq->map_;
         Error result = session_manager_->StartGame(user, userMap, user->GetSessionId());
+
         if (result == Error::Started) {
             rp->game_state_.next_step_id_ = user->GetId();
             rp->error_ = Error::Started;
@@ -109,7 +110,7 @@ void EngineServer::DoAccept() {
         std::shared_ptr<ClientSocket> new_client = m_socket->AcceptClient();
 
         if (new_client && new_client->GetFd() > -1) {
-            std::cout << "new client's sd is " << new_client->GetFd() << std::endl;
+            std::cerr<< "new client's sd is " << new_client->GetFd() << std::endl;
 
             auto read = std::bind(&EngineServer::AsyncRead, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
             auto write = std::bind(&EngineServer::AsyncWrite, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);

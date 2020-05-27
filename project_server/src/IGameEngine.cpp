@@ -264,8 +264,3 @@ int GameMap::Count() {
     return game_ships_.size();
 }
 
-/*void GameMap::prepareMap() {
-    for (auto& line: cells) {
-        std::replace(line.begin(),line.end(), 2, 0);
-    }
-}*/

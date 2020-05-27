@@ -2,7 +2,7 @@
 #define SEABATTLE_SBCLI_COMPONENTS_MENU_MENU_H_
 
 #include <ncurses.h>
-#include <locale.h>
+#include <memory>
 
 namespace seabattle {
 namespace client {
@@ -29,23 +29,19 @@ size_t MainMenu<ItemsT, HelpT>::Draw_(size_t item) {
     addstr(menu_items_.menu_name);
     for (int c = 0; c < menu_items_.len; c++) {
         if (c == item) attron(A_REVERSE); /* highlight selection */
-        mvaddstr(3 + (c * 2), 20, menu_items_.items[c]);
+        mvaddstr(20 + (c * 2), 50, menu_items_.items[c]);
         attroff(A_REVERSE); /* remove highlight */
     }
-    mvaddstr(17, 25, help_items_.help_message);
+    mvaddstr(43, 17, help_items_.help_message);
     refresh();
     return 0;
 }
 
 template <class ItemsT, class HelpT>
 size_t MainMenu<ItemsT, HelpT>::Render(size_t &res_choice) {
-    setlocale(LC_ALL, "");
-
     int key, menuitem;
 
     menuitem = 0;
-
-    initscr();
 
     Draw_(menuitem);
     keypad(stdscr, TRUE);
@@ -68,7 +64,6 @@ size_t MainMenu<ItemsT, HelpT>::Render(size_t &res_choice) {
     };
 
     echo();
-    endwin();
 
     res_choice = menuitem;
 

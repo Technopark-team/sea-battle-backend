@@ -11,42 +11,16 @@ GameController::GameController(std::shared_ptr<network::TCPClient>& network_clie
 size_t GameController::Action(std::shared_ptr<config::ControllerSignal>& controller_signal) {
     controller_signal->Clean();
 
+    utils::data::TestMap player_map;
+    utils::data::TestPoint player_point;
+    config::UserCommandId map_exit;
+    config::UserCommandId step_exit;
+    game_console_interface_->ReadMap(player_map, map_exit);
+    game_console_interface_->ReadStep(player_point, step_exit);
+
     size_t command = -1;
-    game_console_interface_->Run(command);
-    switch(command) {
-        case 0:
 
-            break;
-        case 1:
-
-            break;
-        case 2:
-
-            break;
-        case 3:
-
-            break;
-        case 4:
-
-            break;
-        case 5:
-
-            break;
-        case 6:
-
-            break;
-        case 7:
-
-            break;
-        case 8:
-
-            break;
-        case 9:
-
-            break;
-    }
-
-    controller_signal->signal = config::Controller::MENU;
+    controller_signal->signal = config::Controller::NONE;
     return 0;
 }
 }  // namespace controller

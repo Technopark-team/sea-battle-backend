@@ -14,6 +14,13 @@ GameClient::GameClient() : menu_controller_(new controller::MenuController()) {
 
     setlocale(LC_ALL, "");
     initscr();
+
+    if(has_colors() == FALSE)
+    {	endwin();
+        printf("Your terminal does not support color\n");
+        exit(1);
+    }
+    start_color();
 }
 
 GameClient::~GameClient() {

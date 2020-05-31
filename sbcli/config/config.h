@@ -22,6 +22,10 @@ enum class UserCommandId {
     LOAD_COMMAND,
     MULTI_COMMAND,
     STEP_COMMAND,
+    QUITMAP_COMMAND,
+    QUITCELL_COMMAND,
+    READYCELL_COMMAND,
+    ENDGAME_COMMAND,
 };
 
 enum class UserStatus {

@@ -12,18 +12,16 @@ namespace view {
 
 // TODO: добавить документацию к методам и свойствам
 
-class GameConsoleInput : public IUserInput {
+class GameConsoleInput {
  public:
     explicit GameConsoleInput();
     ~GameConsoleInput() = default;
-    size_t Run(size_t &choice);
 
-    size_t ReadCommand(config::UserCommand &user_command) override;
-    size_t ReadMap(utils::data::TestMap &player_map);
-    size_t ReadStep(utils::data::TestPoint &user_step);
+    size_t ReadMap(utils::data::TestMap &player_map, config::UserCommandId &exit);
+    size_t ReadStep(utils::data::TestPoint &user_step, config::UserCommandId &end_game);
 
  private:
-    component::GameMenu<block::ShipsView> game_menu_;
+    component::GameMenu game_menu_;
 };
 
 }

@@ -10,6 +10,7 @@ sudo apt-get install build-essential
 sudo apt-get install libboost-all-dev
 
 # install gtest and gmock
+cd ~/Downloads
 wget https://github.com/google/googletest/archive/release-1.10.0.tar.gz
 tar xf release-1.10.0.tar.gz
 cd googletest-release-1.10.0
@@ -20,6 +21,7 @@ sudo cp -a lib/libgtest_main.so lib/libgtest.so lib/libgmock.so lib/libgmock_mai
 sudo ldconfig -v | grep gtest
 
 # install msgpack
+cd ~/Downloads
 git clone https://github.com/msgpack/msgpack-c.git
 cd msgpack-c || exit
 cmake -DMSGPACK_CXX17=ON .

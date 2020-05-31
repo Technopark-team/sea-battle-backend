@@ -28,16 +28,16 @@ struct EnemyListName {
 
 
 struct ShipsView {
-//    const char name[10][64] = {"1. Четырехпалубный - ▒│▒│▒│▒", "2. Трехпалубный    - ▒│▒│▒",
-//                               "3. Трехпалубный    - ▒│▒│▒",   "4. Двухпалубный    - ▒│▒",
-//                               "5. Двухпалубный    - ▒│▒",     "6. Двухпалубный    - ▒│▒",
-//                               "7. Однопалубный    - ▒",       "8. Однопалубный    - ▒",
-//                               "9. Однопалубный    - ▒",       "10. Однопалубный   - ▒"};
-    const char name[10][64] = {"1. Four deck   - @|@|@|@", "2. Three deck  - @|@|@",
-                               "3. Three deck  - @|@|@",   "4. Double deck - @|@",
-                               "5. Double deck - @|@",     "6. Double deck - @|@",
-                               "7. Single deck - @",       "8. Single deck - @",
-                               "9. Single deck - @",      "10. Single deck - @"};
+//    const char name[10][64] = {"1.  Четырехпалубный - ▒│▒│▒│▒", "2.  Трехпалубный    - ▒│▒│▒ ",
+//                               "3.  Трехпалубный    - ▒│▒│▒  ", "4.  Двухпалубный    - ▒│▒   ",
+//                               "5.  Двухпалубный    - ▒│▒    ", "6.  Двухпалубный    - ▒│▒   ",
+//                               "7.  Однопалубный    - ▒      ", "8.  Однопалубный    - ▒     ",
+//                               "9.  Однопалубный    - ▒      ", "10. Однопалубный    - ▒     "};
+    const char name[10][64] = {"1.  Four deck   - @|@|@|@", "2.  Three deck  - @|@|@  ",
+                               "3.  Three deck  - @|@|@  ", "4.  Double deck - @|@    ",
+                               "5.  Double deck - @|@    ", "6.  Double deck - @|@    ",
+                               "7.  Single deck - @      ", "8.  Single deck - @      ",
+                               "9.  Single deck - @      ", "10. Single deck - @      "};
     const int len = 10;
     std::map<size_t, size_t> ships = {
         {0, ShipAttribute::DEFAULT},

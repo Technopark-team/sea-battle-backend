@@ -9,10 +9,10 @@
 
 /**
  * -------------------------------------------------------------------------------------------------------------------------------------------------------
- *1
- *2
- *3
- *4
+ *1│\    /│  /-\  │─\
+ *2│ \  / │ /   \ │  /
+ *3│  \/  │ \   / │─/
+ *4│      │  \_/  │
  *5                                         Ваше поле                           ║                               Поле противника
  *6                    0    1    2    3    4    5    6    7    8    9           ║             0    1    2    3    4    5    6    7    8    9
  *7                  ┌────┬────┬────┬────┬────┬────┬────┬────┬────┬────┐        ║          ┌────┬────┬────┬────┬────┬────┬────┬────┬────┬────┐
@@ -64,7 +64,16 @@ int main()
 
     initscr();				/* start the curses mode */
 
+    if(has_colors() == FALSE)
+    {	endwin();
+        printf("Your terminal does not support color\n");
+        exit(1);
+    }
+    start_color();			/* Start color 			*/
+    init_pair(0, COLOR_BLACK, COLOR_MAGENTA);
+
     clear();
+    attron(COLOR_PAIR(0));
     mvaddstr(4, 41, seabattle::client::block::UserFieldName().name);
     mvaddstr(4, 108, seabattle::client::block::EnemyFieldName().name);
     mvaddstr(4, 77, seabattle::client::block::Delimiter().name);
@@ -73,6 +82,7 @@ int main()
         mvaddstr(5 + c, 86, seabattle::client::block::Field().field[c]);
         mvaddstr(5 + c, 77, seabattle::client::block::Delimiter().name);
     }
+    attroff(COLOR_PAIR(0));
 
     mvaddstr(27, 77, seabattle::client::block::Delimiter().name);
     mvaddstr(28, 77, seabattle::client::block::Delimiter().name);

@@ -20,7 +20,7 @@ namespace net = boost::asio;            // from <boost/asio.hpp>
 
 class GameClient {
  public:
-    GameClient();
+    GameClient(config::IpPort net_config, config::Debug debug);
     ~GameClient();
     size_t run();
 

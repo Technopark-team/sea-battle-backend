@@ -6,26 +6,32 @@ namespace seabattle {
 namespace client {
 namespace game {
 
-GameClient::GameClient() : menu_controller_(new controller::MenuController()) {
-    network_client_ = std::make_shared<network::TCPClient>(ioc);
+GameClient::GameClient(config::IpPort net_config, config::Debug debug) : menu_controller_(new controller::MenuController()) {
+    network_client_ = std::make_shared<network::TCPClient>(ioc, net_config);
     auth_controller_ = std::make_unique<controller::AuthController>(network_client_);
     game_controller_ = std::make_unique<controller::GameController>(network_client_);
     controller_signal_ = std::make_shared<config::ControllerSignal>(config::Controller::MENU);
-
+    controller_signal_->debug = std::move(debug);
     setlocale(LC_ALL, "");
-    initscr();
 
-    if(has_colors() == FALSE)
-    {	endwin();
-        printf("Your terminal does not support color\n");
-        exit(1);
+    if (controller_signal_->debug.dev_mode == config::DevMode::RELEASE) {
+        initscr();
+
+        if(has_colors() == FALSE)
+        {	endwin();
+            printf("Your terminal does not support color\n");
+            exit(1);
+        }
+        start_color();
     }
-    start_color();
+
 }
 
 GameClient::~GameClient() {
     network_client_->Close();
-    endwin();
+    if (controller_signal_->debug.dev_mode == config::DevMode::RELEASE) {
+        endwin();
+    }
 }
 
 size_t GameClient::run() {

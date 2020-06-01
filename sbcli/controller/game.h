@@ -2,6 +2,8 @@
 #define SEABATTLE_GAME_H
 
 #include <memory>
+#include <chrono>
+#include <thread>
 #include "sbcli/config/config.h"
 #include "sbcli/view/game_console_input.h"
 #include "sbcli/model/game_model.h"

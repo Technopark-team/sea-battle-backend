@@ -10,15 +10,9 @@ namespace config {
 
 // TODO: добавить струтуру ip/port сервера
 
-enum class DevMode {
-    DEV = 1,
-    RELEASE
-};
+enum class DevMode { DEV = 1, RELEASE };
 
-enum class User_n {
-    USER1 = 1,
-    USER2
-};
+enum class User_n { USER1 = 1, USER2 };
 
 enum class UserCommandId {
     DEFAULT_COMMAND = -1,
@@ -61,11 +55,10 @@ struct IpPort {
 };
 
 struct Debug {
-    DevMode dev_mode;
+    DevMode dev_mode = DevMode::RELEASE;
     User_n user_n;
     utils::data::TestAuthData auth_data{};
     utils::data::TestMap debug_map;
-
 
     Debug() = default;
 };
@@ -83,11 +76,7 @@ struct ControllerSignal {
     int user_id = -1;
     UserCommand command = UserCommand();
 
-
-    Debug debug = Debug();
-
     ControllerSignal() = default;
-    ControllerSignal(Debug debug) : debug(debug) {}
 
     ControllerSignal(Controller signal) : signal(std::move(signal)) {}
     ControllerSignal(Controller signal, UserStatus auth_user_status, int user_id,
@@ -95,8 +84,7 @@ struct ControllerSignal {
         : signal(signal),
           auth_user_status(std::move(auth_user_status)),
           user_id(std::move(user_id)),
-          command(std::move(command)),
-          debug(std::move(debug)) {}
+          command(std::move(command)) {}
 
     void Clean() {
         signal = Controller::DEFAULT;

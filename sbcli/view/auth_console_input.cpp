@@ -28,6 +28,7 @@ size_t AuthConsoleInput::Run(size_t& choice, utils::data::TestAuthData& auth_dat
             }
             break;
     }
+
     return 0;
 }
 }  // namespace view

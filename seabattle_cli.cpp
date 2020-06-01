@@ -7,47 +7,47 @@
 /*
  *   0  1  2  3  4  5  6  7  8  9
  *  ┼──┼──┼──┼──┼──┼──┼──┼──┼──┼──┼
- * 0│1▓│1▓│1▓│1▓│  │1▓│1▓│1▓│  │2▓│
+ * 0│  │  │  │  │  │  │  │  │  │  │
  *  ┼──┼──┼──┼──┼──┼──┼──┼──┼──┼──┼
- * 1│  │  │  │  │  │  │  │  │  │2▓│
+ * 1│  │1▓│1▓│1▓│1▓│  │  │  │  │  │
  *  ┼──┼──┼──┼──┼──┼──┼──┼──┼──┼──┼
- * 2│  │  │  │  │  │  │  │  │  │2▓│
+ * 2│  │  │  │  │  │  │  │  │  │  │
  *  ┼──┼──┼──┼──┼──┼──┼──┼──┼──┼──┼
- * 3│  │  │  │  │  │  │  │  │  │  │
+ * 3│  │1▓│1▓│1▓│  │2▓│2▓│2▓│  │  │
  *  ┼──┼──┼──┼──┼──┼──┼──┼──┼──┼──┼
  * 4│  │  │  │  │  │  │  │  │  │1▓│
  *  ┼──┼──┼──┼──┼──┼──┼──┼──┼──┼──┼
- * 5│  │  │  │  │  │  │  │  │  │1▓│
+ * 5│  │  │4▓│  │  │  │  │  │  │1▓│
  *  ┼──┼──┼──┼──┼──┼──┼──┼──┼──┼──┼
  * 6│  │  │  │  │  │  │  │  │  │  │
  *  ┼──┼──┼──┼──┼──┼──┼──┼──┼──┼──┼
- * 7│  │  │  │  │  │  │  │  │  │2▓│
+ * 7│  │  │3▓│  │  │  │  │  │  │2▓│
  *  ┼──┼──┼──┼──┼──┼──┼──┼──┼──┼──┼
- * 8│4▓│  │  │  │  │  │  │  │  │2▓│
+ * 8│  │  │  │  │  │  │  │  │  │2▓│
  *  ┼──┼──┼──┼──┼──┼──┼──┼──┼──┼──┼
- * 9│  │3▓│  │2▓│  │1▓│  │3▓│3▓│  │
+ * 9│  │  │2▓│  │1▓│  │3▓│3▓│  │  │
  *  ┼──┼──┼──┼──┼──┼──┼──┼──┼──┼──┼
  */
 
 size_t InitDebugMap(seabattle::utils::data::TestMap &debug_map) {
     seabattle::utils::data::TestShip point;
 
-    point.start_.x_ = 0;
-    point.start_.y_ = 0;
-    point.end_.x_ = 3;
-    point.end_.y_ = 0;
+    point.start_.x_ = 1;
+    point.start_.y_ = 1;
+    point.end_.x_ = 4;
+    point.end_.y_ = 1;
     debug_map.ships.insert({0, point});
 
-    point.start_.x_ = 5;
-    point.start_.y_ = 0;
-    point.end_.x_ = 7;
-    point.end_.y_ = 0;
+    point.start_.x_ = 1;
+    point.start_.y_ = 3;
+    point.end_.x_ = 3;
+    point.end_.y_ = 3;
     debug_map.ships.insert({1, point});
 
-    point.start_.x_ = 9;
-    point.start_.y_ = 0;
-    point.end_.x_ = 9;
-    point.end_.y_ = 2;
+    point.start_.x_ = 5;
+    point.start_.y_ = 3;
+    point.end_.x_ = 7;
+    point.end_.y_ = 3;
     debug_map.ships.insert({2, point});
 
     point.start_.x_ = 9;
@@ -80,16 +80,16 @@ size_t InitDebugMap(seabattle::utils::data::TestMap &debug_map) {
     point.end_.y_ = 9;
     debug_map.ships.insert({7, point});
 
-    point.start_.x_ = 0;
-    point.start_.y_ = 9;
-    point.end_.x_ = 0;
-    point.end_.y_ = 9;
+    point.start_.x_ = 2;
+    point.start_.y_ = 7;
+    point.end_.x_ = 2;
+    point.end_.y_ = 7;
     debug_map.ships.insert({8, point});
 
-    point.start_.x_ = 0;
-    point.start_.y_ = 7;
-    point.end_.x_ = 0;
-    point.end_.y_ = 7;
+    point.start_.x_ = 2;
+    point.start_.y_ = 5;
+    point.end_.x_ = 2;
+    point.end_.y_ = 5;
     debug_map.ships.insert({9, point});
 }
 

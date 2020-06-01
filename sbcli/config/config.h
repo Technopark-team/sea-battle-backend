@@ -10,6 +10,16 @@ namespace config {
 
 // TODO: добавить струтуру ip/port сервера
 
+enum class DevMode {
+    DEV = 1,
+    RELEASE
+};
+
+enum class User_n {
+    USER1 = 1,
+    USER2
+};
+
 enum class UserCommandId {
     DEFAULT_COMMAND = -1,
     SIGNIN_COMMAND = 1,
@@ -20,7 +30,8 @@ enum class UserCommandId {
     CLOSE_COMMAND,
     SINGLE_COMMAND,
     LOAD_COMMAND,
-    MULTI_COMMAND,
+    MULTI_COMMAND_START,
+    MULTI_COMMAND_JOIN,
     STEP_COMMAND,
     QUITMAP_COMMAND,
     QUITCELL_COMMAND,
@@ -41,6 +52,24 @@ enum class Controller {
     NONE,
 };
 
+struct IpPort {
+    std::string ip = "127.0.0.1";
+    size_t port = 2000;
+
+    IpPort() = default;
+    IpPort(std::string ip, size_t port) : ip(std::move(ip)), port(port) {}
+};
+
+struct Debug {
+    DevMode dev_mode;
+    User_n user_n;
+    utils::data::TestAuthData auth_data{};
+    utils::data::TestMap debug_map;
+
+
+    Debug() = default;
+};
+
 struct UserCommand {
     UserCommandId command = UserCommandId::DEFAULT_COMMAND;
 
@@ -54,14 +83,20 @@ struct ControllerSignal {
     int user_id = -1;
     UserCommand command = UserCommand();
 
+
+    Debug debug = Debug();
+
     ControllerSignal() = default;
+    ControllerSignal(Debug debug) : debug(debug) {}
+
     ControllerSignal(Controller signal) : signal(std::move(signal)) {}
     ControllerSignal(Controller signal, UserStatus auth_user_status, int user_id,
                      UserCommand command)
         : signal(signal),
           auth_user_status(std::move(auth_user_status)),
           user_id(std::move(user_id)),
-          command(std::move(command)) {}
+          command(std::move(command)),
+          debug(std::move(debug)) {}
 
     void Clean() {
         signal = Controller::DEFAULT;

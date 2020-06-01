@@ -19,7 +19,7 @@ using boost::asio::ip::tcp;
 
 class TCPClient : public INetworkClient {
  public:
-    TCPClient(boost::asio::io_service& IO_Service, config::IpPort ip_port);
+    TCPClient(config::IpPort ip_port);
     ~TCPClient() = default;
 
     void Run(std::shared_ptr<std::stringstream> data,
@@ -27,8 +27,8 @@ class TCPClient : public INetworkClient {
     void Close() override;
 
  private:
-    boost::asio::io_service& io_service_;
-    tcp::socket socket_;
+    std::shared_ptr<boost::asio::io_service> io_service_;
+    std::shared_ptr<tcp::socket> socket_;
 
     string send_buffer_;
     static const size_t buf_len_ = 20000;

@@ -60,6 +60,13 @@ struct Debug {
     utils::data::TestAuthData auth_data{};
     utils::data::TestMap debug_map;
 
+    utils::data::TestGameState game_state{};
+
+    int user_id;
+    int session_id;
+
+    utils::data::TestPoint enemy_point{};
+
     Debug() = default;
 };
 

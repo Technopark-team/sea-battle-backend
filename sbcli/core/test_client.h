@@ -2,6 +2,8 @@
 #define SEABATTLE_SBCLI_CORE_TEST_CLIENT_H_
 
 #include <memory>
+#include <chrono>
+#include <thread>
 #include "network/network.h"
 #include "sbcli/config/config.h"
 #include "sbutils/serialization/serializer.h"

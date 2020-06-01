@@ -2,6 +2,7 @@
 #define SEA_BATTLE_BACKEND_NETWORK_H
 
 #include "network_interface.h"
+#include <sbcli/config/config.h>
 
 #include <iostream>
 #include <string>
@@ -18,7 +19,7 @@ using boost::asio::ip::tcp;
 
 class TCPClient : public INetworkClient {
  public:
-    TCPClient(boost::asio::io_service& IO_Service);
+    TCPClient(boost::asio::io_service& IO_Service, config::IpPort ip_port);
     ~TCPClient() = default;
 
     void Run(std::shared_ptr<std::stringstream> data,
@@ -30,8 +31,10 @@ class TCPClient : public INetworkClient {
     tcp::socket socket_;
 
     string send_buffer_;
-    static const size_t buf_len_ = 5000;
-    char recieve_buffer_[buf_len_ * 2];
+    static const size_t buf_len_ = 20000;
+    char receive_buffer_[buf_len_ * 2];
+
+    config::IpPort ip_port_;
 
     void OnConnect(const boost::system::error_code& ErrorCode,
                    std::shared_ptr<std::function<size_t(std::stringstream&)>> callback) override;

@@ -4,8 +4,11 @@ namespace seabattle {
 namespace client {
 namespace network {
 
-TCPClient::TCPClient(boost::asio::io_service& IO_Service)
-    : io_service_(IO_Service), socket_(IO_Service), send_buffer_("") {}
+TCPClient::TCPClient(boost::asio::io_service& IO_Service, config::IpPort ip_port)
+    : io_service_(IO_Service),
+      socket_(IO_Service),
+      send_buffer_(""),
+      ip_port_(std::move(ip_port)) {}
 
 /*
  * TODO: проверять перед отправкой отсуствие нулей, которые могут превратиться в терминирующие или
@@ -21,11 +24,13 @@ TCPClient::TCPClient(boost::asio::io_service& IO_Service)
 void TCPClient::Run(std::shared_ptr<std::stringstream> data,
                     std::shared_ptr<std::function<size_t(std::stringstream&)>> callback) {
     send_buffer_ = data->str();
-    boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string("127.0.0.1"),
-                                            2000);
+    boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(ip_port_.ip),
+                                            ip_port_.port);
+    boost::asio::io_service ioc;
+    socket_ = tcp::socket(ioc);
     socket_.async_connect(endpoint, boost::bind(&TCPClient::OnConnect, this,
                                                 boost::asio::placeholders::error, callback));
-    io_service_.run();
+    ioc.run();
 }
 
 void TCPClient::Close() { io_service_.post(boost::bind(&TCPClient::DoClose, this)); }
@@ -48,10 +53,11 @@ void TCPClient::OnReceive(const boost::system::error_code& ErrorCode,
                           std::shared_ptr<std::function<size_t(std::stringstream&)>> callback) {
     cout << "receiving..." << endl;
     if (ErrorCode.value() == boost::system::errc::success) {
-        cout << recieve_buffer_ << endl;
+        cout << receive_buffer_ << endl;
         std::stringstream ss{};
-        ss << recieve_buffer_;
+        ss << receive_buffer_;
         callback->operator()(ss);
+        DoClose();
 
         //        socket_.async_receive(boost::asio::buffer(recieve_buffer_, buf_len_),
         //                               boost::bind(&TCPClient::OnReceive, this,
@@ -70,7 +76,7 @@ void TCPClient::OnSend(const boost::system::error_code& ErrorCode,
         send_buffer_ = "";
 
         socket_.async_receive(
-            boost::asio::buffer(recieve_buffer_, buf_len_),
+            boost::asio::buffer(receive_buffer_, buf_len_),
             boost::bind(&TCPClient::OnReceive, this, boost::asio::placeholders::error, callback));
     } else {
         cout << "OnSend closing" << endl;

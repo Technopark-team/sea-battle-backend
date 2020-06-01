@@ -19,6 +19,9 @@ class GameModel : public IModel {
     ~GameModel() = default;
 
     size_t GetSessionId(int &session_id);
+    size_t SetSessionId(int session_id);
+    size_t GetUserId(int& user_id);
+    size_t SetUserId(int user_id);
     size_t SetCurrentStep(utils::data::TestPoint current_step);
     size_t GetEnemyCurrentStep(utils::data::TestPoint &current_enemy_step);
     size_t SetUserMap(utils::data::TestMap user_map);
@@ -27,6 +30,7 @@ class GameModel : public IModel {
     size_t GetGameState(utils::data::TestGameState &game_state);
     size_t SetEraseState(utils::data::TestEraseState erase_state);
     size_t GetEraseState(utils::data::TestEraseState &erase_state);
+    size_t SetError(utils::data::TestError error);
 
     size_t CreateSession() override;
     size_t UpdateGame() override;
@@ -45,6 +49,8 @@ class GameModel : public IModel {
     utils::data::TestMap enemy_killed_map_;
     utils::data::TestGameState game_state_;
     utils::data::TestEraseState erase_state_;
+    utils::data::TestError error_;
+
 
     std::shared_ptr<network::TCPClient> network_client_;
     std::shared_ptr<std::function<size_t(std::stringstream &)>> callback_;

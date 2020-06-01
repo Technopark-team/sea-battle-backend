@@ -41,7 +41,7 @@ size_t UserModel::GetUserData(int& user_id) {
 
 size_t UserModel::SetUserData(int user_id) {
     user_id_ = user_id;
-    std::cout << user_id_ << std::endl;
+    std::cout << "user_id_: " << user_id_ << std::endl;
     return 0;
 }
 

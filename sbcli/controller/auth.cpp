@@ -18,23 +18,11 @@ size_t AuthController::Action(std::shared_ptr<config::ControllerSignal>& control
     controller_signal->Clean();
     utils::data::TestAuthData auth_data;
 
-    // TODO: для отаадки закоммннтировать и руками заиить знаееняя auth_data
-    if (controller_signal->debug.dev_mode == config::DevMode::RELEASE) {
-        console_interface_->Run(command, auth_data, auth_status);
-    } else {
-        auth_data = std::move(controller_signal->debug.auth_data);
-//        controller_signal->auth_user_status = config::UserStatus::AUTHORIZED;
-        command = 0;
-        menu_command.command = config::UserCommandId::SIGNIN_COMMAND;
-    }
-//    auth_data.login_ = "123";
-//    auth_data.password_ = "123";
+    console_interface_->Run(command, auth_data, auth_status);
 
     // TODO: переписать эти условные конструкции
     if (controller_signal->auth_user_status == config::UserStatus::AUTHORIZED) {
         if (command == 0) {
-//            GetUserData(controller_signal->user_id);
-//            user_model_->Enter();
             // TODO: сделать logout в модели и на сервере
         }
     } else {
@@ -42,7 +30,8 @@ size_t AuthController::Action(std::shared_ptr<config::ControllerSignal>& control
             // TODO: провалидировать auth_data
             user_model_->SetAuthData(auth_data);
 
-            // TODO: вызвать PostSignin()/PostSignup() в зависимости от команды авторизации или регистрации
+            // TODO: вызвать PostSignin()/PostSignup() в зависимости от команды авторизации или
+            // регистрации
             // TODO: это неблокирующая операция, требуется синхронизировать асинхронную операцию
             switch (menu_command.command) {
                 case config::UserCommandId::SIGNIN_COMMAND:
@@ -58,7 +47,6 @@ size_t AuthController::Action(std::shared_ptr<config::ControllerSignal>& control
         }
     }
     // command == 1 - возвращение в меню
-    // TODO: для отаадки просааиить game
     controller_signal->signal = config::Controller::MENU;
     return 0;
 }

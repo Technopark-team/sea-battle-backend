@@ -21,9 +21,9 @@ struct MenuExistUser {
 //    const char *menu_name = "Главное меню";
 //    const char *hello_message = "Привет, ";
     const char *menu_name = "Main menu";
-    const char *hello_message = "Hi, ";const int len = 2;
+    const char *hello_message = "Hi, ";const int len = 3;
 //    const int len = 5;
-    const char items[2][100] = {"Multiplayer", "Exit"};
+    const char items[3][100] = {"Start game", "Join game", "Exit"};
 //    const char items[2][100] = {"Многопользовательская игра", "Закрыть игру"};
 //    const char items[5][100] = {"Одиночная игра", "Загрузить игру", "Многопользовательская игра",
 //                                "Выход из аккаунта", "Закрыть игру"};

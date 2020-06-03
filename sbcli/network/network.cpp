@@ -72,7 +72,7 @@ void TCPClient::OnReceive(const boost::system::error_code& ErrorCode,
             socket_->async_read_some(
                 boost::asio::buffer(receive_buffer_, buf_len_),
                 boost::bind(&TCPClient::OnReceive, this, boost::asio::placeholders::error, callback,
-                            boost::asio::placeholders::bytes_transferred, debug_param));
+                            boost::asio::placeholders::bytes_transferred, 1));
         }
         //        DoClose();
     } else {

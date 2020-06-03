@@ -36,7 +36,7 @@ size_t InitDebugMap(seabattle::utils::data::TestMap &debug_map) {
     point.start_.y_ = 1;
     point.end_.x_ = 4;
     point.end_.y_ = 1;
-    debug_map.ships.insert({0, point});
+    debug_map.ships.insert({10, point});
 
     point.start_.x_ = 1;
     point.start_.y_ = 3;
@@ -121,15 +121,18 @@ int main(int argc, char *argv[]) {
         }
         if (!strcmp(argv[2], "user2")) {
             user_n = seabattle::client::config::User_n::USER2;
+            // TODO: unsafe, should be  try-catch
+            debug.join_session_id = std::stoi(argv[5]);
         }
 
         InitDebugMap(debug.debug_map);
+
         mode = seabattle::client::config::DevMode::DEV;
 
         debug.user_n = user_n;
 
-        debug.auth_data.login_ = argv[3];
-        debug.auth_data.password_ = argv[4];
+        debug.auth_data.login_ = std::move(argv[3]);
+        debug.auth_data.password_ = std::move(argv[4]);
     }
     if (!strcmp(argv[1], "release")) {
         mode = seabattle::client::config::DevMode::RELEASE;

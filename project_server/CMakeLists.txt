@@ -1,13 +1,14 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.14)
 project(project_server)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "-Werror -Wpedantic -std=c++1z -g -I msgpack-c/include -pthread -fPIC")
+set(CMAKE_CXX_FLAGS "-std=c++1z -g -I msgpack-c/include -pthread -fPIC")
 
 find_package(Threads)
 
 set(project_name project_server)
 set(library_name server_lib)
+include_directories(/usr/local/include/)
 
 configure_file(CMakeLists.txt.in
         googletest-download/CMakeLists.txt)
@@ -24,6 +25,19 @@ include_directories(${includes})
 file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
 add_library(${library_name} SHARED ${sources})
+target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+find_path(HIREDIS_HEADER hiredis)
+target_include_directories(${library_name} PUBLIC ${HIREDIS_HEADER})
+
+find_library(HIREDIS_LIB hiredis)
+target_link_libraries(${library_name}  ${HIREDIS_LIB})
+
+find_path(REDIS_PLUS_PLUS_HEADER sw)
+target_include_directories(${library_name} PUBLIC ${REDIS_PLUS_PLUS_HEADER})
+
+find_library(REDIS_PLUS_PLUS_LIB redis++)
+target_link_libraries(${library_name} ${REDIS_PLUS_PLUS_LIB})
 
 add_subdirectory(DBAccess)
 

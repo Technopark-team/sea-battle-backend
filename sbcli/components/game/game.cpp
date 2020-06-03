@@ -1,4 +1,5 @@
 #include "game.h"
+#include <sbcli/config/view.h>
 #include <iostream>
 
 namespace seabattle {
@@ -162,7 +163,7 @@ size_t GameMenu::SetShip(size_t item, utils::data::TestPoint &start, utils::data
             case ' ':
             case '\n': {
                 config::UserCommandId cell_direction_exit = config::UserCommandId::DEFAULT_COMMAND;
-                TransformCoordinates(x, y, start);
+                TransformCoordinatesToServer(x, y, start);
                 SetShipDirection(item, x, y, end, cell_direction_exit);
                 if (cell_direction_exit == config::UserCommandId::READYCELL_COMMAND) {
                     InsertCell(start, end);
@@ -173,7 +174,7 @@ size_t GameMenu::SetShip(size_t item, utils::data::TestPoint &start, utils::data
             }
             case KEY_UP: {
                 utils::data::TestPoint check_point;
-                TransformCoordinates(x, y, check_point);
+                TransformCoordinatesToServer(x, y, check_point);
                 IsEmptyCell(check_point.x_, check_point.y_, check);
                 if (check == YesNo::YES) {
                     attron(COLOR_PAIR(5));
@@ -187,7 +188,7 @@ size_t GameMenu::SetShip(size_t item, utils::data::TestPoint &start, utils::data
             }
             case KEY_DOWN: {
                 utils::data::TestPoint check_point;
-                TransformCoordinates(x, y, check_point);
+                TransformCoordinatesToServer(x, y, check_point);
                 IsEmptyCell(check_point.x_, check_point.y_, check);
                 if (check == YesNo::YES) {
                     attron(COLOR_PAIR(5));
@@ -201,7 +202,7 @@ size_t GameMenu::SetShip(size_t item, utils::data::TestPoint &start, utils::data
             }
             case KEY_LEFT: {
                 utils::data::TestPoint check_point;
-                TransformCoordinates(x, y, check_point);
+                TransformCoordinatesToServer(x, y, check_point);
                 IsEmptyCell(check_point.x_, check_point.y_, check);
                 if (check == YesNo::YES) {
                     attron(COLOR_PAIR(5));
@@ -215,7 +216,7 @@ size_t GameMenu::SetShip(size_t item, utils::data::TestPoint &start, utils::data
             }
             case KEY_RIGHT: {
                 utils::data::TestPoint check_point;
-                TransformCoordinates(x, y, check_point);
+                TransformCoordinatesToServer(x, y, check_point);
                 IsEmptyCell(check_point.x_, check_point.y_, check);
                 if (check == YesNo::YES) {
                     attron(COLOR_PAIR(5));
@@ -266,7 +267,7 @@ size_t GameMenu::SetShipDirection(size_t item, int x, int y, utils::data::TestPo
                             mvaddstr(y - 2, x, block::ShipElement().base);
                             mvaddstr(y - 4, x, block::ShipElement().base);
                             mvaddstr(y - 6, x, block::ShipElement().base);
-                            TransformCoordinates(x, y - 6, end);
+                            TransformCoordinatesToServer(x, y - 6, end);
                             cell_direction_exit = config::UserCommandId::READYCELL_COMMAND;
                         }
                         break;
@@ -277,7 +278,7 @@ size_t GameMenu::SetShipDirection(size_t item, int x, int y, utils::data::TestPo
                             mvaddstr(y, x, block::ShipElement().base);
                             mvaddstr(y - 2, x, block::ShipElement().base);
                             mvaddstr(y - 4, x, block::ShipElement().base);
-                            TransformCoordinates(x, y - 4, end);
+                            TransformCoordinatesToServer(x, y - 4, end);
                             cell_direction_exit = config::UserCommandId::READYCELL_COMMAND;
                         }
                         break;
@@ -288,7 +289,7 @@ size_t GameMenu::SetShipDirection(size_t item, int x, int y, utils::data::TestPo
                         if (check == YesNo::NO) {
                             mvaddstr(y, x, block::ShipElement().base);
                             mvaddstr(y - 2, x, block::ShipElement().base);
-                            TransformCoordinates(x, y - 2, end);
+                            TransformCoordinatesToServer(x, y - 2, end);
                             cell_direction_exit = config::UserCommandId::READYCELL_COMMAND;
                         }
                         break;
@@ -297,7 +298,7 @@ size_t GameMenu::SetShipDirection(size_t item, int x, int y, utils::data::TestPo
                     case 8:
                     case 9:
                         mvaddstr(y, x, block::ShipElement().base);
-                        TransformCoordinates(x, y, end);
+                        TransformCoordinatesToServer(x, y, end);
                         cell_direction_exit = config::UserCommandId::READYCELL_COMMAND;
                         break;
                 }
@@ -311,7 +312,7 @@ size_t GameMenu::SetShipDirection(size_t item, int x, int y, utils::data::TestPo
                             mvaddstr(y + 2, x, block::ShipElement().base);
                             mvaddstr(y + 4, x, block::ShipElement().base);
                             mvaddstr(y + 6, x, block::ShipElement().base);
-                            TransformCoordinates(x, y + 6, end);
+                            TransformCoordinatesToServer(x, y + 6, end);
                             cell_direction_exit = config::UserCommandId::READYCELL_COMMAND;
                         }
                         break;
@@ -322,7 +323,7 @@ size_t GameMenu::SetShipDirection(size_t item, int x, int y, utils::data::TestPo
                             mvaddstr(y, x, block::ShipElement().base);
                             mvaddstr(y + 2, x, block::ShipElement().base);
                             mvaddstr(y + 4, x, block::ShipElement().base);
-                            TransformCoordinates(x, y + 4, end);
+                            TransformCoordinatesToServer(x, y + 4, end);
                             cell_direction_exit = config::UserCommandId::READYCELL_COMMAND;
                         }
                         break;
@@ -333,7 +334,7 @@ size_t GameMenu::SetShipDirection(size_t item, int x, int y, utils::data::TestPo
                         if (check == YesNo::NO) {
                             mvaddstr(y, x, block::ShipElement().base);
                             mvaddstr(y + 2, x, block::ShipElement().base);
-                            TransformCoordinates(x, y + 2, end);
+                            TransformCoordinatesToServer(x, y + 2, end);
                             cell_direction_exit = config::UserCommandId::READYCELL_COMMAND;
                         }
                         break;
@@ -342,7 +343,7 @@ size_t GameMenu::SetShipDirection(size_t item, int x, int y, utils::data::TestPo
                     case 8:
                     case 9:
                         mvaddstr(y, x, block::ShipElement().base);
-                        TransformCoordinates(x, y, end);
+                        TransformCoordinatesToServer(x, y, end);
                         cell_direction_exit = config::UserCommandId::READYCELL_COMMAND;
                         break;
                 }
@@ -356,7 +357,7 @@ size_t GameMenu::SetShipDirection(size_t item, int x, int y, utils::data::TestPo
                             mvaddstr(y, x - 5, block::ShipElement().base);
                             mvaddstr(y, x - 10, block::ShipElement().base);
                             mvaddstr(y, x - 15, block::ShipElement().base);
-                            TransformCoordinates(x - 15, y, end);
+                            TransformCoordinatesToServer(x - 15, y, end);
                             cell_direction_exit = config::UserCommandId::READYCELL_COMMAND;
                         }
                         break;
@@ -367,7 +368,7 @@ size_t GameMenu::SetShipDirection(size_t item, int x, int y, utils::data::TestPo
                             mvaddstr(y, x, block::ShipElement().base);
                             mvaddstr(y, x - 5, block::ShipElement().base);
                             mvaddstr(y, x - 10, block::ShipElement().base);
-                            TransformCoordinates(x - 10, y, end);
+                            TransformCoordinatesToServer(x - 10, y, end);
                             cell_direction_exit = config::UserCommandId::READYCELL_COMMAND;
                         }
                         break;
@@ -378,7 +379,7 @@ size_t GameMenu::SetShipDirection(size_t item, int x, int y, utils::data::TestPo
                         if (check == YesNo::NO) {
                             mvaddstr(y, x, block::ShipElement().base);
                             mvaddstr(y, x - 5, block::ShipElement().base);
-                            TransformCoordinates(x - 5, y, end);
+                            TransformCoordinatesToServer(x - 5, y, end);
                             cell_direction_exit = config::UserCommandId::READYCELL_COMMAND;
                         }
                         break;
@@ -387,7 +388,7 @@ size_t GameMenu::SetShipDirection(size_t item, int x, int y, utils::data::TestPo
                     case 8:
                     case 9:
                         mvaddstr(y, x, block::ShipElement().base);
-                        TransformCoordinates(x, y, end);
+                        TransformCoordinatesToServer(x, y, end);
                         cell_direction_exit = config::UserCommandId::READYCELL_COMMAND;
                         break;
                 }
@@ -401,7 +402,7 @@ size_t GameMenu::SetShipDirection(size_t item, int x, int y, utils::data::TestPo
                             mvaddstr(y, x + 5, block::ShipElement().base);
                             mvaddstr(y, x + 10, block::ShipElement().base);
                             mvaddstr(y, x + 15, block::ShipElement().base);
-                            TransformCoordinates(x + 15, y, end);
+                            TransformCoordinatesToServer(x + 15, y, end);
                             cell_direction_exit = config::UserCommandId::READYCELL_COMMAND;
                         }
                         break;
@@ -412,7 +413,7 @@ size_t GameMenu::SetShipDirection(size_t item, int x, int y, utils::data::TestPo
                             mvaddstr(y, x, block::ShipElement().base);
                             mvaddstr(y, x + 5, block::ShipElement().base);
                             mvaddstr(y, x + 10, block::ShipElement().base);
-                            TransformCoordinates(x + 10, y, end);
+                            TransformCoordinatesToServer(x + 10, y, end);
                             cell_direction_exit = config::UserCommandId::READYCELL_COMMAND;
                         }
                         break;
@@ -423,7 +424,7 @@ size_t GameMenu::SetShipDirection(size_t item, int x, int y, utils::data::TestPo
                         if (check == YesNo::NO) {
                             mvaddstr(y, x, block::ShipElement().base);
                             mvaddstr(y, x + 5, block::ShipElement().base);
-                            TransformCoordinates(x + 5, y, end);
+                            TransformCoordinatesToServer(x + 5, y, end);
                             cell_direction_exit = config::UserCommandId::READYCELL_COMMAND;
                         }
                         break;
@@ -432,7 +433,7 @@ size_t GameMenu::SetShipDirection(size_t item, int x, int y, utils::data::TestPo
                     case 8:
                     case 9:
                         mvaddstr(y, x, block::ShipElement().base);
-                        TransformCoordinates(x, y, end);
+                        TransformCoordinatesToServer(x, y, end);
                         cell_direction_exit = config::UserCommandId::READYCELL_COMMAND;
                         break;
                 }
@@ -489,7 +490,7 @@ size_t GameMenu::InitStaticFields() {
  * 7  9  11 13 15 17 19 21 23 25
  *
  */
-size_t GameMenu::TransformCoordinates(int x, int y, utils::data::TestPoint &point) {
+size_t GameMenu::TransformCoordinatesToServer(int x, int y, utils::data::TestPoint &point) {
     switch (x) {
         case 19:
             point.x_ = 0;
@@ -553,6 +554,76 @@ size_t GameMenu::TransformCoordinates(int x, int y, utils::data::TestPoint &poin
             break;
         case 25:
             point.y_ = 9;
+            break;
+    }
+
+    return 0;
+}
+
+size_t GameMenu::TransformCoordinatesFromServer(int &x, int &y, utils::data::TestPoint point) {
+    switch (x) {
+        case 0:
+            point.x_ = 19;
+            break;
+        case 1:
+            point.x_ = 24;
+            break;
+        case 2:
+            point.x_ = 29;
+            break;
+        case 3:
+            point.x_ = 34;
+            break;
+        case 4:
+            point.x_ = 39;
+            break;
+        case 5:
+            point.x_ = 44;
+            break;
+        case 6:
+            point.x_ = 49;
+            break;
+        case 7:
+            point.x_ = 54;
+            break;
+        case 8:
+            point.x_ = 59;
+            break;
+        case 9:
+            point.x_ = 64;
+            break;
+    }
+
+    switch (y) {
+        case 1:
+            point.y_ = 7;
+            break;
+        case 2:
+            point.y_ = 9;
+            break;
+        case 3:
+            point.y_ = 11;
+            break;
+        case 4:
+            point.y_ = 13;
+            break;
+        case 5:
+            point.y_ = 15;
+            break;
+        case 6:
+            point.y_ = 17;
+            break;
+        case 7:
+            point.y_ = 19;
+            break;
+        case 8:
+            point.y_ = 21;
+            break;
+        case 9:
+            point.y_ = 23;
+            break;
+        case 10:
+            point.y_ = 25;
             break;
     }
 
@@ -650,7 +721,7 @@ size_t GameMenu::GetStep(utils::data::TestPoint &player_step, config::UserComman
                 break;
             case ' ':
             case '\n':
-                TransformCoordinates(x, y, player_step);
+                TransformCoordinatesToServer(x, y, player_step);
                 exit = config::UserCommandId::READYCELL_COMMAND;
                 break;
             case KEY_UP:
@@ -726,6 +797,79 @@ size_t GameMenu::IsOpponentRIGHTEdge(int x, YesNo &check) {
     } else {
         check = YesNo::YES;
     }
+}
+
+//===============
+
+inline const char *const BoolToString(bool b) { return b ? "true" : "false"; }
+
+size_t GameMenu::SetState(utils::data::TestPoint enemy_step, utils::data::TestGameState game_state,
+                          utils::data::TestEraseState erase_state) {
+    config::GameStateMessage msg_template;
+
+    char *full_started_status;
+    full_started_status = static_cast<char *>(malloc(
+        strlen(msg_template.started_status) + strlen(BoolToString(erase_state.started_)) + 1));
+    strcpy(full_started_status, msg_template.started_status);
+    strcat(full_started_status, BoolToString(erase_state.started_));
+
+    char *full_next_step_message;
+    full_next_step_message = static_cast<char *>(
+        malloc(strlen(msg_template.next_step_id) +
+               strlen(reinterpret_cast<const char *>(game_state.next_step_id_)) + 1));
+    strcpy(full_next_step_message, msg_template.next_step_id);
+    strcat(full_next_step_message, reinterpret_cast<const char *>(game_state.next_step_id_));
+
+    char *step_res;
+    switch (game_state.result_) {
+        case utils::data::TestResult::Miss:
+            step_res = "Miss";
+            break;
+        case utils::data::TestResult::Hit:
+            step_res = "Hit";
+            break;
+        case utils::data::TestResult::Kill:
+            step_res = "Kill";
+            break;
+        case utils::data::TestResult::BadPoint:
+            step_res = "BadPoint";
+            break;
+    }
+    char *full_enemy_step_result;
+    full_enemy_step_result =
+        static_cast<char *>(malloc(strlen(msg_template.enemy_step_result) + strlen(step_res) + 1));
+    strcpy(full_enemy_step_result, msg_template.enemy_step_result);
+    strcat(full_enemy_step_result, step_res);
+
+    char *full_end_game_status;
+    full_end_game_status = static_cast<char *>(malloc(
+        strlen(msg_template.end_game_status) + strlen(BoolToString(game_state.end_game_)) + 1));
+    strcpy(full_end_game_status, msg_template.end_game_status);
+    strcat(full_end_game_status, BoolToString(game_state.end_game_));
+
+    char *full_winner_id;
+    full_winner_id = static_cast<char *>(
+        malloc(strlen(msg_template.winner_id) +
+               strlen(reinterpret_cast<const char *>(erase_state.winner_id_)) + 1));
+    strcpy(full_winner_id, msg_template.winner_id);
+    strcat(full_winner_id, reinterpret_cast<const char *>(erase_state.winner_id_));
+
+    mvaddstr(28, 53, full_started_status);
+    mvaddstr(29, 53, full_started_status);
+    mvaddstr(30, 53, full_next_step_message);
+    mvaddstr(31, 53, full_enemy_step_result);
+    mvaddstr(32, 53, full_end_game_status);
+    mvaddstr(33, 53, full_winner_id);
+
+    int x = -1;
+    int y = -1;
+    TransformCoordinatesFromServer(x,y, enemy_step);
+    init_pair(6, COLOR_RED, COLOR_CYAN);
+    attron(COLOR_PAIR(6));
+    mvaddstr(y, x, block::ShipElement().base);
+    attroff(COLOR_PAIR(6));
+
+    return 0;
 }
 
 }  // namespace component

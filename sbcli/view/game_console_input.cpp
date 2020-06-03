@@ -7,23 +7,29 @@ namespace view {
 
 GameConsoleInput::GameConsoleInput() : game_menu_() {}
 
-
 size_t GameConsoleInput::ReadMap(utils::data::TestMap& player_map, config::UserCommandId& exit) {
     game_menu_.GetMap(player_map, exit);
 
     return 0;
 }
 
-size_t GameConsoleInput::ReadStep(utils::data::TestPoint& user_step, config::UserCommandId &end_game) {
-//    if (controller_signal->debug.dev_mode == config::DevMode::DEV) {
-//        std::cout << "input x, y: ";
-//        std::cin >> user_step.x_ >> user_step.y_;
-//    } else {
-        game_menu_.GetStep(user_step, end_game);
-//    }
-//    user_step.x_ = 1;
-//    user_step.y_ = 1;
+size_t GameConsoleInput::ReadStep(utils::data::TestPoint& user_step,
+                                  config::UserCommandId& end_game) {
+    //    if (controller_signal->debug.dev_mode == config::DevMode::DEV) {
+    //        std::cout << "input x, y: ";
+    //        std::cin >> user_step.x_ >> user_step.y_;
+    //    } else {
+    game_menu_.GetStep(user_step, end_game);
+    //    }
+    //    user_step.x_ = 1;
+    //    user_step.y_ = 1;
 
+    return 0;
+}
+size_t GameConsoleInput::WriteEnemyState(utils::data::TestPoint enemy_step,
+                                         utils::data::TestGameState game_state,
+                                         utils::data::TestEraseState erase_state) {
+    game_menu_.SetState(enemy_step, game_state, erase_state);
     return 0;
 }
 

@@ -21,7 +21,8 @@ struct MenuExistUser {
 //    const char *menu_name = "Главное меню";
 //    const char *hello_message = "Привет, ";
     const char *menu_name = "Main menu";
-    const char *hello_message = "Hi, ";const int len = 3;
+    const char *hello_message = "Hi, ";
+    const int len = 3;
 //    const int len = 5;
     const char items[3][100] = {"Start game", "Join game", "Exit"};
 //    const char items[2][100] = {"Многопользовательская игра", "Закрыть игру"};
@@ -75,6 +76,14 @@ struct GameMoveHelp {
         "UP/DOWN/LEFT/RIGHT/SPACE or ESC to return to select a ship from the list",
         "To select the position of the ship on the field press  UP/DOWN/LEFT/RIGHT/SPACE "
         "or ESC to return to select a ship from the list"};
+};
+
+struct GameStateMessage {
+    char started_status[100] = "Игра начата: ";
+    char next_step_id[100] = "Следующий ход за пользователем: ";
+    char enemy_step_result[100] = "Результат хода противника: ";
+    char end_game_status[100] = "Статус конца игры: ";
+    char winner_id[100] = "Победитель: ";
 };
 
 }  // namespace config

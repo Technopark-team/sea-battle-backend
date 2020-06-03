@@ -2,8 +2,8 @@
 #define SEABATTLE_GAME_CONSOLE_INPUT_H
 
 #include <memory>
-#include "sbcli/config/config.h"
 #include "sbcli/components/game/game.h"
+#include "sbcli/config/config.h"
 #include "ui_interface.h"
 
 namespace seabattle {
@@ -19,15 +19,15 @@ class GameConsoleInput {
 
     size_t ReadMap(utils::data::TestMap &player_map, config::UserCommandId &exit);
     size_t ReadStep(utils::data::TestPoint &user_step, config::UserCommandId &end_game);
-    size_t WriteEnemyState();
+    size_t WriteEnemyState(utils::data::TestPoint enemy_step, utils::data::TestGameState game_state,
+                           utils::data::TestEraseState erase_state);
 
  private:
     component::GameMenu game_menu_;
 };
 
-}
-}
-}
-
+}  // namespace view
+}  // namespace client
+}  // namespace seabattle
 
 #endif  // SEABATTLE_GAME_CONSOLE_INPUT_H

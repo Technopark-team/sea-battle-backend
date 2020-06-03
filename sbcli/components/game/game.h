@@ -25,15 +25,18 @@ class GameMenu {
 
     size_t GetMap(utils::data::TestMap &player_map, config::UserCommandId &exit);
     size_t GetStep(utils::data::TestPoint &player_point, config::UserCommandId &exit);
+    size_t SetState(utils::data::TestPoint enemy_step, utils::data::TestGameState game_state,
+                    utils::data::TestEraseState erase_state);
 
  private:
     size_t Draw_(size_t item);
     size_t SetShip(size_t item, utils::data::TestPoint &start, utils::data::TestPoint &end,
-                 config::UserCommandId &cell_exit);
+                   config::UserCommandId &cell_exit);
     size_t SetShipDirection(size_t item, int x, int y, utils::data::TestPoint &end,
-                          config::UserCommandId &cell_direction_exit);
+                            config::UserCommandId &cell_direction_exit);
     size_t InitStaticFields();
-    size_t TransformCoordinates(int x, int y, utils::data::TestPoint &point);
+    size_t TransformCoordinatesToServer(int x, int y, utils::data::TestPoint &point);
+    size_t TransformCoordinatesFromServer(int &x, int &y, utils::data::TestPoint point);
 
     size_t MakeBaseColor(int item, int x, int y);
 

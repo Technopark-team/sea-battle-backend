@@ -1,4 +1,5 @@
 #include "Socket.h"
+#include "errno.h"
 
 void Socket::SetNonBlocking(bool option) {
     int flags = fcntl(sock_fd_, F_GETFL, 0);

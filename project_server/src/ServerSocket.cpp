@@ -2,6 +2,8 @@
 
 #include "Socket.h"
 
+#include "errno.h"
+
 ServerSocket::ServerSocket(const std::string& host, uint32_t port) noexcept(false) {
     sock_fd_ = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (sock_fd_ <= 0) {

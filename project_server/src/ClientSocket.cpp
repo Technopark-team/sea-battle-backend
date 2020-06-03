@@ -1,4 +1,5 @@
 #include "ClientSocket.h"
+#include "errno.h"
 #include <iostream>
 
 int ClientSocket::Receive(std::string& msg) {

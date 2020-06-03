@@ -49,7 +49,7 @@ class con_handler : public boost::enable_shared_from_this<con_handler> {
             std::shared_ptr<utils::data::TestDataRequest> req =
                 utils::serializer::Serializer<utils::data::TestDataRequest>::Deserialize(
                     *ss, ss->str().size());
-
+            cout << "req->type_ = " << static_cast<int>(req->type_) << endl;
             switch (req->type_) {
                 case utils::data::TestRoute::CreateUser: {
                     std::cout << req->data_.login_ << std::endl;

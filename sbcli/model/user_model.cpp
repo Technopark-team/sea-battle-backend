@@ -19,7 +19,7 @@ size_t UserModel::CreateUser() {
     std::shared_ptr<std::stringstream> ss = seabattle::utils::serializer::Serializer<
         seabattle::utils::data::TestDataRequest>::Serialize(req);
 
-    network_client_->Run(ss, callback_);
+    network_client_->Run(ss, callback_, 1);
     return 0;
 }
 
@@ -30,7 +30,7 @@ size_t UserModel::Enter() {
     std::shared_ptr<std::stringstream> ss = seabattle::utils::serializer::Serializer<
         seabattle::utils::data::TestDataRequest>::Serialize(req);
 
-    network_client_->Run(ss, callback_);
+    network_client_->Run(ss, callback_, 1);
     return 0;
 }
 

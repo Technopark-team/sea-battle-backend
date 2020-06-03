@@ -23,7 +23,8 @@ class TCPClient : public INetworkClient {
     ~TCPClient() = default;
 
     void Run(std::shared_ptr<std::stringstream> data,
-             std::shared_ptr<std::function<size_t(std::stringstream&)>> callback) override;
+             std::shared_ptr<std::function<size_t(std::stringstream&)>> callback,
+             int debug_param) override;
     void Close() override;
 
  private:
@@ -34,16 +35,17 @@ class TCPClient : public INetworkClient {
     static const size_t buf_len_ = 20000;
     char receive_buffer_[buf_len_ * 2];
 
+    std::shared_ptr<std::function<size_t(std::stringstream&)>> callback_;
+
     config::IpPort ip_port_;
 
-    //    void OnConnect(const boost::system::error_code& ErrorCode,
-    //                   std::shared_ptr<std::function<size_t(std::stringstream&)>> callback)
-    //                   override;
     void OnConnect(const boost::system::error_code& ErrorCode) override;
     void OnReceive(const boost::system::error_code& ErrorCode,
-                   std::shared_ptr<std::function<size_t(std::stringstream&)>> callback) override;
+                   std::shared_ptr<std::function<size_t(std::stringstream&)>> callback,
+                   size_t bytes_transferred, int debug_param) override;
     void OnSend(const boost::system::error_code& ErrorCode,
-                std::shared_ptr<std::function<size_t(std::stringstream&)>> callback) override;
+                std::shared_ptr<std::function<size_t(std::stringstream&)>> callback,
+                int debug_param) override;
     void DoClose() override;
 };
 

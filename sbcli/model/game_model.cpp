@@ -88,7 +88,7 @@ size_t GameModel::CreateSession() {
     std::shared_ptr<std::stringstream> ss = seabattle::utils::serializer::Serializer<
         seabattle::utils::data::TestDataRequest>::Serialize(req);
 
-    network_client_->Run(ss, callback_);
+    network_client_->Run(ss, callback_, 1);
 //    std::cout << "s_id create session: " << session_id_ << std::endl;
     return 0;
 }
@@ -109,7 +109,7 @@ size_t GameModel::UpdateGame() {
     std::shared_ptr<std::stringstream> ss = seabattle::utils::serializer::Serializer<
         seabattle::utils::data::TestDataRequest>::Serialize(req);
 
-    network_client_->Run(ss, callback_);
+    network_client_->Run(ss, callback_, 2);
     std::cout << "update session: " << session_id_ << std::endl;
     return 0;
 }
@@ -120,7 +120,7 @@ size_t GameModel::JoinSession() {
     req.session_id_ = 1;
     std::shared_ptr<std::stringstream> ss = seabattle::utils::serializer::Serializer<
         seabattle::utils::data::TestDataRequest>::Serialize(req);
-    network_client_->Run(ss, callback_);
+    network_client_->Run(ss, callback_, 2);
     std::cout << "req.user_id_ " << req.user_id_ << std::endl;
 //    std::cout << "s_id join session: " << session_id_ << std::endl;
     return 0;
@@ -134,7 +134,7 @@ size_t GameModel::StartGame() {
     std::shared_ptr<std::stringstream> ss = seabattle::utils::serializer::Serializer<
         seabattle::utils::data::TestDataRequest>::Serialize(req);
 
-    network_client_->Run(ss, callback_);
+    network_client_->Run(ss, callback_, 2);
 //    std::cout << "request user_id: " << user_id_ << std::endl;
     std::cout << "map: " << user_map_.ships[5].start_.x_ << user_map_.ships[5].start_.y_
               << std::endl;

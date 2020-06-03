@@ -19,6 +19,7 @@ class GameConsoleInput {
 
     size_t ReadMap(utils::data::TestMap &player_map, config::UserCommandId &exit);
     size_t ReadStep(utils::data::TestPoint &user_step, config::UserCommandId &end_game);
+    size_t WriteEnemyState();
 
  private:
     component::GameMenu game_menu_;

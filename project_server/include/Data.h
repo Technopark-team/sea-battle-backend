@@ -17,7 +17,7 @@ enum class Route {
 MSGPACK_ADD_ENUM(Route)
 
 enum class Error {
-    Success = 0,
+    Success = 1,
     NotFound,
     Full,
     UserExist,
@@ -42,7 +42,8 @@ struct AuthData {
 
 
 enum class Result {
-    Miss = 0,
+    Default = -1,
+    Miss = 1,
     Hit,
     Kill,
     BadPoint
@@ -59,7 +60,7 @@ struct Point {
     MSGPACK_DEFINE_MAP(x_, y_)
 
     Point(size_t x, size_t y): x_(x), y_(y){}
-    Point():x_(0), y_(0) {}
+    Point():x_(-1), y_(-1) {}
 
     const bool isValid() const {
         return x_ < 10 && y_ < 10;
@@ -92,8 +93,8 @@ struct Map {
 };
 
 struct GameState {
-    int next_step_id_;
-    Result result_;
+    int next_step_id_ = -1;
+    Result result_ = Result::Default;
     Ship killed_ship_;
     bool end_game_;
 
@@ -129,8 +130,8 @@ struct EraseState {
 };
 
 struct DataRequest {
-    int user_id_;
-    int session_id_;
+    int user_id_ = -1;
+    int session_id_ = -1;
     Route type_;
     AuthData data_;
     Point point_;
@@ -143,14 +144,14 @@ struct DataRequest {
 };
 
 struct DataResponse {
-    int user_id_;
-    int session_id_;
+    int user_id_ = -1;
+    int session_id_ = -1;
     Route type_;
     Point point_;
     GameState game_state_;
     EraseState erase_state_;
 
-    Error error_;
+    Error error_ = Error::Success;;
 
     MSGPACK_DEFINE_MAP(user_id_, session_id_, type_, point_, game_state_ , erase_state_, error_)
 

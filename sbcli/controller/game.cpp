@@ -54,9 +54,14 @@ size_t GameController::Action(std::shared_ptr<config::ControllerSignal>& control
     int session_id;
     game_model_->GetSessionId(session_id);
 
+    std::cout << "=== Need Read Game" << std::endl;
+
     game_console_interface_->ReadMap(player_map, exit);
+    std::cout << "=== Read Map" << std::endl;
 
     game_model_->SetUserMap(player_map);
+
+    std::cout << "=== Need Start Game" << std::endl;
 
     game_model_->StartGame();
     std::this_thread::sleep_for(std::chrono::milliseconds(2000));
@@ -90,8 +95,13 @@ size_t GameController::Action(std::shared_ptr<config::ControllerSignal>& control
     game_console_interface_->ReadMap(player_map, map_exit);
     //    game_console_interface_->ReadStep(player_point, step_exit);
 
+    std::cout << "=== StartedGame" << std::endl;
+
     do {
+        std::cout << "=== Started do-while" << std::endl;
+
         while ((game_state.next_step_id_ != user_id) && (!game_state.end_game_)) {
+            std::cout << "=== Update enemy" << std::endl;
             game_model_->UpdateGame();
             game_model_->GetGameState(game_state);
             game_model_->GetEnemyCurrentStep(enemy_point);
@@ -99,10 +109,16 @@ size_t GameController::Action(std::shared_ptr<config::ControllerSignal>& control
             game_console_interface_->WriteEnemyState(enemy_point, game_state, erase_state);
             std::this_thread::sleep_for(std::chrono::milliseconds(2000));
         }
+        std::cout << "=== Update need ReadStep" << std::endl;
 
         game_console_interface_->ReadStep(player_point, end_game);
+
+        std::cout << "=== Update made ReadStep, need update" << std::endl;
+
         game_model_->SetCurrentStep(player_point);
         game_model_->UpdateGame();
+        std::cout << "=== Update Game user1" << std::endl;
+
 //        std::cout << "enemy's step: " << enemy_point.x_ << ", " << enemy_point.y_ << std::endl;
 //        std::cout << "enemy's step status: " << static_cast<int>(game_state.result_)
 //                  << ", end: " << game_state.end_game_ << std::endl;

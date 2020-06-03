@@ -12,7 +12,7 @@ GameClient::GameClient(config::IpPort net_config, config::Debug debug)
       menu_controller_(new controller::MenuController()) {
     std::cout << "[GameClient] GameClient" << std::endl;
     network_client_ = std::make_shared<network::TCPClient>(net_config_);
-    test_client_ = std::make_unique<test::TestClient>(debug, network_client_);
+    test_client_ = std::make_unique<test::TestClient>(debug_data_, network_client_);
     auth_controller_ = std::make_unique<controller::AuthController>(network_client_);
     game_controller_ = std::make_unique<controller::GameController>(network_client_);
     controller_signal_ = std::make_shared<config::ControllerSignal>(config::Controller::MENU);

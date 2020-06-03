@@ -1,8 +1,8 @@
 #ifndef SEABATTLE_SBCLI_CORE_TEST_CLIENT_H_
 #define SEABATTLE_SBCLI_CORE_TEST_CLIENT_H_
 
-#include <memory>
 #include <chrono>
+#include <memory>
 #include <thread>
 #include "network/network.h"
 #include "sbcli/config/config.h"
@@ -29,6 +29,8 @@ class TestClient {
     size_t TestEnter_();
     size_t TestEndGame_();
     size_t GeneralCallback_(std::stringstream& response);
+    size_t EmulateCreateClient();
+    size_t EmulateJoinClient();
 
     int user1_id_;
     int user2_id_;
@@ -36,6 +38,13 @@ class TestClient {
     int user2_session_id_;
     std::shared_ptr<network::TCPClient> network_client_;
     std::shared_ptr<std::function<size_t(std::stringstream&)>> callback_;
+
+    utils::data::TestGameState game_state_{};
+
+    int user_id_;
+    int session_id_;
+
+    utils::data::TestPoint enemy_point_{};
 
     config::Debug debug_data_;
 };

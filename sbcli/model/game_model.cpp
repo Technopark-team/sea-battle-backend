@@ -51,6 +51,11 @@ size_t GameModel::GetEnemyCurrentStep(utils::data::TestPoint& enemy_current_step
     enemy_current_step = std::move(enemy_current_step_);
     return 0;
 }
+
+size_t GameModel::SetEnemyCurrentStep(utils::data::TestPoint enemy_current_step) {
+    enemy_current_step_ = std::move(enemy_current_step);
+    return 0;
+}
 size_t GameModel::SetUserMap(utils::data::TestMap user_map) {
     user_map_ = std::move(user_map);
     return 0;
@@ -94,23 +99,19 @@ size_t GameModel::CreateSession() {
 }
 size_t GameModel::UpdateGame() {
     utils::data::TestDataRequest req;
-    req.type_ = utils::data::TestRoute::CreateSession;
+    req.type_ = utils::data::TestRoute::UpdateGame;
     req.user_id_ = user_id_;
     req.session_id_ = session_id_;
 
-//    if (debug_mode) {
-//
-//    }
-    std::cout << "input x, y: ";
-    std::cin >> req.point_.x_ >> req.point_.y_;
-    //    req.point_.x_ = 12;
-    //    req.point_.y_ = 12;
+    if (game_state_.next_step_id_ == user_id_) {
+        req.point_ = std::move(current_step_);
+    }
 
     std::shared_ptr<std::stringstream> ss = seabattle::utils::serializer::Serializer<
         seabattle::utils::data::TestDataRequest>::Serialize(req);
 
     network_client_->Run(ss, callback_, 2);
-    std::cout << "update session: " << session_id_ << std::endl;
+//    std::cout << "update session: " << session_id_ << std::endl;
     return 0;
 }
 size_t GameModel::JoinSession() {
@@ -118,6 +119,7 @@ size_t GameModel::JoinSession() {
     req.type_ = utils::data::TestRoute::JoinSession;
     req.user_id_ = user_id_;
     req.session_id_ = 1;
+    session_id_ = 1;
     std::shared_ptr<std::stringstream> ss = seabattle::utils::serializer::Serializer<
         seabattle::utils::data::TestDataRequest>::Serialize(req);
     network_client_->Run(ss, callback_, 2);
@@ -130,14 +132,14 @@ size_t GameModel::StartGame() {
     req.type_ = utils::data::TestRoute::StartGame;
     req.session_id_ = session_id_;
     req.user_id_ = user_id_;
-//    req.map_ = user_map_;
+    req.map_ = std::move(user_map_);
     std::shared_ptr<std::stringstream> ss = seabattle::utils::serializer::Serializer<
         seabattle::utils::data::TestDataRequest>::Serialize(req);
 
     network_client_->Run(ss, callback_, 2);
 //    std::cout << "request user_id: " << user_id_ << std::endl;
-    std::cout << "map: " << user_map_.ships[5].start_.x_ << user_map_.ships[5].start_.y_
-              << std::endl;
+//    std::cout << "map: " << user_map_.ships[5].start_.x_ << user_map_.ships[5].start_.y_
+//              << std::endl;
     return 0;
 }
 size_t GameModel::EndGame() {
@@ -156,32 +158,36 @@ size_t GameModel::GeneralCallback_(std::stringstream& response) {
         case utils::data::TestRoute::CreateSession: {
             std::cout << "GeneralCallback_ CreateSession" << std::endl;
             SetSessionId(resp->session_id_);
-//            SetUserId(resp->user_id_);
             break;
         }
         case utils::data::TestRoute::StartGame: {
-            std::cout << "GeneralCallback_ StartGame" << std::endl;
-            std::cout << "resp->user_id_: " << resp->user_id_ << std::endl;
+//            std::cout << "GeneralCallback_ StartGame" << std::endl;
+//            std::cout << "resp->user_id_: " << resp->user_id_ << std::endl;
 //            SetUserId(resp->user_id_);
             SetError(resp->error_);  // wait или started
             SetGameState(resp->game_state_);
-            std::cout << "start" << static_cast<int>(error_) << std::endl;
+            SetEraseState(resp->erase_state_);
+//            std::cout << "start" << static_cast<int>(error_) << std::endl;
             break;
         }
         case utils::data::TestRoute::UpdateGame: {
-            std::cout << "GeneralCallback_ UpdateGame" << std::endl;
+//            std::cout << "GeneralCallback_ UpdateGame" << std::endl;
             SetGameState(resp->game_state_);
+            SetEraseState(resp->erase_state_);
+            SetEnemyCurrentStep(resp->point_);
             break;
         }
         case utils::data::TestRoute::JoinSession: {
-            std::cout << "GeneralCallback_ JoinSession" << std::endl;
-            std::cout << resp->session_id_ << std::endl;
+//            std::cout << "GeneralCallback_ JoinSession" << std::endl;
+//            std::cout << resp->session_id_ << std::endl;
             SetError(resp->error_);  // должен получить Success
-            std::cout << "resp->error_" << static_cast<int>(resp->error_) << std::endl;
+//            std::cout << "resp->error_" << static_cast<int>(resp->error_) << std::endl;
             break;
         }
         case utils::data::TestRoute::EndGame: {
-            std::cout << "GeneralCallback_ EndGame" << std::endl;
+//            std::cout << "GeneralCallback_ EndGame" << std::endl;
+            SetGameState(resp->game_state_);
+            SetEraseState(resp->erase_state_);
             break;
         }
     }

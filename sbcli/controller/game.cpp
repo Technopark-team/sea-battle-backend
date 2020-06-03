@@ -33,74 +33,82 @@ size_t GameController::Action(std::shared_ptr<config::ControllerSignal>& control
     config::Controller signal = std::move(controller_signal->signal);
     controller_signal->Clean();
 
-    //    if (controller_signal->debug.dev_mode == config::DevMode::DEV) {
-    //        game_model_->debug_mode = true;
-    //    }
-
     utils::data::TestMap player_map;
     config::UserCommandId exit;
     game_model_->SetUserId(controller_signal->user_id);
-    //
-    //    int session = 0;
-    std::cout << "create or join " << std::endl;
-    //    CREATE or JOIN
+
+//    std::cout << "create or join " << std::endl;
+//    //    CREATE or JOIN
     if (command.command == config::UserCommandId::MULTI_COMMAND_START) {
-        std::cout << "CreateSession" << std::endl;
+//        std::cout << "CreateSession" << std::endl;
         game_model_->CreateSession();
         std::this_thread::sleep_for(std::chrono::milliseconds(5000));
     } else {
-        std::cout << "JoinSession" << std::endl;
+//        std::cout << "JoinSession" << std::endl;
         game_model_->JoinSession();
         std::this_thread::sleep_for(std::chrono::milliseconds(2000));
     }
-    //
-    game_console_interface_->ReadMap(player_map, exit);
-
-    game_model_->SetUserMap(player_map);
-    game_model_->StartGame();
-    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 
     int user_id;
     game_model_->GetUserId(user_id);
     int session_id;
     game_model_->GetSessionId(session_id);
-    std::cout << "StartGame, user_id: " << user_id << std::endl;
-    std::cout << "StartGame, session_id: " << session_id << std::endl;
+
+    game_console_interface_->ReadMap(player_map, exit);
+
+    game_model_->SetUserMap(player_map);
+
+    game_model_->StartGame();
+    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+
+
+//    std::cout << "StartGame, user_id: " << user_id << std::endl;
+//    std::cout << "StartGame, session_id: " << session_id << std::endl;
     //
 
-    int wait;
-    std::cout << "wait ";
-    std::cin >> wait;
+//    int wait;
+//    std::cout << "wait ";
+//    std::cin >> wait;
 
-    game_model_->UpdateGame();
-    std::cout << "UpdateGame" << std::endl;
-    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+
+
+//    game_model_->UpdateGame();
+//    std::cout << "UpdateGame" << std::endl;
+//    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
     //
     utils::data::TestPoint enemy_point;
     utils::data::TestGameState game_state;
+    utils::data::TestEraseState erase_state;
     //    game_model_->GetEnemyCurrentStep(enemy_point);
-    //    game_model_->GetGameState(game_state);
+        game_model_->GetGameState(game_state);
     //
 
     utils::data::TestPoint player_point;
     config::UserCommandId map_exit;
-    config::UserCommandId step_exit;
+    config::UserCommandId end_game;
 
     game_console_interface_->ReadMap(player_map, map_exit);
     //    game_console_interface_->ReadStep(player_point, step_exit);
 
-    while (!game_state.end_game_) {
-        while (game_state.next_step_id_ != user_id) {
-            game_model_->GetEnemyCurrentStep(enemy_point);
+    do {
+        while ((game_state.next_step_id_ != user_id) && (!game_state.end_game_)) {
+            game_model_->UpdateGame();
             game_model_->GetGameState(game_state);
+            game_model_->GetEnemyCurrentStep(enemy_point);
+            game_model_->GetEraseState(erase_state);
+            game_console_interface_->WriteEnemyState(enemy_point, game_state, erase_state);
+            std::this_thread::sleep_for(std::chrono::milliseconds(2000));
         }
+
+        game_console_interface_->ReadStep(player_point, end_game);
+        game_model_->SetCurrentStep(player_point);
         game_model_->UpdateGame();
-        std::cout << "enemy's step: " << enemy_point.x_ << ", " << enemy_point.y_ << std::endl;
-        std::cout << "enemy's step status: " << static_cast<int>(game_state.result_)
-                  << ", end: " << game_state.end_game_ << std::endl;
+//        std::cout << "enemy's step: " << enemy_point.x_ << ", " << enemy_point.y_ << std::endl;
+//        std::cout << "enemy's step status: " << static_cast<int>(game_state.result_)
+//                  << ", end: " << game_state.end_game_ << std::endl;
 
         std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-    }
+    } while (!game_state.end_game_);
 
     //    size_t command = -1;
     //    game_console_interface_->Run(command);

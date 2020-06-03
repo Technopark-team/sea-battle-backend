@@ -24,6 +24,7 @@ class GameModel : public IModel {
     size_t SetUserId(int user_id);
     size_t SetCurrentStep(utils::data::TestPoint current_step);
     size_t GetEnemyCurrentStep(utils::data::TestPoint &current_enemy_step);
+    size_t SetEnemyCurrentStep(utils::data::TestPoint current_enemy_step);
     size_t SetUserMap(utils::data::TestMap user_map);
     size_t GetEnemyKilledMap(utils::data::TestMap &enemy_killed_map);
     size_t SetGameState(utils::data::TestGameState game_state);

@@ -59,15 +59,16 @@ struct Debug {
     User_n user_n;
     utils::data::TestAuthData auth_data{};
     utils::data::TestMap debug_map;
-
-    utils::data::TestGameState game_state{};
-
-    int user_id;
-    int session_id;
-
-    utils::data::TestPoint enemy_point{};
+    int join_session_id;
 
     Debug() = default;
+    Debug(DevMode dev_mode, User_n user_n, utils::data::TestAuthData auth_data,
+          utils::data::TestMap debug_map, int join_session_id)
+        : dev_mode(dev_mode),
+          user_n(user_n),
+          auth_data(std::move(auth_data)),
+          debug_map(std::move(debug_map)),
+          join_session_id(join_session_id) {}
 };
 
 struct UserCommand {

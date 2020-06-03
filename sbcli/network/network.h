@@ -1,8 +1,8 @@
 #ifndef SEA_BATTLE_BACKEND_NETWORK_H
 #define SEA_BATTLE_BACKEND_NETWORK_H
 
-#include "network_interface.h"
 #include <sbcli/config/config.h>
+#include "network_interface.h"
 
 #include <iostream>
 #include <string>
@@ -36,8 +36,10 @@ class TCPClient : public INetworkClient {
 
     config::IpPort ip_port_;
 
-    void OnConnect(const boost::system::error_code& ErrorCode,
-                   std::shared_ptr<std::function<size_t(std::stringstream&)>> callback) override;
+    //    void OnConnect(const boost::system::error_code& ErrorCode,
+    //                   std::shared_ptr<std::function<size_t(std::stringstream&)>> callback)
+    //                   override;
+    void OnConnect(const boost::system::error_code& ErrorCode) override;
     void OnReceive(const boost::system::error_code& ErrorCode,
                    std::shared_ptr<std::function<size_t(std::stringstream&)>> callback) override;
     void OnSend(const boost::system::error_code& ErrorCode,
